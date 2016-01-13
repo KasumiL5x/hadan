@@ -165,6 +165,28 @@ const std::vector<Model::Edge> Model::getEdges() const {
 	return _edges;
 }
 
+BoundingBox Model::computeBoundingBox() const {
+	if( _vertices.empty() ) {
+		return BoundingBox();
+	}
+	cc::Vec3f min;
+	cc::Vec3f max;
+	cc::Vec3f center;
+	for( unsigned int i = 0; i < static_cast<unsigned int>(_vertices.size()); ++i ) {
+		const cc::Vec3f& pos = _vertices[i].position;
+		center += pos;
+		min.x = (pos.x < min.x) ? pos.x : min.x;
+		min.y = (pos.y < min.y) ? pos.y : min.y;
+		min.z = (pos.z < min.z) ? pos.z : min.z;
+		max.x = (pos.x > max.x) ? pos.x : max.x;
+		max.y = (pos.y > max.y) ? pos.y : max.y;
+		max.z = (pos.z > max.z) ? pos.z : max.z;
+	}
+	center /= static_cast<float>(_vertices.size());
+	const cc::Vec3f halfExtents = (max - min) * 0.5f;
+	return BoundingBox(center, halfExtents);
+}
+
 Model::Edge::Edge() {
 	idx[0]=idx[1] = -1;
 	face[0]=face[1] = -1;

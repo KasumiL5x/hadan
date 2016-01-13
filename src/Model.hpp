@@ -4,6 +4,7 @@
 #include <vector>
 #include <set>
 #include "Vertex.hpp"
+#include "BoundingBox.hpp"
 
 class Model {
 public:
@@ -37,6 +38,8 @@ public:
 	const std::vector<int>& getIndices() const;
 	const std::vector<Triangle> getTriangles() const;
 	const std::vector<Edge> getEdges() const;
+
+	BoundingBox computeBoundingBox() const;
 
 private:
 	std::vector<Vertex> _vertices;
