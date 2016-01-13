@@ -15,7 +15,15 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\ClipMesh.cpp" />
     <ClCompile Include="..\src\hadan.cpp" />
+    <ClCompile Include="..\src\Model.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\ClipMesh.hpp" />
+    <ClInclude Include="..\src\Model.hpp" />
+    <ClInclude Include="..\src\Plane.hpp" />
+    <ClInclude Include="..\src\Vertex.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>Win32Proj</Keyword>
