@@ -1,0 +1,3 @@
+[submodule "thirdparty/ccmath"]
+	path = thirdparty/ccmath
+	url = https://github.com/KasumiL5x/ccmath.git

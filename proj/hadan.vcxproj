@@ -58,7 +58,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <IntDir>../tmp/$(Configuration)/</IntDir>
     <TargetName>$(ProjectName)-d</TargetName>
-    <IncludePath>D:\programs\Autodesk\Maya2016\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\programs\Autodesk\Maya2016\include;../thirdparty/ccmath/src/;$(IncludePath)</IncludePath>
     <LibraryPath>D:\programs\Autodesk\Maya2016\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -92,7 +92,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <IntDir>../tmp/$(Configuration)/</IntDir>
     <TargetName>$(ProjectName)-rd</TargetName>
-    <IncludePath>D:\programs\Autodesk\Maya2016\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\programs\Autodesk\Maya2016\include;../thirdparty/ccmath/src/;$(IncludePath)</IncludePath>
     <LibraryPath>D:\programs\Autodesk\Maya2016\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDebug|x64'">
@@ -129,7 +129,7 @@
     <TargetExt>.mll</TargetExt>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <IntDir>../tmp/$(Configuration)/</IntDir>
-    <IncludePath>D:\programs\Autodesk\Maya2016\include;$(IncludePath)</IncludePath>
+    <IncludePath>D:\programs\Autodesk\Maya2016\include;../thirdparty/ccmath/src/;$(IncludePath)</IncludePath>
     <LibraryPath>D:\programs\Autodesk\Maya2016\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
