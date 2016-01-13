@@ -9,9 +9,9 @@ Fracturing meshes in Maya is difficult.  With this tool, fracturing meshes in Ma
 ### Tech
 * [Voro++][voropp] - computation of Voronoi diagrams
 * [GeometricTools][geometrictools] - large library ranging from physics to graphics
+* [ccmath][ccmath] - mathematics library
 
 ### Todos
- - Create Maya plugin and test creation of arbitrary meshes
  - Test predefined mesh slicing in Maya
  - Incorporate actual Maya meshes
  - Use 3D Voronoi as the source of the cutting planes
@@ -24,3 +24,4 @@ MIT
 [//]: References
 [voropp]: <http://math.lbl.gov/voro++/>
 [geometrictools]: <http://geometrictools.com/>
+[ccmath]: <http://www.ngreen.org/ccmath/>
