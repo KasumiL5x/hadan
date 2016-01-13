@@ -21,6 +21,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\ClipMesh.hpp" />
+    <ClInclude Include="..\src\MayaHelper.hpp" />
     <ClInclude Include="..\src\Model.hpp" />
     <ClInclude Include="..\src\Plane.hpp" />
     <ClInclude Include="..\src\Vertex.hpp" />
