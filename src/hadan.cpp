@@ -5,8 +5,9 @@
  *    daniel green
  *
  * usage:
- *    hadan <mesh_name>
- *    <mesh_name> is a string representing the path of the mesh to fracture
+ *    hadan <mesh_name> <slice_count>
+ *    <mesh_name>   is a string representing the path of the mesh to fracture
+ *    <slice_count> is the number of slices the source geometry should be split into (must be >=1)
  */
 
 // todo:
@@ -50,13 +51,16 @@ void destroy() {
 }
 
 MStatus hadan::doIt( const MArgList& args ) {
-	// 1. generate sample points
-	// 2. generate cutting planes
-	// 3. create cut geometry
-
-	if( args.length() < 1 ) {
+	if( args.length() < 2 ) {
 		displayError("Hadan ERROR: Incorrect number of arguments.");
 		return MS::kFailure; // must have right number of arguments
+	}
+
+	// get and validate number of slices
+	const int numSlices = args.asInt(1);
+	if( numSlices < 1 ) {
+		displayError("Hadan ERROR: Must have at least one slice!");
+		return MS::kFailure;
 	}
 
 	MDagPath inputObjectPath;
@@ -89,7 +93,7 @@ MStatus hadan::doIt( const MArgList& args ) {
 	// create a sample point generator and generate sample points
 	pointGenerator = createSamplePointGenerator();
 	std::vector<cc::Vec3f> samplePoints;
-	pointGenerator->generateSamplePoints(fromMaya, 2, samplePoints);
+	pointGenerator->generateSamplePoints(fromMaya, static_cast<unsigned int>(numSlices), samplePoints);
 
 	if( samplePoints.empty() ) {
 		printf("Hadan ERROR: Not enough sample points were generated.\n");
@@ -127,10 +131,10 @@ MStatus hadan::doIt( const MArgList& args ) {
 			//
 			// DEBUG
 			//
-			Model planeModel;
-			PlaneHelper::planeToModel(currPlane, 1.0f, planeModel);
-			MFnMesh planeMesh;
-			MayaHelper::copyModelToMFnMesh(planeModel, planeMesh);
+			//Model planeModel;
+			//PlaneHelper::planeToModel(currPlane, 1.0f, planeModel);
+			//MFnMesh planeMesh;
+			//MayaHelper::copyModelToMFnMesh(planeModel, planeMesh);
 		}
 
 		if( anyResult ) {
