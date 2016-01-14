@@ -164,5 +164,7 @@ MStatus hadan::doIt( const MArgList& args ) {
 
 	destroy();
 
+	fflush(stdout);
+
 	return MStatus::kSuccess;
 }

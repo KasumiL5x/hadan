@@ -13,10 +13,22 @@ namespace PlaneHelper {
 			return false;
 		}
 
-		const cc::Vec3f ab = points[2] - points[0];
-		const cc::Vec3f ac = points[1] - points[0];
+		cc::Vec3f sum(0.0f, 0.0f, 0.0f);
+		for( auto& p : points ) {
+			sum += p;
+		}
+		const cc::Vec3f centroid = sum * (1.0f / static_cast<float>(n));
+		const cc::Vec3f ab = points[1] - points[0]; // ba
+		const cc::Vec3f ac = points[2] - points[0]; // ca
 		outPlane.normal = ab.cross(ac).normalized();
-		outPlane.constant = -points[0].dot(outPlane.normal);
+		outPlane.constant = centroid.dot(outPlane.normal);
+
+
+
+		//const cc::Vec3f ab = points[2] - points[0];
+		//const cc::Vec3f ac = points[1] - points[0];
+		//outPlane.normal = ab.cross(ac).normalized();
+		//outPlane.constant = -points[0].dot(outPlane.normal);
 
 		//cc::Vec3f sum(0.0f, 0.0f, 0.0f);
 		//for( auto& p : points ) {
