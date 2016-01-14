@@ -15,10 +15,10 @@
 //    - fix maya vertices not being in world space
 
 
-#include <maya/MIOStream.h>
 #include <maya/MSimple.h>
 #include <maya/MFnMesh.h>
-#include <maya/MPointArray.h>
+#include <maya/MGlobal.h>
+#include <maya/MFnSet.h>
 #include "Model.hpp"
 #include "ClipMesh.hpp"
 #include "MayaHelper.hpp"
@@ -113,6 +113,9 @@ MStatus hadan::doIt( const MArgList& args ) {
 		return MS::kFailure;
 	}
 
+	// used to assign materials later
+	std::vector<MObject> allGeneratedMeshes;
+
 	// cut out all cells creating a new piece of geometry for each
 	int offset = 0;
 	for( unsigned int i = 0; i < static_cast<unsigned int>(outPlaneCounts.size()); ++i ) {
@@ -142,11 +145,23 @@ MStatus hadan::doIt( const MArgList& args ) {
 			if( cm.convert(&clippedModel) ) {
 				MFnMesh outCellChunkMesh;
 				MayaHelper::copyModelToMFnMesh(clippedModel, outCellChunkMesh);
+				allGeneratedMeshes.push_back(outCellChunkMesh.object());
 			} else {
 				printf("Hadan ERROR: Failed to convert clipped model.\n");
 			}
 		}
 	}
+
+	// get and assign the default material to all created meshes
+	MSelectionList shadingSelectionList;
+	MGlobal::getSelectionListByName("initialShadingGroup", shadingSelectionList);
+	MObject shadingGroupObj;
+	shadingSelectionList.getDependNode(0, shadingGroupObj);
+	MFnSet shadingGroupFn(shadingGroupObj);
+	for( auto& mesh : allGeneratedMeshes ) {
+		shadingGroupFn.addMember(mesh);
+	}
+
 	destroy();
 
 	return MStatus::kSuccess;

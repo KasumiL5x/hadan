@@ -7,6 +7,7 @@
 #include <maya/MFnMesh.h>
 #include <maya/MIntArray.h>
 #include <maya/MItMeshEdge.h>
+#include <maya/MPointArray.h>
 #include "Model.hpp"
 
 namespace MayaHelper {
@@ -31,7 +32,7 @@ namespace MayaHelper {
 	static void copyMFnMeshToModel( MFnMesh& mayaMesh, Model& outModel ) {
 		// get points
 		MPointArray points;
-		mayaMesh.getPoints(points, MSpace::kPostTransform);
+		mayaMesh.getPoints(points, MSpace::kWorld);
 		for( unsigned int i = 0; i < points.length(); ++i ) {
 			const MPoint& pnt = points[i];
 			const float x = static_cast<float>(pnt.x);
@@ -87,7 +88,7 @@ namespace MayaHelper {
 
 	static void debugPrintMFnMesh( MFnMesh& mesh, bool verbose ) {
 		MPointArray points;
-		mesh.getPoints(points, MSpace::kPostTransform);
+		mesh.getPoints(points, MSpace::kWorld);
 		printf("Points (%d)\n", points.length());
 		if( verbose ) {
 			for( unsigned int i = 0; i < points.length(); ++i ) {
