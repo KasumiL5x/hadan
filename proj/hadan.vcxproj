@@ -19,6 +19,7 @@
     <ClCompile Include="..\src\ClipMesh.cpp" />
     <ClCompile Include="..\src\hadan.cpp" />
     <ClCompile Include="..\src\Model.cpp" />
+    <ClCompile Include="..\src\Plane.cpp" />
     <ClCompile Include="..\src\TestSamplePointGenerator.cpp" />
     <ClCompile Include="..\src\VoronoiPlaneGenerator.cpp" />
   </ItemGroup>

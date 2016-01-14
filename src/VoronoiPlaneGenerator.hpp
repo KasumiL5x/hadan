@@ -8,7 +8,7 @@ public:
 	VoronoiPlaneGenerator();
 	~VoronoiPlaneGenerator();
 
-	virtual void generatePlanes( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Plane>& outPlanes, std::vector<int>& outPlaneCounts ) const override;
+	virtual void generatePlanes( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Plane>& outPlanes, std::vector<int>& outPlaneCounts, std::vector<cc::Vec3f>& outCellPositions ) const override;
 };
 
 #endif /* __voronoi_plane_generator__ */

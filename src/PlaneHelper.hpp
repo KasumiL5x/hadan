@@ -13,6 +13,11 @@ namespace PlaneHelper {
 			return false;
 		}
 
+		//float residualError;
+		//Plane::fitPointsToPlane(points, residualError, outPlane);
+		//outPlane.normal = -outPlane.normal;
+		//outPlane.constant = -outPlane.constant;
+
 		cc::Vec3f sum(0.0f, 0.0f, 0.0f);
 		for( unsigned int i = 0; i < 3; ++i ) {
 			sum += points[i];
@@ -20,8 +25,10 @@ namespace PlaneHelper {
 		const cc::Vec3f centroid = sum * (1.0f / 3.0f);
 		const cc::Vec3f ab = points[1] - points[0]; // ba
 		const cc::Vec3f ac = points[2] - points[0]; // ca
+		//const cc::Vec3f otherNormal = ab.cross(ac).normalized();
+		//const float otherConstant = centroid.dot(outPlane.normal);
 		outPlane.normal = ab.cross(ac).normalized();
-		outPlane.constant = centroid.dot(outPlane.normal);
+		outPlane.constant = -centroid.dot(outPlane.normal);
 
 
 
@@ -77,8 +84,11 @@ namespace PlaneHelper {
 		return true;
 	}
 
-	static void planeToModel( const Plane& plane, float size, Model& outModel ) {
-		const cc::Vec3f right = plane.normal.cross(cc::Vec3f::up()).normalized();
+	static void planeToModel( const Plane& plane, float size, const cc::Vec3f& position, Model& outModel ) {
+		cc::Vec3f right = plane.normal.cross(cc::Vec3f::up()).normalized();
+		if( 0.0f == right.magnitude() ){ 
+			right = cc::Vec3f::right();
+		}
 		const cc::Vec3f surface = right.cross(plane.normal).normalized();
 		const cc::Vec3f origin = cc::Vec3f(0.0f, plane.constant, 0.0f);
 		
@@ -90,10 +100,18 @@ namespace PlaneHelper {
 		const cc::Vec3f p2 = (right * size) + (surface * -size);
 		// bottom left
 		const cc::Vec3f p3 = (right * -size) + (surface * -size);
-		outModel.addVertex(Vertex(plane.normal * plane.constant + p0));
-		outModel.addVertex(Vertex(plane.normal * plane.constant + p1));
-		outModel.addVertex(Vertex(plane.normal * plane.constant + p2));
-		outModel.addVertex(Vertex(plane.normal * plane.constant + p3));
+
+		outModel.addVertex(Vertex(position + (plane.normal * plane.constant) + p0));
+		outModel.addVertex(Vertex(position + (plane.normal * plane.constant) + p1));
+		outModel.addVertex(Vertex(position + (plane.normal * plane.constant) + p2));
+		outModel.addVertex(Vertex(position + (plane.normal * plane.constant) + p3));
+
+		printf("position: %f, %f, %f\n", position.x, position.y, position.z);
+
+		//outModel.addVertex(Vertex(position + plane.normal * -plane.constant + p0));
+		//outModel.addVertex(Vertex(position + plane.normal * -plane.constant + p1));
+		//outModel.addVertex(Vertex(position + plane.normal * -plane.constant + p2));
+		//outModel.addVertex(Vertex(position + plane.normal * -plane.constant + p3));
 
 		outModel.addIndex(0);
 		outModel.addIndex(3);

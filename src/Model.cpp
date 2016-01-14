@@ -169,8 +169,8 @@ BoundingBox Model::computeBoundingBox() const {
 	if( _vertices.empty() ) {
 		return BoundingBox();
 	}
-	cc::Vec3f min;
-	cc::Vec3f max;
+	cc::Vec3f min(std::numeric_limits<float>::max());
+	cc::Vec3f max(-std::numeric_limits<float>::max());
 	cc::Vec3f center;
 	for( unsigned int i = 0; i < static_cast<unsigned int>(_vertices.size()); ++i ) {
 		const cc::Vec3f& pos = _vertices[i].position;

@@ -14,7 +14,7 @@
 //    - fix plane generation (look at voronoplanegenerator.cpp for a note)
 //    - fix maya vertices not being in world space
 
-
+#include <ctime>
 #include <maya/MSimple.h>
 #include <maya/MFnMesh.h>
 #include <maya/MGlobal.h>
@@ -51,6 +51,10 @@ void destroy() {
 }
 
 MStatus hadan::doIt( const MArgList& args ) {
+	srand(time(0));
+
+	printf("Hadan beginning!\n");
+
 	if( args.length() < 2 ) {
 		displayError("Hadan ERROR: Incorrect number of arguments.");
 		return MS::kFailure; // must have right number of arguments
@@ -90,6 +94,10 @@ MStatus hadan::doIt( const MArgList& args ) {
 	MayaHelper::copyMFnMeshToModel(mayaMesh, fromMaya);
 	fromMaya.buildExtendedData();
 
+	// debug: print bb info
+	BoundingBox bb = fromMaya.computeBoundingBox();
+	printf("minx(%f), maxx(%f), miny(%f), maxy(%f), minz(%f), maxz(%f)\n", bb.minX(), bb.maxX(), bb.minY(), bb.maxY(), bb.minZ(), bb.maxZ());
+
 	// create a sample point generator and generate sample points
 	pointGenerator = createSamplePointGenerator();
 	std::vector<cc::Vec3f> samplePoints;
@@ -105,7 +113,8 @@ MStatus hadan::doIt( const MArgList& args ) {
 	planeGenerator = createPlaneGenerator();
 	std::vector<Plane> outPlanes;
 	std::vector<int> outPlaneCounts;
-	planeGenerator->generatePlanes(fromMaya.computeBoundingBox(), samplePoints, outPlanes, outPlaneCounts);
+	std::vector<cc::Vec3f> outCellPositions;
+	planeGenerator->generatePlanes(fromMaya.computeBoundingBox(), samplePoints, outPlanes, outPlaneCounts, outCellPositions);
 
 	if( outPlanes.empty() || outPlaneCounts.empty() ) {
 		printf("Hadan ERROR: Generated cutting planes were inadequate.\n");
@@ -135,7 +144,7 @@ MStatus hadan::doIt( const MArgList& args ) {
 			// DEBUG
 			//
 			//Model planeModel;
-			//PlaneHelper::planeToModel(currPlane, 1.0f, planeModel);
+			//PlaneHelper::planeToModel(currPlane, 1.0f, outCellPositions[i], planeModel);
 			//MFnMesh planeMesh;
 			//MayaHelper::copyModelToMFnMesh(planeModel, planeMesh);
 		}
@@ -151,6 +160,8 @@ MStatus hadan::doIt( const MArgList& args ) {
 			}
 		}
 	}
+
+	printf("Hadan Complete (%d/%d chunks)\n", allGeneratedMeshes.size(), outPlaneCounts.size());
 
 	// get and assign the default material to all created meshes
 	MSelectionList shadingSelectionList;

@@ -9,7 +9,7 @@ VoronoiPlaneGenerator::VoronoiPlaneGenerator()
 VoronoiPlaneGenerator::~VoronoiPlaneGenerator() {
 }
 
-void VoronoiPlaneGenerator::generatePlanes( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Plane>& outPlanes, std::vector<int>& outPlaneCounts ) const {
+void VoronoiPlaneGenerator::generatePlanes( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Plane>& outPlanes, std::vector<int>& outPlaneCounts, std::vector<cc::Vec3f>& outCellPositions ) const {
 	// create container
 	const int initMem = 8;
 	const int resx = 6;
@@ -44,16 +44,22 @@ void VoronoiPlaneGenerator::generatePlanes( const BoundingBox& bbox, const std::
 				}
 
 				// extract planes from points
+				cc::Vec3f centroid;
 				std::vector<int> faceVertices;
 				cell.face_vertices(faceVertices);
 				int faceCounter = 0;
 				for( int i = 0;  i < faceVertices.size(); ) {
 					const int vertsInFace = faceVertices[i]; // k, k+k1, k+k1+k2, ...
+
+					cc::Vec3f faceCenter;
 					std::vector<cc::Vec3f> facePoints;
 					for( int j = i+1; j < i+vertsInFace+1; ++j ) {
 						const int vtxIdx = faceVertices[j];
 						facePoints.push_back(cellPoints[vtxIdx]);
+						faceCenter += cellPoints[vtxIdx];
 					}
+					faceCenter /= static_cast<float>(facePoints.size());
+					centroid += faceCenter;
 
 					Plane plane;
 					if( PlaneHelper::planeFromPoints(facePoints, plane) ) {
@@ -64,6 +70,8 @@ void VoronoiPlaneGenerator::generatePlanes( const BoundingBox& bbox, const std::
 					faceCounter += 1;
 				}
 
+				centroid /= static_cast<float>(faceCounter);
+				outCellPositions.push_back(centroid);
 				outPlaneCounts.push_back(faceCounter);
 			}
 		} while(cla.inc());

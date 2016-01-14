@@ -22,7 +22,7 @@ public:
 	 * Each number in outPlaneCounts represents the plane count that should be read for the current cell.
 	 * For instance, [7, 6, 4] would mean 3 cells with 7, 6, and 4 planes, respectively.  outPlanes would be a size of 17.
 	 */
-	virtual void generatePlanes( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Plane>& outPlanes, std::vector<int>& outPlaneCounts ) const=0;
+	virtual void generatePlanes( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Plane>& outPlanes, std::vector<int>& outPlaneCounts, std::vector<cc::Vec3f>& outCellPositions ) const=0;
 };
 
 #endif /* __iplanegenerator__ */

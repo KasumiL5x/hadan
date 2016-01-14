@@ -155,7 +155,7 @@ void ClipMesh::printDebug( bool verbose ) {
 }
 
 ClipMesh::Result ClipMesh::processVertices( const Plane& clippingPlane ) {
-	const float EPSILON = 0.00001f;
+	const float EPSILON = 0.0001f;
 	int numPositive = 0;
 	int numNegative = 0;
 	int numZero = 0;
@@ -168,7 +168,8 @@ ClipMesh::Result ClipMesh::processVertices( const Plane& clippingPlane ) {
 			continue;
 		}
 
-		vtx.distance = clippingPlane.normal.dot(vtx.point) - clippingPlane.constant;
+		//vtx.distance = clippingPlane.normal.dot(vtx.point) - clippingPlane.constant;
+		vtx.distance = clippingPlane.signedDistance(vtx.point);
 		if( vtx.distance > EPSILON ) {
 			++numPositive;
 		} else if( vtx.distance < -EPSILON ) {
@@ -182,12 +183,12 @@ ClipMesh::Result ClipMesh::processVertices( const Plane& clippingPlane ) {
 	}
 
 	// mesh is in negative halfspace, fully clipped
-	if( 0 == numPositive ) {
+	if( 0 == numPositive){// && 0 == numZero ) {
 		return Result::Invisibubble;
 	}
 
 	// mesh is in positive halfspace, fully visible
-	if( 0 == numNegative ) {
+	if( 0 == numNegative){// && 0 == numZero ) {
 		return Result::Visible;
 	}
 
