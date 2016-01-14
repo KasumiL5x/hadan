@@ -89,7 +89,7 @@ MStatus hadan::doIt( const MArgList& args ) {
 	// create a sample point generator and generate sample points
 	pointGenerator = createSamplePointGenerator();
 	std::vector<cc::Vec3f> samplePoints;
-	pointGenerator->generateSamplePoints(fromMaya, 1, samplePoints);
+	pointGenerator->generateSamplePoints(fromMaya, 2, samplePoints);
 
 	if( samplePoints.empty() ) {
 		printf("Hadan ERROR: Not enough sample points were generated.\n");
@@ -127,10 +127,10 @@ MStatus hadan::doIt( const MArgList& args ) {
 			//
 			// DEBUG
 			//
-			//Model planeModel;
-			//PlaneHelper::planeToModel(currPlane, 1.0f, planeModel);
-			//MFnMesh planeMesh;
-			//MayaHelper::copyModelToMFnMesh(planeModel, planeMesh);
+			Model planeModel;
+			PlaneHelper::planeToModel(currPlane, 1.0f, planeModel);
+			MFnMesh planeMesh;
+			MayaHelper::copyModelToMFnMesh(planeModel, planeMesh);
 		}
 
 		if( anyResult ) {

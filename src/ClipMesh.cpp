@@ -98,7 +98,7 @@ bool ClipMesh::convert( Model* outModel ) {
 	}
 
 	// check for all culled
-	if( points.empty() ) {
+	if( points.empty() || points.size() < 3) {
 		return false;
 	}
 

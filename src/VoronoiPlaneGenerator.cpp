@@ -24,32 +24,39 @@ void VoronoiPlaneGenerator::generatePlanes( const BoundingBox& bbox, const std::
 	}
 
 	voro::c_loop_all cla(container);
+	voro::voronoicell cell;
 	if( cla.start() ) {
 		do {
-			voro::voronoicell cell;
 			if( container.compute_cell(cell, cla) ) {
-				// get vertex positions
-				std::vector<double> vertices;
-				cell.vertices(vertices);
-				// get vertex indices
+				// compute offset for current cell
+				const double* pp = container.p[cla.ijk] + container.ps * cla.q;
+				const double off_x = *pp;
+				const double off_y = pp[1];
+				const double off_z = pp[2];
+
+				 // get all cell points in a usable format
+				std::vector<cc::Vec3f> cellPoints;
+				for( int i = 0; i < cell.p; ++i ) {
+					const float x = static_cast<float>(off_x + (0.5 * cell.pts[3*i]));
+					const float y = static_cast<float>(off_y + (0.5 * cell.pts[3*i+1]));
+					const float z = static_cast<float>(off_z + (0.5 * cell.pts[3*i+2]));
+					cellPoints.push_back(cc::Vec3f(x, y, z));
+				}
+
+				// extract planes from points
 				std::vector<int> faceVertices;
 				cell.face_vertices(faceVertices);
-
-				// i think i'm parsing the vertices wrong?  the planes generated (and points?) seem off...
-				// check the docs (lol) for anything useful
-				giorgjiorjijirt
-
-				unsigned int faceCounter = 0;
-				for( unsigned int i = 0; i < static_cast<unsigned int>(faceVertices.size()); ) {
+				int faceCounter = 0;
+				for( int i = 0;  i < faceVertices.size(); ) {
 					const int vertsInFace = faceVertices[i]; // k, k+k1, k+k1+k2, ...
-					std::vector<cc::Vec3f> ccPoints;
+					std::vector<cc::Vec3f> facePoints;
 					for( int j = i+1; j < i+vertsInFace+1; ++j ) {
 						const int vtxIdx = faceVertices[j];
-						ccPoints.push_back(cc::Vec3f(vertices[vtxIdx], vertices[vtxIdx+1], vertices[vtxIdx+2]));
+						facePoints.push_back(cellPoints[vtxIdx]);
 					}
 
 					Plane plane;
-					if( PlaneHelper::planeFromPoints(ccPoints, plane) ) {
+					if( PlaneHelper::planeFromPoints(facePoints, plane) ) {
 						outPlanes.push_back(plane);
 					}
 
@@ -62,6 +69,6 @@ void VoronoiPlaneGenerator::generatePlanes( const BoundingBox& bbox, const std::
 		} while(cla.inc());
 	}
 
-	container.draw_particles("C:/Users/daniel/Desktop/particles.gnu");
 	container.draw_cells_gnuplot("C:/Users/daniel/Desktop/cells.gnu");
+	container.draw_particles("C:/Users/daniel/Desktop/particles.gnu");
 }

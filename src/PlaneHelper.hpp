@@ -78,10 +78,10 @@ namespace PlaneHelper {
 		const cc::Vec3f p2 = (right * size) + (surface * -size);
 		// bottom left
 		const cc::Vec3f p3 = (right * -size) + (surface * -size);
-		outModel.addVertex(Vertex(p0));
-		outModel.addVertex(Vertex(p1));
-		outModel.addVertex(Vertex(p2));
-		outModel.addVertex(Vertex(p3));
+		outModel.addVertex(Vertex(plane.normal * plane.constant + p0));
+		outModel.addVertex(Vertex(plane.normal * plane.constant + p1));
+		outModel.addVertex(Vertex(plane.normal * plane.constant + p2));
+		outModel.addVertex(Vertex(plane.normal * plane.constant + p3));
 
 		outModel.addIndex(0);
 		outModel.addIndex(3);
