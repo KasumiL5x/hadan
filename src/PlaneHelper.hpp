@@ -14,10 +14,10 @@ namespace PlaneHelper {
 		}
 
 		cc::Vec3f sum(0.0f, 0.0f, 0.0f);
-		for( auto& p : points ) {
-			sum += p;
-		}
-		const cc::Vec3f centroid = sum * (1.0f / static_cast<float>(n));
+		for( unsigned int i = 0; i < 3; ++i ) {
+			sum += points[i];
+		}			
+		const cc::Vec3f centroid = sum * (1.0f / 3.0f);
 		const cc::Vec3f ab = points[1] - points[0]; // ba
 		const cc::Vec3f ac = points[2] - points[0]; // ca
 		outPlane.normal = ab.cross(ac).normalized();
