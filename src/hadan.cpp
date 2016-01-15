@@ -11,9 +11,6 @@
  */
 
 // todo:
-//    - clean up code (and properly document classes
-//    - make cutting also an interface
-//    - format printing in a coherent fashion
 //    - fix plane in world space drawing position bug
 //    - add ability to push vertices along negative normals by a fraction to shrink mesh (once normals are generated properly), mainly for stacking
 //    - preserve UVs and somehow add a separate material on the inside
@@ -29,6 +26,7 @@
 #include "MayaHelper.hpp"
 #include "TestSamplePointGenerator.hpp"
 #include "VoronoiPlaneGenerator.hpp"
+#include "ClosedConvexSlicer.hpp"
 #include "PlaneHelper.hpp"
 #include "Log.hpp"
 
@@ -36,6 +34,7 @@ DeclareSimpleCommand(hadan, "KasumiL5x", "0.0.1-dev");
 
 ISamplePointGenerator* pointGenerator = nullptr;
 IPlaneGenerator* planeGenerator = nullptr;
+IMeshSlicer* meshSlicer = nullptr;
 
 ISamplePointGenerator* createSamplePointGenerator() {
 	return new TestSamplePointGenerator();
@@ -45,7 +44,15 @@ IPlaneGenerator* createPlaneGenerator() {
 	return new VoronoiPlaneGenerator();
 }
 
+IMeshSlicer* createMeshSlicer() {
+	return new ClosedConvexSlicer();
+}
+
 void destroy() {
+	if( meshSlicer != nullptr ) {
+		delete meshSlicer;
+		meshSlicer = nullptr;
+	}
 	if( planeGenerator != nullptr ) {
 		delete planeGenerator;
 		planeGenerator = nullptr;
@@ -127,13 +134,11 @@ MStatus hadan::doIt( const MArgList& args ) {
 
 	// create a plane generator and generate cutting planes
 	planeGenerator = createPlaneGenerator();
-	std::vector<Plane> outPlanes;
-	std::vector<int> outPlaneCounts;
-	std::vector<cc::Vec3f> outCellPositions;
-	planeGenerator->generatePlanes(fromMaya.computeBoundingBox(), samplePoints, outPlanes, outPlaneCounts, outCellPositions);
+	std::vector<Cell> outCells;
+	planeGenerator->generate(fromMaya.computeBoundingBox(), samplePoints, outCells);
 
-	if( outPlanes.empty() || outPlaneCounts.empty() ) {
-		Log::error("Error: Generated cutting planes were inadequate.\n");
+	if( outCells.empty() ) {
+		Log::error("Error: Generated cells were inadequate.\n");
 		destroy();
 		return MS::kFailure;
 	}
@@ -141,43 +146,23 @@ MStatus hadan::doIt( const MArgList& args ) {
 	// used to assign materials later
 	std::vector<MObject> allGeneratedMeshes;
 
+	// create a mesh slicer
+	meshSlicer = createMeshSlicer();
+
 	// cut out all cells creating a new piece of geometry for each
-	int offset = 0;
-	for( unsigned int i = 0; i < static_cast<unsigned int>(outPlaneCounts.size()); ++i ) {
-		// copy the maya mesh for slicing
-		ClipMesh cm(fromMaya);
-
-		// cut with all planes for the cell
-		bool anyResult = false;
-		const int planeCount = outPlaneCounts[i];
-		for( int j = 0; j < planeCount; ++j ) {
-			const Plane& currPlane = outPlanes[offset++];
-			if( ClipMesh::Result::Dissected == cm.clip(currPlane) ) {
-				anyResult = true;
-			}
-
-			//
-			// DEBUG
-			//
-			//Model planeModel;
-			//PlaneHelper::planeToModel(currPlane, 1.0f, outCellPositions[i], planeModel);
-			//MFnMesh planeMesh;
-			//MayaHelper::copyModelToMFnMesh(planeModel, planeMesh);
+	for( unsigned int i = 0; i < static_cast<unsigned int>(outCells.size()); ++i ) {
+		const Cell& currCell = outCells[i];
+		Model outModel;
+		if( !meshSlicer->slice(fromMaya, currCell, outModel) ) {
+			Log::warning("Warning: Failed to slice using cell " + std::to_string(i) + ".  This is sometimes expected.");
+			continue;
 		}
-
-		if( anyResult ) {
-			Model clippedModel;
-			if( cm.convert(&clippedModel) ) {
-				MFnMesh outCellChunkMesh;
-				MayaHelper::copyModelToMFnMesh(clippedModel, outCellChunkMesh);
-				allGeneratedMeshes.push_back(outCellChunkMesh.object());
-			} else {
-				Log::info("Failed to convert clipped mesh, most likely due to clipping leaving insignificant geometry.  This is expected.\n");
-			}
-		}
+		MFnMesh outCellMesh;
+		MayaHelper::copyModelToMFnMesh(outModel, outCellMesh);
+		allGeneratedMeshes.push_back(outCellMesh.object());
 	}
 
-	// modify normals of all meshes (harden then set angle as sometimes only set angle doesn't work)
+	// run mel commands on the generated chunks
 	for( const auto& mesh : allGeneratedMeshes ) {
 		const std::string meshName = std::string(MFnMesh(mesh).fullPathName().asChar());
 
@@ -187,6 +172,10 @@ MStatus hadan::doIt( const MArgList& args ) {
 		// set normal angle to 30
 		const std::string setNormalAngle = "polySoftEdge -angle 30 -ch 1 " + meshName + ";";
 		MGlobal::executeCommand(setNormalAngle.c_str());
+
+		// center pivot
+		const std::string centerPivotStr = "xform -cpc " + meshName + ";";
+		MGlobal::executeCommand(centerPivotStr.c_str());
 	}
 
 	// get and assign the default material to all created meshes
@@ -209,12 +198,10 @@ MStatus hadan::doIt( const MArgList& args ) {
 	const auto endTime = std::chrono::system_clock::now();
 	const std::chrono::duration<double> timeDiff = endTime - startTime;
 	const std::string timeTakenStr = "Hadan finished in " + std::to_string(timeDiff.count()) + "s. ";
-	const std::string chunkStr = std::to_string(allGeneratedMeshes.size()) + "/" + std::to_string(outPlaneCounts.size()) + " chunks generated.\n";
+	const std::string chunkStr = std::to_string(allGeneratedMeshes.size()) + "/" + std::to_string(outCells.size()) + " chunks generated.\n";
 	Log::info(timeTakenStr + chunkStr);
 
 	destroy();
-
-	fflush(stdout);
 
 	return MStatus::kSuccess;
 }

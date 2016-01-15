@@ -16,7 +16,9 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\BoundingBox.cpp" />
+    <ClCompile Include="..\src\Cell.cpp" />
     <ClCompile Include="..\src\ClipMesh.cpp" />
+    <ClCompile Include="..\src\ClosedConvexSlicer.cpp" />
     <ClCompile Include="..\src\hadan.cpp" />
     <ClCompile Include="..\src\Model.cpp" />
     <ClCompile Include="..\src\Plane.cpp" />
@@ -25,7 +27,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.hpp" />
+    <ClInclude Include="..\src\Cell.hpp" />
     <ClInclude Include="..\src\ClipMesh.hpp" />
+    <ClInclude Include="..\src\ClosedConvexSlicer.hpp" />
+    <ClInclude Include="..\src\IMeshSlicer.hpp" />
     <ClInclude Include="..\src\IPlaneGenerator.hpp" />
     <ClInclude Include="..\src\ISamplePointGenerator.hpp" />
     <ClInclude Include="..\src\Log.hpp" />

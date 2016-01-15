@@ -9,7 +9,14 @@ VoronoiPlaneGenerator::VoronoiPlaneGenerator()
 VoronoiPlaneGenerator::~VoronoiPlaneGenerator() {
 }
 
-void VoronoiPlaneGenerator::generatePlanes( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Plane>& outPlanes, std::vector<int>& outPlaneCounts, std::vector<cc::Vec3f>& outCellPositions ) const {
+bool VoronoiPlaneGenerator::generate( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Cell>& outCells ) const {
+	if( samplePoints.empty() ) {
+		return false;
+	}
+
+	// clear existing data
+	outCells.clear();
+
 	// create container
 	const int initMem = 8;
 	const int resx = 6;
@@ -28,6 +35,8 @@ void VoronoiPlaneGenerator::generatePlanes( const BoundingBox& bbox, const std::
 	if( cla.start() ) {
 		do {
 			if( container.compute_cell(cell, cla) ) {
+				Cell newCell;
+
 				// compute offset for current cell
 				const double* pp = container.p[cla.ijk] + container.ps * cla.q;
 				const double off_x = *pp;
@@ -63,7 +72,7 @@ void VoronoiPlaneGenerator::generatePlanes( const BoundingBox& bbox, const std::
 
 					Plane plane;
 					if( PlaneHelper::planeFromPoints(facePoints, plane) ) {
-						outPlanes.push_back(plane);
+						newCell.addPlane(plane);
 					}
 
 					i += vertsInFace+1;
@@ -71,12 +80,14 @@ void VoronoiPlaneGenerator::generatePlanes( const BoundingBox& bbox, const std::
 				}
 
 				centroid /= static_cast<float>(faceCounter);
-				outCellPositions.push_back(centroid);
-				outPlaneCounts.push_back(faceCounter);
+				newCell.setCenter(centroid);
+				outCells.push_back(newCell);
 			}
 		} while(cla.inc());
 	}
 
 	//container.draw_cells_gnuplot("C:/Users/daniel/Desktop/cells.gnu");
 	//container.draw_particles("C:/Users/daniel/Desktop/particles.gnu");
+
+	return !outCells.empty();
 }

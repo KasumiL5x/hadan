@@ -5,6 +5,7 @@
 #include <cc/Vec3.hpp>
 #include "Plane.hpp"
 #include "BoundingBox.hpp"
+#include "Cell.hpp"
 
 class IPlaneGenerator {
 public:
@@ -14,15 +15,13 @@ public:
 	}
 
 	/**
-	 * Generates a list of cutting planes.
-	 * @param[in]  samplePoints   Input sample points used to seed the plane generation.
-	 * @param[out] outPlanes      All generated planes.
-	 * @param[out] outPlaneCounts Indices representing the number of planes.
-	 *
-	 * Each number in outPlaneCounts represents the plane count that should be read for the current cell.
-	 * For instance, [7, 6, 4] would mean 3 cells with 7, 6, and 4 planes, respectively.  outPlanes would be a size of 17.
+	 * Generates a list of cutting cells.
+	 * @param[in] bbox         BoundingBox to clamp cell generation to.
+	 * @param[in] samplePoints Sample points used to seed cell generation.
+	 * @param[out] outCells    Vector of generated cutting Cells.
+	 * @returns True upon success; false otherwise.
 	 */
-	virtual void generatePlanes( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Plane>& outPlanes, std::vector<int>& outPlaneCounts, std::vector<cc::Vec3f>& outCellPositions ) const=0;
+	virtual bool generate( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Cell>& outCells ) const=0;
 };
 
 #endif /* __iplanegenerator__ */
