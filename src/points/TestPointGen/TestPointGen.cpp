@@ -1,13 +1,13 @@
-#include "TestSamplePointGenerator.hpp"
+#include "TestPointGen.hpp"
 
-TestSamplePointGenerator::TestSamplePointGenerator()
-	: IPointGenerator() {
+TestPointGen::TestPointGen()
+	: IPointGen() {
 }
 
-TestSamplePointGenerator::~TestSamplePointGenerator() {
+TestPointGen::~TestPointGen() {
 }
 
-void TestSamplePointGenerator::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outSamplePoints ) const {
+void TestPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outSamplePoints ) const {
 	const BoundingBox bbox = sourceModel.computeBoundingBox();
 	const float minx = bbox.minX();
 	const float miny = bbox.minY();

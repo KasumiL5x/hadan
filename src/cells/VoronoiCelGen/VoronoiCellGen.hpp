@@ -1,12 +1,12 @@
 #ifndef __voronoi_plane_generator__
 #define __voronoi_plane_generator__
 
-#include <cells/ICellGenerator.hpp>
+#include <cells/ICellGen.hpp>
 
-class VoronoiPlaneGenerator : public ICellGenerator {
+class VoronoiCellGen : public ICellGen {
 public:
-	VoronoiPlaneGenerator();
-	~VoronoiPlaneGenerator();
+	VoronoiCellGen();
+	~VoronoiCellGen();
 
 	virtual bool generate( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Cell>& outCells ) const override;
 };

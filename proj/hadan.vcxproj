@@ -17,29 +17,32 @@
   <ItemGroup>
     <ClCompile Include="..\src\BoundingBox.cpp" />
     <ClCompile Include="..\src\cells\Cell.cpp" />
-    <ClCompile Include="..\src\cells\VoronoiPlaneGen\VoronoiPlaneGenerator.cpp" />
+    <ClCompile Include="..\src\cells\VoronoiCelGen\VoronoiCellGen.cpp" />
     <ClCompile Include="..\src\hadan.cpp" />
     <ClCompile Include="..\src\Model.cpp" />
     <ClCompile Include="..\src\Plane.cpp" />
-    <ClCompile Include="..\src\points\TestSamplePointGen\TestSamplePointGenerator.cpp" />
+    <ClCompile Include="..\src\points\TestPointGen\TestPointGen.cpp" />
     <ClCompile Include="..\src\slicing\ClipMesh.cpp" />
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.hpp" />
     <ClInclude Include="..\src\cells\Cell.hpp" />
-    <ClInclude Include="..\src\cells\ICellGenerator.hpp" />
-    <ClInclude Include="..\src\cells\VoronoiPlaneGen\VoronoiPlaneGenerator.hpp" />
+    <ClInclude Include="..\src\cells\CellGenFactory.hpp" />
+    <ClInclude Include="..\src\cells\ICellGen.hpp" />
+    <ClInclude Include="..\src\cells\VoronoiCelGen\VoronoiCellGen.hpp" />
     <ClInclude Include="..\src\Log.hpp" />
     <ClInclude Include="..\src\MayaHelper.hpp" />
     <ClInclude Include="..\src\Model.hpp" />
     <ClInclude Include="..\src\Plane.hpp" />
     <ClInclude Include="..\src\PlaneHelper.hpp" />
-    <ClInclude Include="..\src\points\IPointGenerator.hpp" />
-    <ClInclude Include="..\src\points\TestSamplePointGen\TestSamplePointGenerator.hpp" />
+    <ClInclude Include="..\src\points\IPointGen.hpp" />
+    <ClInclude Include="..\src\points\PointGenFactory.hpp" />
+    <ClInclude Include="..\src\points\TestPointGen\TestPointGen.hpp" />
     <ClInclude Include="..\src\slicing\ClipMesh.hpp" />
     <ClInclude Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.hpp" />
     <ClInclude Include="..\src\slicing\IMeshSlicer.hpp" />
+    <ClInclude Include="..\src\slicing\MeshSlicerFactory.hpp" />
     <ClInclude Include="..\src\Vertex.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

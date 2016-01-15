@@ -1,15 +1,15 @@
-#include "VoronoiPlaneGenerator.hpp"
+#include "VoronoiCellGen.hpp"
 #include <voro++.hh>
 #include <PlaneHelper.hpp>
 
-VoronoiPlaneGenerator::VoronoiPlaneGenerator()
-	: ICellGenerator() {
+VoronoiCellGen::VoronoiCellGen()
+	: ICellGen() {
 }
 
-VoronoiPlaneGenerator::~VoronoiPlaneGenerator() {
+VoronoiCellGen::~VoronoiCellGen() {
 }
 
-bool VoronoiPlaneGenerator::generate( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Cell>& outCells ) const {
+bool VoronoiCellGen::generate( const BoundingBox& bbox, const std::vector<cc::Vec3f>& samplePoints, std::vector<Cell>& outCells ) const {
 	if( samplePoints.empty() ) {
 		return false;
 	}

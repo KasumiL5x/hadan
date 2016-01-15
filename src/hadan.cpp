@@ -24,43 +24,15 @@
 #include "Model.hpp"
 #include <slicing/ClipMesh.hpp>
 #include "MayaHelper.hpp"
-#include <points/TestSamplePointGen/TestSamplePointGenerator.hpp>
-#include <cells/VoronoiPlaneGen/VoronoiPlaneGenerator.hpp>
-#include <slicing/ClosedConvexSlicer/ClosedConvexSlicer.hpp>
-#include "PlaneHelper.hpp"
+#include <cells/CellGenFactory.hpp>
+#include <points/PointGenFactory.hpp>
+#include <slicing/MeshSlicerFactory.hpp>
 #include "Log.hpp"
 
 DeclareSimpleCommand(hadan, "KasumiL5x", "0.0.1-dev");
 
-IPointGenerator* pointGenerator = nullptr;
-ICellGenerator* planeGenerator = nullptr;
-IMeshSlicer* meshSlicer = nullptr;
-
-IPointGenerator* createSamplePointGenerator() {
-	return new TestSamplePointGenerator();
-}
-
-ICellGenerator* createPlaneGenerator() {
-	return new VoronoiPlaneGenerator();
-}
-
 IMeshSlicer* createMeshSlicer() {
 	return new ClosedConvexSlicer();
-}
-
-void destroy() {
-	if( meshSlicer != nullptr ) {
-		delete meshSlicer;
-		meshSlicer = nullptr;
-	}
-	if( planeGenerator != nullptr ) {
-		delete planeGenerator;
-		planeGenerator = nullptr;
-	}
-	if( pointGenerator != nullptr ) {
-		delete pointGenerator;
-		pointGenerator = nullptr;
-	}
 }
 
 MStatus hadan::doIt( const MArgList& args ) {
@@ -122,24 +94,22 @@ MStatus hadan::doIt( const MArgList& args ) {
 	fromMaya.buildExtendedData();
 
 	// create a sample point generator and generate sample points
-	pointGenerator = createSamplePointGenerator();
+	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(PointGenFactory::Type::Test);
 	std::vector<cc::Vec3f> samplePoints;
 	pointGenerator->generateSamplePoints(fromMaya, static_cast<unsigned int>(numSlices), samplePoints);
 
 	if( samplePoints.empty() ) {
 		Log::error("Error: Not enough sample points were generated.\n");
-		destroy();
 		return MS::kFailure;
 	}
 
 	// create a plane generator and generate cutting planes
-	planeGenerator = createPlaneGenerator();
+	std::unique_ptr<ICellGen> cellGenerator = CellGenFactory::create(CellGenFactory::Type::Voronoi);
 	std::vector<Cell> outCells;
-	planeGenerator->generate(fromMaya.computeBoundingBox(), samplePoints, outCells);
+	cellGenerator->generate(fromMaya.computeBoundingBox(), samplePoints, outCells);
 
 	if( outCells.empty() ) {
 		Log::error("Error: Generated cells were inadequate.\n");
-		destroy();
 		return MS::kFailure;
 	}
 
@@ -147,7 +117,7 @@ MStatus hadan::doIt( const MArgList& args ) {
 	std::vector<MObject> allGeneratedMeshes;
 
 	// create a mesh slicer
-	meshSlicer = createMeshSlicer();
+	std::unique_ptr<IMeshSlicer> meshSlicer = MeshSlicerFactory::create(MeshSlicerFactory::Type::ClosedConvex);
 
 	// cut out all cells creating a new piece of geometry for each
 	for( unsigned int i = 0; i < static_cast<unsigned int>(outCells.size()); ++i ) {
@@ -200,8 +170,6 @@ MStatus hadan::doIt( const MArgList& args ) {
 	const std::string timeTakenStr = "Hadan finished in " + std::to_string(timeDiff.count()) + "s. ";
 	const std::string chunkStr = std::to_string(allGeneratedMeshes.size()) + "/" + std::to_string(outCells.size()) + " chunks generated.\n";
 	Log::info(timeTakenStr + chunkStr);
-
-	destroy();
 
 	return MStatus::kSuccess;
 }

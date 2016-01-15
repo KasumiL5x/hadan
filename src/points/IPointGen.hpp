@@ -1,18 +1,18 @@
-#ifndef __isamplepointgenerator__
-#define __isamplepointgenerator__
+#ifndef __isamplepointgen__
+#define __isamplepointgen__
 
 #include <vector>
 #include <cc/Vec3.hpp>
 #include <Model.hpp>
 
-class IPointGenerator {
+class IPointGen {
 public:
-	IPointGenerator() {
+	IPointGen() {
 	}
-	virtual ~IPointGenerator() {
+	virtual ~IPointGen() {
 	}
 
 	virtual void generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outSamplePoints ) const=0;
 };
 
-#endif /* __isamplepointgenerator__ */
+#endif /* __isamplepointgen__ */

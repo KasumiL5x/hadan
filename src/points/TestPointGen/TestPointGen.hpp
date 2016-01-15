@@ -1,12 +1,12 @@
 #ifndef __testsamplepointgenerator__
 #define __testsamplepointgenerator__
 
-#include <points/IPointGenerator.hpp>
+#include <points/IPointGen.hpp>
 
-class TestSamplePointGenerator : public IPointGenerator {
+class TestPointGen : public IPointGen {
 public:
-	TestSamplePointGenerator();
-	~TestSamplePointGenerator();
+	TestPointGen();
+	~TestPointGen();
 
 	virtual void generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outSamplePoints ) const override;
 };
