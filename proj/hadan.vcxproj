@@ -16,31 +16,31 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\BoundingBox.cpp" />
-    <ClCompile Include="..\src\Cell.cpp" />
-    <ClCompile Include="..\src\ClipMesh.cpp" />
-    <ClCompile Include="..\src\ClosedConvexSlicer.cpp" />
+    <ClCompile Include="..\src\cells\Cell.cpp" />
+    <ClCompile Include="..\src\cells\VoronoiPlaneGen\VoronoiPlaneGenerator.cpp" />
     <ClCompile Include="..\src\hadan.cpp" />
     <ClCompile Include="..\src\Model.cpp" />
     <ClCompile Include="..\src\Plane.cpp" />
-    <ClCompile Include="..\src\TestSamplePointGenerator.cpp" />
-    <ClCompile Include="..\src\VoronoiPlaneGenerator.cpp" />
+    <ClCompile Include="..\src\points\TestSamplePointGen\TestSamplePointGenerator.cpp" />
+    <ClCompile Include="..\src\slicing\ClipMesh.cpp" />
+    <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.hpp" />
-    <ClInclude Include="..\src\Cell.hpp" />
-    <ClInclude Include="..\src\ClipMesh.hpp" />
-    <ClInclude Include="..\src\ClosedConvexSlicer.hpp" />
-    <ClInclude Include="..\src\IMeshSlicer.hpp" />
-    <ClInclude Include="..\src\IPlaneGenerator.hpp" />
-    <ClInclude Include="..\src\ISamplePointGenerator.hpp" />
+    <ClInclude Include="..\src\cells\Cell.hpp" />
+    <ClInclude Include="..\src\cells\IPlaneGenerator.hpp" />
+    <ClInclude Include="..\src\cells\VoronoiPlaneGen\VoronoiPlaneGenerator.hpp" />
     <ClInclude Include="..\src\Log.hpp" />
     <ClInclude Include="..\src\MayaHelper.hpp" />
     <ClInclude Include="..\src\Model.hpp" />
     <ClInclude Include="..\src\Plane.hpp" />
     <ClInclude Include="..\src\PlaneHelper.hpp" />
-    <ClInclude Include="..\src\TestSamplePointGenerator.hpp" />
+    <ClInclude Include="..\src\points\ISamplePointGenerator.hpp" />
+    <ClInclude Include="..\src\points\TestSamplePointGen\TestSamplePointGenerator.hpp" />
+    <ClInclude Include="..\src\slicing\ClipMesh.hpp" />
+    <ClInclude Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.hpp" />
+    <ClInclude Include="..\src\slicing\IMeshSlicer.hpp" />
     <ClInclude Include="..\src\Vertex.hpp" />
-    <ClInclude Include="..\src\VoronoiPlaneGenerator.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <Keyword>Win32Proj</Keyword>
@@ -83,7 +83,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <IntDir>../tmp/$(Configuration)/</IntDir>
     <TargetName>$(ProjectName)-d</TargetName>
-    <IncludePath>D:\programs\Autodesk\Maya2016\include;../thirdparty/ccmath/src/;../thirdparty/voropp-0.4.6/inc/;$(IncludePath)</IncludePath>
+    <IncludePath>D:\programs\Autodesk\Maya2016\include;../thirdparty/ccmath/src/;../thirdparty/voropp-0.4.6/inc/;../src/;$(IncludePath)</IncludePath>
     <LibraryPath>D:\programs\Autodesk\Maya2016\lib;../thirdparty/voropp-0.4.6/lib/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -117,7 +117,7 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <IntDir>../tmp/$(Configuration)/</IntDir>
     <TargetName>$(ProjectName)-rd</TargetName>
-    <IncludePath>D:\programs\Autodesk\Maya2016\include;../thirdparty/ccmath/src/;../thirdparty/voropp-0.4.6/inc/;$(IncludePath)</IncludePath>
+    <IncludePath>D:\programs\Autodesk\Maya2016\include;../thirdparty/ccmath/src/;../thirdparty/voropp-0.4.6/inc/;../src/;$(IncludePath)</IncludePath>
     <LibraryPath>D:\programs\Autodesk\Maya2016\lib;../thirdparty/voropp-0.4.6/lib/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseDebug|x64'">
@@ -154,7 +154,7 @@
     <TargetExt>.mll</TargetExt>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
     <IntDir>../tmp/$(Configuration)/</IntDir>
-    <IncludePath>D:\programs\Autodesk\Maya2016\include;../thirdparty/ccmath/src/;../thirdparty/voropp-0.4.6/inc/;$(IncludePath)</IncludePath>
+    <IncludePath>D:\programs\Autodesk\Maya2016\include;../thirdparty/ccmath/src/;../thirdparty/voropp-0.4.6/inc/;../src/;$(IncludePath)</IncludePath>
     <LibraryPath>D:\programs\Autodesk\Maya2016\lib;../thirdparty/voropp-0.4.6/lib/;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

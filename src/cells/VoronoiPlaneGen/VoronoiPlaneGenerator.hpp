@@ -1,7 +1,7 @@
 #ifndef __voronoi_plane_generator__
 #define __voronoi_plane_generator__
 
-#include "IPlaneGenerator.hpp"
+#include <cells/IPlaneGenerator.hpp>
 
 class VoronoiPlaneGenerator : public IPlaneGenerator {
 public:

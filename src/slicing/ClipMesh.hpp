@@ -15,8 +15,8 @@
 #include <vector>
 #include <set>
 #include <cc/Vec3.hpp>
-#include "Model.hpp"
-#include "Plane.hpp"
+#include <Model.hpp>
+#include <Plane.hpp>
 
 class ClipMesh {
 public:

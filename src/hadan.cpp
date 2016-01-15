@@ -22,11 +22,11 @@
 #include <maya/MGlobal.h>
 #include <maya/MFnSet.h>
 #include "Model.hpp"
-#include "ClipMesh.hpp"
+#include <slicing/ClipMesh.hpp>
 #include "MayaHelper.hpp"
-#include "TestSamplePointGenerator.hpp"
-#include "VoronoiPlaneGenerator.hpp"
-#include "ClosedConvexSlicer.hpp"
+#include <points/TestSamplePointGen/TestSamplePointGenerator.hpp>
+#include <cells/VoronoiPlaneGen/VoronoiPlaneGenerator.hpp>
+#include <slicing/ClosedConvexSlicer/ClosedConvexSlicer.hpp>
 #include "PlaneHelper.hpp"
 #include "Log.hpp"
 

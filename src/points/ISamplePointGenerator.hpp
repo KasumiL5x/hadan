@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <cc/Vec3.hpp>
-#include "Model.hpp"
+#include <Model.hpp>
 
 class ISamplePointGenerator {
 public:

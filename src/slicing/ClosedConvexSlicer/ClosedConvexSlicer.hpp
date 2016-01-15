@@ -1,7 +1,7 @@
 #ifndef __closed_convex_slicer__
 #define __closed_convex_slicer__
 
-#include "IMeshSlicer.hpp"
+#include <slicing/IMeshSlicer.hpp>
 
 class ClosedConvexSlicer : public IMeshSlicer {
 public:

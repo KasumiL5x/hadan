@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <cc/Vec3.hpp>
-#include "Plane.hpp"
+#include <Plane.hpp>
 
 class Cell {
 public:

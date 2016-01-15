@@ -1,8 +1,8 @@
 #ifndef __imeshslicer__
 #define __imeshslicer__
 
-#include "Cell.hpp"
-#include "Model.hpp"
+#include <cells/Cell.hpp>
+#include <Model.hpp>
 
 class IMeshSlicer {
 public:

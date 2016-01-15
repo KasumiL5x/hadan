@@ -1,7 +1,7 @@
 #ifndef __testsamplepointgenerator__
 #define __testsamplepointgenerator__
 
-#include "ISamplePointGenerator.hpp"
+#include <points/ISamplePointGenerator.hpp>
 
 class TestSamplePointGenerator : public ISamplePointGenerator {
 public:

@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <cc/Vec3.hpp>
-#include "Plane.hpp"
-#include "BoundingBox.hpp"
+#include <Plane.hpp>
+#include <BoundingBox.hpp>
 #include "Cell.hpp"
 
 class IPlaneGenerator {

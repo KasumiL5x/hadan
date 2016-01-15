@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\src\BoundingBox.cpp" />
+    <ClCompile Include="..\src\hadan.cpp" />
+    <ClCompile Include="..\src\Model.cpp" />
+    <ClCompile Include="..\src\Plane.cpp" />
+    <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.cpp">
+      <Filter>slicing\ClosedConvexSlicer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cells\VoronoiPlaneGen\VoronoiPlaneGenerator.cpp">
+      <Filter>cells\VoronoiPlaneGen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\points\TestSamplePointGen\TestSamplePointGenerator.cpp">
+      <Filter>points\TestSamplePointGen</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cells\Cell.cpp">
+      <Filter>cells</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\slicing\ClipMesh.cpp">
+      <Filter>slicing</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\src\BoundingBox.hpp" />
+    <ClInclude Include="..\src\Log.hpp" />
+    <ClInclude Include="..\src\MayaHelper.hpp" />
+    <ClInclude Include="..\src\Model.hpp" />
+    <ClInclude Include="..\src\Plane.hpp" />
+    <ClInclude Include="..\src\PlaneHelper.hpp" />
+    <ClInclude Include="..\src\Vertex.hpp" />
+    <ClInclude Include="..\src\slicing\IMeshSlicer.hpp">
+      <Filter>slicing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.hpp">
+      <Filter>slicing\ClosedConvexSlicer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cells\IPlaneGenerator.hpp">
+      <Filter>cells</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cells\VoronoiPlaneGen\VoronoiPlaneGenerator.hpp">
+      <Filter>cells\VoronoiPlaneGen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\points\ISamplePointGenerator.hpp">
+      <Filter>points</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\points\TestSamplePointGen\TestSamplePointGenerator.hpp">
+      <Filter>points\TestSamplePointGen</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\cells\Cell.hpp">
+      <Filter>cells</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\slicing\ClipMesh.hpp">
+      <Filter>slicing</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="slicing">
+      <UniqueIdentifier>{f05b03c7-4dc5-4094-9d46-9d23725131f1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="slicing\ClosedConvexSlicer">
+      <UniqueIdentifier>{8337f087-d9ae-4e68-bb24-966947fdf51e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cells">
+      <UniqueIdentifier>{ab2acfcd-a000-4be9-af37-159ef03bf14a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cells\VoronoiPlaneGen">
+      <UniqueIdentifier>{640713e1-8aca-4b79-b975-85995ba56f84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="points">
+      <UniqueIdentifier>{268e56c9-c0f7-4baf-8cd3-7e1a57bfe0c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="points\TestSamplePointGen">
+      <UniqueIdentifier>{d0bcfc87-201b-4675-9263-459c3640025a}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

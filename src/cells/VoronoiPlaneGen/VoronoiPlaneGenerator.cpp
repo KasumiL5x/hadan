@@ -1,6 +1,6 @@
 #include "VoronoiPlaneGenerator.hpp"
 #include <voro++.hh>
-#include "PlaneHelper.hpp"
+#include <PlaneHelper.hpp>
 
 VoronoiPlaneGenerator::VoronoiPlaneGenerator()
 	: IPlaneGenerator() {
