@@ -7,11 +7,11 @@
 #include <BoundingBox.hpp>
 #include "Cell.hpp"
 
-class IPlaneGenerator {
+class ICellGenerator {
 public:
-	IPlaneGenerator() {
+	ICellGenerator() {
 	}
-	virtual ~IPlaneGenerator() {
+	virtual ~ICellGenerator() {
 	}
 
 	/**

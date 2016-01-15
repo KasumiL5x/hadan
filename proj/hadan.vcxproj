@@ -28,7 +28,7 @@
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.hpp" />
     <ClInclude Include="..\src\cells\Cell.hpp" />
-    <ClInclude Include="..\src\cells\IPlaneGenerator.hpp" />
+    <ClInclude Include="..\src\cells\ICellGenerator.hpp" />
     <ClInclude Include="..\src\cells\VoronoiPlaneGen\VoronoiPlaneGenerator.hpp" />
     <ClInclude Include="..\src\Log.hpp" />
     <ClInclude Include="..\src\MayaHelper.hpp" />

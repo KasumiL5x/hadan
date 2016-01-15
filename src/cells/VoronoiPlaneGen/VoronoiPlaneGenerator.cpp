@@ -3,7 +3,7 @@
 #include <PlaneHelper.hpp>
 
 VoronoiPlaneGenerator::VoronoiPlaneGenerator()
-	: IPlaneGenerator() {
+	: ICellGenerator() {
 }
 
 VoronoiPlaneGenerator::~VoronoiPlaneGenerator() {

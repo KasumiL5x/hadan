@@ -33,14 +33,14 @@
 DeclareSimpleCommand(hadan, "KasumiL5x", "0.0.1-dev");
 
 ISamplePointGenerator* pointGenerator = nullptr;
-IPlaneGenerator* planeGenerator = nullptr;
+ICellGenerator* planeGenerator = nullptr;
 IMeshSlicer* meshSlicer = nullptr;
 
 ISamplePointGenerator* createSamplePointGenerator() {
 	return new TestSamplePointGenerator();
 }
 
-IPlaneGenerator* createPlaneGenerator() {
+ICellGenerator* createPlaneGenerator() {
 	return new VoronoiPlaneGenerator();
 }
 
