@@ -1,7 +1,7 @@
 #include "TestSamplePointGenerator.hpp"
 
 TestSamplePointGenerator::TestSamplePointGenerator()
-	: ISamplePointGenerator() {
+	: IPointGenerator() {
 }
 
 TestSamplePointGenerator::~TestSamplePointGenerator() {

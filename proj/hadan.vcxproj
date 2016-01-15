@@ -35,7 +35,7 @@
     <ClInclude Include="..\src\Model.hpp" />
     <ClInclude Include="..\src\Plane.hpp" />
     <ClInclude Include="..\src\PlaneHelper.hpp" />
-    <ClInclude Include="..\src\points\ISamplePointGenerator.hpp" />
+    <ClInclude Include="..\src\points\IPointGenerator.hpp" />
     <ClInclude Include="..\src\points\TestSamplePointGen\TestSamplePointGenerator.hpp" />
     <ClInclude Include="..\src\slicing\ClipMesh.hpp" />
     <ClInclude Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.hpp" />

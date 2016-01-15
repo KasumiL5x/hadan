@@ -5,11 +5,11 @@
 #include <cc/Vec3.hpp>
 #include <Model.hpp>
 
-class ISamplePointGenerator {
+class IPointGenerator {
 public:
-	ISamplePointGenerator() {
+	IPointGenerator() {
 	}
-	virtual ~ISamplePointGenerator() {
+	virtual ~IPointGenerator() {
 	}
 
 	virtual void generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outSamplePoints ) const=0;

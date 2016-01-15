@@ -32,11 +32,11 @@
 
 DeclareSimpleCommand(hadan, "KasumiL5x", "0.0.1-dev");
 
-ISamplePointGenerator* pointGenerator = nullptr;
+IPointGenerator* pointGenerator = nullptr;
 ICellGenerator* planeGenerator = nullptr;
 IMeshSlicer* meshSlicer = nullptr;
 
-ISamplePointGenerator* createSamplePointGenerator() {
+IPointGenerator* createSamplePointGenerator() {
 	return new TestSamplePointGenerator();
 }
 

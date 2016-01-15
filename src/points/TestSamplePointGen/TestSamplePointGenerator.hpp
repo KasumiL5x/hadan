@@ -1,9 +1,9 @@
 #ifndef __testsamplepointgenerator__
 #define __testsamplepointgenerator__
 
-#include <points/ISamplePointGenerator.hpp>
+#include <points/IPointGenerator.hpp>
 
-class TestSamplePointGenerator : public ISamplePointGenerator {
+class TestSamplePointGenerator : public IPointGenerator {
 public:
 	TestSamplePointGenerator();
 	~TestSamplePointGenerator();

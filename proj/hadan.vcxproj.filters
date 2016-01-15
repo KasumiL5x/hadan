@@ -38,9 +38,6 @@
     <ClInclude Include="..\src\cells\VoronoiPlaneGen\VoronoiPlaneGenerator.hpp">
       <Filter>cells\VoronoiPlaneGen</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\points\ISamplePointGenerator.hpp">
-      <Filter>points</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\points\TestSamplePointGen\TestSamplePointGenerator.hpp">
       <Filter>points\TestSamplePointGen</Filter>
     </ClInclude>
@@ -52,6 +49,9 @@
     </ClInclude>
     <ClInclude Include="..\src\cells\ICellGenerator.hpp">
       <Filter>cells</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\points\IPointGenerator.hpp">
+      <Filter>points</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
