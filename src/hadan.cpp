@@ -167,10 +167,16 @@ MStatus hadan::doIt( const MArgList& args ) {
 
 	printf("Hadan Complete (%zd/%zd chunks)\n", allGeneratedMeshes.size(), outPlaneCounts.size());
 
-	// harden the edges of every generated mesh
+	// modify normals of all meshes (harden then set angle as sometimes only set angle doesn't work)
 	for( const auto& mesh : allGeneratedMeshes ) {
-		const std::string command = "polySoftEdge -a 0 -ch 1 " + std::string(MFnMesh(mesh).fullPathName().asChar());
-		MGlobal::executeCommand(command.c_str());
+		const std::string meshName = std::string(MFnMesh(mesh).fullPathName().asChar());
+
+		// harden edges
+		const std::string harden = "polySoftEdge -a 0 -ch 1 " + meshName + ";";
+		MGlobal::executeCommand(harden.c_str());
+		// set normal angle to 30
+		const std::string setNormalAngle = "polySoftEdge -angle 30 -ch 1 " + meshName + ";";
+		MGlobal::executeCommand(setNormalAngle.c_str());
 	}
 
 	// get and assign the default material to all created meshes
@@ -182,6 +188,11 @@ MStatus hadan::doIt( const MArgList& args ) {
 	for( auto& mesh : allGeneratedMeshes ) {
 		shadingGroupFn.addMember(mesh);
 	}
+
+	// end with only the source mesh selected (for easy deleting, etc.)
+	MSelectionList sourceObjectSelectionList;
+	sourceObjectSelectionList.add(inputObjectPath);
+	MGlobal::setActiveSelectionList(sourceObjectSelectionList);
 
 	destroy();
 
