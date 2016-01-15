@@ -11,8 +11,12 @@
  */
 
 // todo:
-//    - fix plane generation (look at voronoplanegenerator.cpp for a note)
-//    - fix maya vertices not being in world space
+//    - clean up code (and properly document classes
+//    - make cutting also an interface
+//    - format printing in a coherent fashion
+//    - fix plane in world space drawing position bug
+//    - add ability to push vertices along negative normals by a fraction to shrink mesh (once normals are generated properly), mainly for stacking
+//    - preserve UVs and somehow add a separate material on the inside
 
 #include <ctime>
 #include <maya/MSimple.h>
@@ -51,7 +55,7 @@ void destroy() {
 }
 
 MStatus hadan::doIt( const MArgList& args ) {
-	srand(time(0));
+	srand(static_cast<unsigned int>(time(0)));
 
 	printf("Hadan beginning!\n");
 
@@ -161,7 +165,13 @@ MStatus hadan::doIt( const MArgList& args ) {
 		}
 	}
 
-	printf("Hadan Complete (%d/%d chunks)\n", allGeneratedMeshes.size(), outPlaneCounts.size());
+	printf("Hadan Complete (%zd/%zd chunks)\n", allGeneratedMeshes.size(), outPlaneCounts.size());
+
+	// harden the edges of every generated mesh
+	for( const auto& mesh : allGeneratedMeshes ) {
+		const std::string command = "polySoftEdge -a 0 -ch 1 " + std::string(MFnMesh(mesh).fullPathName().asChar());
+		MGlobal::executeCommand(command.c_str());
+	}
 
 	// get and assign the default material to all created meshes
 	MSelectionList shadingSelectionList;

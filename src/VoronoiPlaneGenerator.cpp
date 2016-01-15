@@ -77,6 +77,6 @@ void VoronoiPlaneGenerator::generatePlanes( const BoundingBox& bbox, const std::
 		} while(cla.inc());
 	}
 
-	container.draw_cells_gnuplot("C:/Users/daniel/Desktop/cells.gnu");
-	container.draw_particles("C:/Users/daniel/Desktop/particles.gnu");
+	//container.draw_cells_gnuplot("C:/Users/daniel/Desktop/cells.gnu");
+	//container.draw_particles("C:/Users/daniel/Desktop/particles.gnu");
 }
