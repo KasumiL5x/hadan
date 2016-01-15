@@ -135,17 +135,8 @@ MStatus hadan::doIt( const MArgList& args ) {
 	// run mel commands on the generated chunks
 	for( const auto& mesh : allGeneratedMeshes ) {
 		const std::string meshName = std::string(MFnMesh(mesh).fullPathName().asChar());
-
-		// harden edges
-		const std::string harden = "polySoftEdge -a 0 -ch 1 " + meshName + ";";
-		MGlobal::executeCommand(harden.c_str());
-		// set normal angle to 30
-		const std::string setNormalAngle = "polySoftEdge -angle 30 -ch 1 " + meshName + ";";
-		MGlobal::executeCommand(setNormalAngle.c_str());
-
-		// center pivot
-		const std::string centerPivotStr = "xform -cpc " + meshName + ";";
-		MGlobal::executeCommand(centerPivotStr.c_str());
+		MayaHelper::softenMeshEdge(meshName);
+		MayaHelper::centerPivot(meshName);
 	}
 
 	// get and assign the default material to all created meshes

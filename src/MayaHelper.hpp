@@ -121,6 +121,21 @@ namespace MayaHelper {
 		
 		return true;
 	}
+
+	static void softenMeshEdge( const std::string& meshName ) {
+		// harden edges
+		const std::string harden = "polySoftEdge -a 0 -ch 1 " + meshName + ";";
+		MGlobal::executeCommand(harden.c_str());
+		
+		// set normal angle to 30
+		const std::string normalAngle = "polySoftEdge -angle 30 -ch 1 " + meshName + ";";
+		MGlobal::executeCommand(normalAngle.c_str());
+	}
+
+	static void centerPivot( const std::string& objName ) {
+		const std::string cp = "xform -cpc " + objName + ";";
+		MGlobal::executeCommand(cp.c_str());
+	}
 } // mayahelper
 
 #endif /* __mayahelper__ */
