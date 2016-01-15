@@ -28,6 +28,7 @@
     <ClInclude Include="..\src\ClipMesh.hpp" />
     <ClInclude Include="..\src\IPlaneGenerator.hpp" />
     <ClInclude Include="..\src\ISamplePointGenerator.hpp" />
+    <ClInclude Include="..\src\Log.hpp" />
     <ClInclude Include="..\src\MayaHelper.hpp" />
     <ClInclude Include="..\src\Model.hpp" />
     <ClInclude Include="..\src\Plane.hpp" />
