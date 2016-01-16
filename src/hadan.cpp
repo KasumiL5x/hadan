@@ -124,7 +124,7 @@ MStatus hadan::doIt( const MArgList& args ) {
 		const Cell& currCell = outCells[i];
 		Model outModel;
 		if( !meshSlicer->slice(fromMaya, currCell, outModel) ) {
-			Log::warning("Warning: Failed to slice using cell " + std::to_string(i) + ".  This is sometimes expected.");
+			Log::warning("Warning: Failed to slice using cell " + std::to_string(i) + ".  This is sometimes expected.\n");
 			continue;
 		}
 		MFnMesh outCellMesh;
