@@ -38,3 +38,45 @@ float BoundingBox::maxY() const {
 float BoundingBox::maxZ() const {
 	return _center.z + _halfExtents.z;
 }
+
+cc::Vec3f BoundingBox::getCorner( Corner corner ) const {
+	const float x = _halfExtents.x;
+	const float y = _halfExtents.y;
+	const float z = _halfExtents.z;
+	cc::Vec3f point = _center;
+	switch( corner ) {
+		case Corner::TopLeftBack: {
+			point += cc::Vec3f(-x, y, -z);
+			break;
+		}
+		case Corner::TopLeftFront: {
+			point += cc::Vec3f(-x, y, z);
+			break;
+		}
+		case Corner::TopRightBack: {
+			point += cc::Vec3f(x, y, -z);
+			break;
+		}
+		case Corner::TopRightFront: {
+			point += cc::Vec3f(x, y, z);
+			break;
+		}
+		case Corner::BottomLeftBack: {
+			point += cc::Vec3f(-x, -y, -z);
+			break;
+		}
+		case Corner::BottomLeftFront: {
+			point += cc::Vec3f(-x, -y, z);
+			break;
+		}
+		case Corner::BottomRightBack: {
+			point += cc::Vec3f(x, -y, -z);
+			break;
+		}
+		case Corner::BottomRightFront: {
+			point += cc::Vec3f(x, -y, z);
+			break;
+		}
+	}
+	return point;
+}

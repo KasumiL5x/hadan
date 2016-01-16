@@ -5,6 +5,18 @@
 
 class BoundingBox {
 public:
+	enum class Corner {
+		TopLeftBack,
+		TopLeftFront,
+		TopRightBack,
+		TopRightFront,
+		BottomLeftBack,
+		BottomLeftFront,
+		BottomRightBack,
+		BottomRightFront
+	};
+
+public:
 	BoundingBox();
 	BoundingBox( const cc::Vec3f& center, const cc::Vec3f& halfExtents );
 
@@ -17,6 +29,8 @@ public:
 	float maxX() const;
 	float maxY() const;
 	float maxZ() const;
+
+	cc::Vec3f getCorner( Corner corner ) const;
 
 private:
 	cc::Vec3f _center;
