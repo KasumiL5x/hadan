@@ -7,7 +7,7 @@ TestPointGen::TestPointGen()
 TestPointGen::~TestPointGen() {
 }
 
-void TestPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outSamplePoints ) const {
+void TestPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) const {
 	const BoundingBox bbox = sourceModel.computeBoundingBox();
 	const float minx = bbox.minX();
 	const float miny = bbox.minY();
@@ -21,6 +21,6 @@ void TestPointGen::generateSamplePoints( const Model& sourceModel, const unsigne
 		const float x = minx + (float(rand()) / RAND_MAX) * (maxx - minx);
 		const float y = miny + (float(rand()) / RAND_MAX) * (maxy - miny);
 		const float z = minz + (float(rand()) / RAND_MAX) * (maxz - minz);
-		outSamplePoints.push_back(cc::Vec3f(x, y, z));
+		outPoints.push_back(cc::Vec3f(x, y, z));
 	}
 }

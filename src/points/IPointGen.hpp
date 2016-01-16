@@ -12,7 +12,13 @@ public:
 	virtual ~IPointGen() {
 	}
 
-	virtual void generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outSamplePoints ) const=0;
+	/**
+	 * Generates a vector of sample points.
+	 * @param[in]  sourceModel Input Model used to generate points.
+	 * @param[in]  pointCount  Number of points requested to be generated.
+	 * @param[out] outPoints   Output vector of generated points.
+	 */
+	virtual void generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) const=0;
 };
 
 #endif /* __isamplepointgen__ */
