@@ -3,16 +3,22 @@
 
 #include <memory>
 #include "IPointGen.hpp"
+#include "Uniform/UniformPointGen.hpp"
 #include "TestPointGen/TestPointGen.hpp"
 
 class PointGenFactory {
 public:
 	enum class Type {
+		Uniform,
 		Test
 	};
 
 	static std::unique_ptr<IPointGen> create( Type type ) {
 		switch( type ) {
+			case Type::Uniform: {
+				return std::make_unique<UniformPointGen>();
+			}
+
 			case Type::Test: {
 				return std::make_unique<TestPointGen>();
 			}

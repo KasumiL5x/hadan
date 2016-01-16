@@ -20,6 +20,9 @@
     <ClCompile Include="..\src\cells\VoronoiCelGen\VoronoiCellGen.cpp">
       <Filter>cells\VoronoiCelGen</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\points\Uniform\UniformPointGen.cpp">
+      <Filter>points\Uniform</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.hpp" />
@@ -62,6 +65,9 @@
     <ClInclude Include="..\src\cells\VoronoiCelGen\VoronoiCellGen.hpp">
       <Filter>cells\VoronoiCelGen</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\points\Uniform\UniformPointGen.hpp">
+      <Filter>points\Uniform</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="slicing">
@@ -81,6 +87,9 @@
     </Filter>
     <Filter Include="cells\VoronoiCelGen">
       <UniqueIdentifier>{640713e1-8aca-4b79-b975-85995ba56f84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="points\Uniform">
+      <UniqueIdentifier>{1b52bcdd-710d-4e57-9a6b-22015c53c8be}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
