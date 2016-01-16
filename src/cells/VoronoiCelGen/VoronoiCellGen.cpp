@@ -22,7 +22,8 @@ bool VoronoiCellGen::generate( const BoundingBox& bbox, const std::vector<cc::Ve
 	const int resx = 6;
 	const int resy = 6;
 	const int resz = 6;
-	voro::container container(bbox.minX(), bbox.maxX(), bbox.minY(), bbox.maxY(), bbox.minZ(), bbox.maxZ(), resx, resy, resz, false, false, false, initMem);
+	const float EXP = 0.1f;
+	voro::container container(bbox.minX()-EXP, bbox.maxX()+EXP, bbox.minY()-EXP, bbox.maxY()+EXP, bbox.minZ()-EXP, bbox.maxZ()+EXP, resx, resy, resz, false, false, false, initMem);
 
 	// insert sample points
 	for( unsigned int i = 0; i < static_cast<unsigned int>(samplePoints.size()); ++i ) {
@@ -86,8 +87,8 @@ bool VoronoiCellGen::generate( const BoundingBox& bbox, const std::vector<cc::Ve
 		} while(cla.inc());
 	}
 
-	//container.draw_cells_gnuplot("C:/Users/daniel/Desktop/cells.gnu");
-	//container.draw_particles("C:/Users/daniel/Desktop/particles.gnu");
+	container.draw_cells_gnuplot("C:/Users/daniel/Desktop/cells.gnu");
+	container.draw_particles("C:/Users/daniel/Desktop/particles.gnu");
 
 	return !outCells.empty();
 }
