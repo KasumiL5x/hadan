@@ -8,6 +8,7 @@
 #include <maya/MIntArray.h>
 #include <maya/MItMeshEdge.h>
 #include <maya/MPointArray.h>
+#include <maya/MItMeshVertex.h>
 #include "Model.hpp"
 
 namespace MayaHelper {
@@ -135,6 +136,20 @@ namespace MayaHelper {
 	static void centerPivot( const std::string& objName ) {
 		const std::string cp = "xform -cpc " + objName + ";";
 		MGlobal::executeCommand(cp.c_str());
+	}
+
+	static void moveVerticesAlongNormal( MObject mesh, float amount, bool invert ) {
+		MItMeshVertex it(mesh);
+		while( !it.isDone() ) {
+			MVector normal;
+			it.getNormal(normal, MSpace::kObject);
+			if( invert ) {
+				normal = -normal;
+			}
+			const MPoint position = it.position(MSpace::kObject);
+			it.setPosition(position + normal * amount, MSpace::kObject);
+			it.next();
+		}
 	}
 } // mayahelper
 

@@ -5,9 +5,10 @@
  *    daniel green
  *
  * usage:
- *    hadan <mesh_name> <slice_count>
- *    <mesh_name>   is a string representing the path of the mesh to fracture
- *    <slice_count> is the number of slices the source geometry should be split into (must be >=1)
+ *    hadan <mesh_name> <slice_count> <separate_dist>
+ *    <mesh_name>     is a string representing the path of the mesh to fracture
+ *    <slice_count>   is the number of slices the source geometry should be split into (must be >=1)
+ *    <separate_dist> is how far to push chunks' vertices along their normal to separate geometry (can be zero)
  */
 
 // todo:
@@ -46,10 +47,13 @@ MStatus hadan::doIt( const MArgList& args ) {
 	srand(static_cast<unsigned int>(startTime.time_since_epoch().count()));
 
 	// check arguments length
-	if( args.length() < 2 ) {
+	if( args.length() < 3 ) {
 		Log::error("Error: Incorrect number of arguments.\n");
 		return MS::kFailure;
 	}
+
+	// get separation distance
+	const float separationDistance = static_cast<float>(args.asDouble(2));
 
 	// get and validate number of slices
 	const int numSlices = args.asInt(1);
@@ -143,6 +147,13 @@ MStatus hadan::doIt( const MArgList& args ) {
 	MFnSet shadingGroupFn(shadingGroupObj);
 	for( auto& mesh : allGeneratedMeshes ) {
 		shadingGroupFn.addMember(mesh);
+	}
+
+	// shrink vertices of chunks along normals
+	if( separationDistance != 0.0f ) {
+		for( auto& mesh : allGeneratedMeshes ) {
+			MayaHelper::moveVerticesAlongNormal(mesh, separationDistance, true);
+		}
 	}
 
 	// end with only the source mesh selected (for easy deleting, etc.)
