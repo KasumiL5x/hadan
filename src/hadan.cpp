@@ -31,10 +31,6 @@
 
 DeclareSimpleCommand(hadan, "KasumiL5x", "0.0.1-dev");
 
-IMeshSlicer* createMeshSlicer() {
-	return new ClosedConvexSlicer();
-}
-
 MStatus hadan::doIt( const MArgList& args ) {
 	// get start time
 	const auto startTime = std::chrono::system_clock::now();
