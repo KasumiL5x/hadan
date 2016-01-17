@@ -9,6 +9,9 @@ public:
 	~TestPointGen();
 
 	virtual void generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) const override;
+
+private:
+	cc::Vec3f randomPointInBounds( float minx, float maxx, float miny, float maxy, float minz, float maxz ) const;
 };
 
 #endif /* __testsamplepointgenerator__ */

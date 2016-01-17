@@ -15,6 +15,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\src\BezierPath.cpp" />
     <ClCompile Include="..\src\BoundingBox.cpp" />
     <ClCompile Include="..\src\cells\Cell.cpp" />
     <ClCompile Include="..\src\cells\VoronoiCelGen\VoronoiCellGen.cpp" />
@@ -27,6 +28,7 @@
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\BezierPath.hpp" />
     <ClInclude Include="..\src\BoundingBox.hpp" />
     <ClInclude Include="..\src\cells\Cell.hpp" />
     <ClInclude Include="..\src\cells\CellGenFactory.hpp" />

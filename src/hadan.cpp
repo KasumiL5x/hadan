@@ -94,7 +94,7 @@ MStatus hadan::doIt( const MArgList& args ) {
 	fromMaya.buildExtendedData();
 
 	// create a sample point generator and generate sample points
-	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(PointGenFactory::Type::Uniform);
+	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(PointGenFactory::Type::Test);
 	std::vector<cc::Vec3f> samplePoints;
 	pointGenerator->generateSamplePoints(fromMaya, static_cast<unsigned int>(numSlices), samplePoints);
 

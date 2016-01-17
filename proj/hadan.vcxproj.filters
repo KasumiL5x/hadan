@@ -23,6 +23,7 @@
     <ClCompile Include="..\src\points\Uniform\UniformPointGen.cpp">
       <Filter>points\Uniform</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\BezierPath.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.hpp" />
@@ -68,6 +69,7 @@
     <ClInclude Include="..\src\points\Uniform\UniformPointGen.hpp">
       <Filter>points\Uniform</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\BezierPath.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="slicing">
