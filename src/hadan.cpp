@@ -15,6 +15,7 @@
 //    - fix plane in world space drawing position bug
 //    - add ability to push vertices along negative normals by a fraction to shrink mesh (once normals are generated properly), mainly for stacking
 //    - preserve UVs and somehow add a separate material on the inside
+//    - cluster mode (generate X primary random points, then Y secondary point around those primary points w/ a random distance)
 
 #include <chrono>
 #include <ctime>
@@ -93,7 +94,7 @@ MStatus hadan::doIt( const MArgList& args ) {
 	fromMaya.buildExtendedData();
 
 	// create a sample point generator and generate sample points
-	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(PointGenFactory::Type::Test);
+	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(PointGenFactory::Type::Bezier);
 	std::vector<cc::Vec3f> samplePoints;
 	pointGenerator->generateSamplePoints(fromMaya, static_cast<unsigned int>(numSlices), samplePoints);
 

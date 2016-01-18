@@ -4,12 +4,14 @@
 #include <memory>
 #include "IPointGen.hpp"
 #include "Uniform/UniformPointGen.hpp"
+#include "Bezier/BezierPointGen.hpp"
 #include "TestPointGen/TestPointGen.hpp"
 
 class PointGenFactory {
 public:
 	enum class Type {
 		Uniform,
+		Bezier,
 		Test
 	};
 
@@ -17,6 +19,10 @@ public:
 		switch( type ) {
 			case Type::Uniform: {
 				return std::make_unique<UniformPointGen>();
+			}
+
+			case Type::Bezier: {
+				return std::make_unique<BezierPointGen>();
 			}
 
 			case Type::Test: {

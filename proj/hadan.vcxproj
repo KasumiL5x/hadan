@@ -22,6 +22,7 @@
     <ClCompile Include="..\src\hadan.cpp" />
     <ClCompile Include="..\src\Model.cpp" />
     <ClCompile Include="..\src\Plane.cpp" />
+    <ClCompile Include="..\src\points\Bezier\BezierPointGen.cpp" />
     <ClCompile Include="..\src\points\TestPointGen\TestPointGen.cpp" />
     <ClCompile Include="..\src\points\Uniform\UniformPointGen.cpp" />
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClipMesh.cpp" />
@@ -39,8 +40,10 @@
     <ClInclude Include="..\src\Model.hpp" />
     <ClInclude Include="..\src\Plane.hpp" />
     <ClInclude Include="..\src\PlaneHelper.hpp" />
+    <ClInclude Include="..\src\points\Bezier\BezierPointGen.hpp" />
     <ClInclude Include="..\src\points\IPointGen.hpp" />
     <ClInclude Include="..\src\points\PointGenFactory.hpp" />
+    <ClInclude Include="..\src\points\PointsUItils.hpp" />
     <ClInclude Include="..\src\points\TestPointGen\TestPointGen.hpp" />
     <ClInclude Include="..\src\points\Uniform\UniformPointGen.hpp" />
     <ClInclude Include="..\src\Random.hpp" />

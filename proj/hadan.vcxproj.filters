@@ -24,6 +24,9 @@
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClipMesh.cpp">
       <Filter>slicing\ClosedConvexSlicer</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\points\Bezier\BezierPointGen.cpp">
+      <Filter>points\Bezier</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.hpp" />
@@ -71,6 +74,12 @@
     <ClInclude Include="..\src\slicing\ClosedConvexSlicer\ClipMesh.hpp">
       <Filter>slicing\ClosedConvexSlicer</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\points\Bezier\BezierPointGen.hpp">
+      <Filter>points\Bezier</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\points\PointsUItils.hpp">
+      <Filter>points</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="slicing">
@@ -93,6 +102,9 @@
     </Filter>
     <Filter Include="points\Uniform">
       <UniqueIdentifier>{1b52bcdd-710d-4e57-9a6b-22015c53c8be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="points\Bezier">
+      <UniqueIdentifier>{f0565453-1209-4744-aea2-ecd5c69e4950}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
