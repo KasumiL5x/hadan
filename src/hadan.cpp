@@ -23,7 +23,6 @@
 #include <maya/MGlobal.h>
 #include <maya/MFnSet.h>
 #include "Model.hpp"
-#include <slicing/ClipMesh.hpp>
 #include "MayaHelper.hpp"
 #include <cells/CellGenFactory.hpp>
 #include <points/PointGenFactory.hpp>

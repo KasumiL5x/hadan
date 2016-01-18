@@ -11,9 +11,6 @@
     <ClCompile Include="..\src\cells\Cell.cpp">
       <Filter>cells</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\slicing\ClipMesh.cpp">
-      <Filter>slicing</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\points\TestPointGen\TestPointGen.cpp">
       <Filter>points\TestPointGen</Filter>
     </ClCompile>
@@ -24,6 +21,9 @@
       <Filter>points\Uniform</Filter>
     </ClCompile>
     <ClCompile Include="..\src\BezierPath.cpp" />
+    <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClipMesh.cpp">
+      <Filter>slicing\ClosedConvexSlicer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.hpp" />
@@ -41,9 +41,6 @@
     </ClInclude>
     <ClInclude Include="..\src\cells\Cell.hpp">
       <Filter>cells</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\slicing\ClipMesh.hpp">
-      <Filter>slicing</Filter>
     </ClInclude>
     <ClInclude Include="..\src\points\PointGenFactory.hpp">
       <Filter>points</Filter>
@@ -71,6 +68,9 @@
     </ClInclude>
     <ClInclude Include="..\src\BezierPath.hpp" />
     <ClInclude Include="..\src\Random.hpp" />
+    <ClInclude Include="..\src\slicing\ClosedConvexSlicer\ClipMesh.hpp">
+      <Filter>slicing\ClosedConvexSlicer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="slicing">

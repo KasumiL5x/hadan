@@ -1,5 +1,5 @@
 #include "ClosedConvexSlicer.hpp"
-#include <slicing/ClipMesh.hpp>
+#include "ClipMesh.hpp"
 
 ClosedConvexSlicer::ClosedConvexSlicer()
 	: IMeshSlicer() {
