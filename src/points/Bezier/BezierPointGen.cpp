@@ -9,46 +9,60 @@ BezierPointGen::BezierPointGen()
 BezierPointGen::~BezierPointGen() {
 }
 
-void BezierPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) const {
-	const BoundingBox& bbox = sourceModel.computeBoundingBox();
+void BezierPointGen::addControlPoints( const cc::Vec3f& cp ) {
+	_controlPoints.push_back(cp);
+}
 
+void BezierPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) const {
 	printf("Generating bezier:\n");
 
-	// get distance from one corner of the bbox to the other
-	const cc::Vec3f cornerDiff = bbox.getCorner(BoundingBox::Corner::BottomLeftBack) - bbox.getCorner(BoundingBox::Corner::TopRightFront);
-	const float minDistance = cc::math::percent<float>(cornerDiff.magnitude(), 75.0f);
+	// get model's bounding box
+	const BoundingBox& bbox = sourceModel.computeBoundingBox();
 
-	printf("\tsize: %f; minDistance: %f\n", cornerDiff.magnitude(), minDistance);
+	std::vector<cc::Vec3f> bezierPoints;
+	if( 4 == _controlPoints.size() ) { // all control points are provided
+		printf("\tall points provided; building curve from points\n");
+		bezierPoints = bezierPoints;
+	} else if( 2 == _controlPoints.size() ) { // start and end points are provided; generate random midpoints
+		printf("\tstart and end points provided; generating intermediate points\n");
+		bezierPoints.push_back(_controlPoints[0]);
+		bezierPoints.push_back(PointsUtils::randomPointInBbox(bbox));
+		bezierPoints.push_back(PointsUtils::randomPointInBbox(bbox));
+		bezierPoints.push_back(_controlPoints[1]);
+	} else { // no control points provided (or too many); randomly generate all (p0 and p3 on faces, p1 and p2 randomly inside)
+		printf("\tno points provided; generating all points\n");
+		// get distance from one corner of the bbox to the other
+		const cc::Vec3f cornerDiff = bbox.getCorner(BoundingBox::Corner::BottomLeftBack) - bbox.getCorner(BoundingBox::Corner::TopRightFront);
+		const float minDistance = cc::math::percent<float>(cornerDiff.magnitude(), 75.0f);
+		printf("\tsize: %f; minDistance: %f\n", cornerDiff.magnitude(), minDistance);
 
-	// compute first point of bezier
-	int firstSide = -1;
-	const cc::Vec3f p0 = PointsUtils::randomPointOnBboxSide(bbox, firstSide, -1);
-	printf("\tp0: face %d at (%f, %f, %f)\n", firstSide, p0.x, p0.y, p0.z);
+		// first point (on surface of bounding box)
+		int p0Side = -1;
+		const cc::Vec3f p0 = PointsUtils::randomPointOnBboxSide(bbox, p0Side, -1);
+		bezierPoints.push_back(p0);
+		printf("\tp0: face %d at (%f, %f, %f)\n", p0Side, p0.x, p0.y, p0.z);
 
-	// compute two random points inside the bounding box
-	const cc::Vec3f p1 = PointsUtils::randomPointInBbox(bbox);
-	const cc::Vec3f p2 = PointsUtils::randomPointInBbox(bbox);
-	printf("\tp1: (%f, %f, %f)\n", p1.x, p1.y, p1.z);
-	printf("\tp2: (%f, %f, %f)\n", p2.x, p2.y, p2.z);
+		// second and third are randomly generated
+		bezierPoints.push_back(PointsUtils::randomPointInBbox(bbox));
+		printf("\tp1: (%f, %f, %f)\n", bezierPoints.back().x, bezierPoints.back().y, bezierPoints.back().z);
+		bezierPoints.push_back(PointsUtils::randomPointInBbox(bbox));
+		printf("\tp2: (%f, %f, %f)\n", bezierPoints.back().x, bezierPoints.back().y, bezierPoints.back().z);
 
-	// compute last point of bezier
-	int lastSide = -1;
-	cc::Vec3f p3;
-	do {
-		p3 = PointsUtils::randomPointOnBboxSide(bbox, lastSide, firstSide);
-		printf("\t%s with distance %f\n", p3.distance(p0) < minDistance ? "FAILED" : "SUCCEEDED", p3.distance(p0));
-	} while(p3.distance(p0) < minDistance);
-
-	printf("\tp3: face %d at (%f, %f, %f)\n", lastSide, p3.x, p3.y, p3.z);	
+		// fourth is on another side and must be a certain percentage of the size of the bounding box away from the first point
+		// TODO: add an interation count, accepting last try if exceeding, to avoid infinite loop
+		int p3Side = -1;
+		cc::Vec3f p3;
+		do {
+			p3 = PointsUtils::randomPointOnBboxSide(bbox, p3Side, p0Side);
+			printf("\t%s with distance %f\n", p3.distance(p0) < minDistance ? "FAILED" : "SUCCEEDED", p3.distance(p0));
+		} while(p3.distance(p0) < minDistance);
+		bezierPoints.push_back(p3);
+		printf("\tp3: face %d at (%f, %f, %f)\n", p3Side, p3.x, p3.y, p3.z);	
+	}
 
 	// extract points along bezier curve
-	std::vector<cc::Vec3f> controlPoints;
-	controlPoints.push_back(p0);
-	controlPoints.push_back(p1);
-	controlPoints.push_back(p2);
-	controlPoints.push_back(p3);
 	BezierPath bezier;
-	bezier.setControlPoints(controlPoints);
+	bezier.setControlPoints(bezierPoints);
 	for( auto& pnt : bezier.getDrawingPoints() ) {
 		outPoints.push_back(pnt);
 	}
