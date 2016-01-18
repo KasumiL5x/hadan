@@ -70,6 +70,7 @@
       <Filter>points\Uniform</Filter>
     </ClInclude>
     <ClInclude Include="..\src\BezierPath.hpp" />
+    <ClInclude Include="..\src\Random.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="slicing">

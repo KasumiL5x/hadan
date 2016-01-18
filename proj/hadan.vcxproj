@@ -43,6 +43,7 @@
     <ClInclude Include="..\src\points\PointGenFactory.hpp" />
     <ClInclude Include="..\src\points\TestPointGen\TestPointGen.hpp" />
     <ClInclude Include="..\src\points\Uniform\UniformPointGen.hpp" />
+    <ClInclude Include="..\src\Random.hpp" />
     <ClInclude Include="..\src\slicing\ClipMesh.hpp" />
     <ClInclude Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.hpp" />
     <ClInclude Include="..\src\slicing\IMeshSlicer.hpp" />
