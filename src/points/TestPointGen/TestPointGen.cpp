@@ -1,6 +1,8 @@
 #include "TestPointGen.hpp"
 #include <random>
 #include <BezierPath.hpp>
+#include <Random.hpp>
+#include <Log.hpp>
 
 TestPointGen::TestPointGen()
 	: IPointGen() {
@@ -8,8 +10,6 @@ TestPointGen::TestPointGen()
 
 TestPointGen::~TestPointGen() {
 }
-
-
 
 void TestPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) const {
 	const BoundingBox bbox = sourceModel.computeBoundingBox();
@@ -22,10 +22,16 @@ void TestPointGen::generateSamplePoints( const Model& sourceModel, const unsigne
 
 	// bezier stuff
 	std::vector<cc::Vec3f> controlPoints;
-	controlPoints.push_back(bbox.getCenter() + bbox.getHalfExtents()); // p0 - begin
+	int firstSide = -1;
+	const cc::Vec3f firstPoint = randomPointOnUnitSide(bbox, -1, firstSide, nullptr);
+	controlPoints.push_back(firstPoint); // p0 - begin
+	//controlPoints.push_back(bbox.getCenter() + bbox.getHalfExtents()); // p0 - begin
 	controlPoints.push_back(randomPointInBounds(minx, maxx, miny, maxy, minz, maxz)); // p1
 	controlPoints.push_back(randomPointInBounds(minx, maxx, miny, maxy, minz, maxz)); // p2
-	controlPoints.push_back(bbox.getCenter() - bbox.getHalfExtents()); // p3 - end
+	int lastSide = -1;
+	const cc::Vec3f lastPoint = randomPointOnUnitSide(bbox, firstSide, lastSide, &firstPoint);
+	controlPoints.push_back(lastPoint); // p3 - end
+	//controlPoints.push_back(bbox.getCenter() - bbox.getHalfExtents()); // p3 - end
 	BezierPath bezier;
 	bezier.setControlPoints(controlPoints);
 	for( auto& pnt : bezier.getDrawingPoints() ) {
@@ -38,6 +44,14 @@ void TestPointGen::generateSamplePoints( const Model& sourceModel, const unsigne
 		const float FLUX = 0.05f;
 		outPoints[i] += cc::Vec3f(cc::math::randRange<float>(-FLUX, FLUX), cc::math::randRange<float>(-FLUX, FLUX), cc::math::randRange<float>(-FLUX, FLUX));
 	}
+
+	printf("First point:\n");
+	printf("\tside: %d\n", firstSide);
+	printf("\tpos: %f, %f, %f\n", firstPoint.x, firstPoint.y, firstPoint.z);
+	printf("Second point:\n");
+	printf("\tside: %d\n", lastSide);
+	printf("\tpos: %f, %f, %f\n", lastPoint.x, lastPoint.y, lastPoint.z);
+	fflush(stdout);
 
 
 
@@ -116,4 +130,77 @@ cc::Vec3f TestPointGen::randomPointInBounds( float minx, float maxx, float miny,
 	const float y = miny + (float(rand()) / RAND_MAX) * (maxy - miny);
 	const float z = minz + (float(rand()) / RAND_MAX) * (maxz - minz);
 	return cc::Vec3f(x, y, z);
+}
+
+cc::Vec3f TestPointGen::randomPointOnUnitSide( const BoundingBox& bb, int notOnThisSide, int& outChosenSide, const cc::Vec3f* lastPoint ) const {
+	Random<float, int> rnd;
+
+	// pick a side that's not been picked before
+	int newSide = notOnThisSide;
+	do {
+		newSide = rnd.nextInt(0, 5);
+	} while(newSide == notOnThisSide);
+
+	// update output chosen side
+	outChosenSide = newSide;
+
+	// generate point based on picked side
+	cc::Vec3f pos = bb.getCenter();
+	const cc::Vec3f& half = bb.getHalfExtents();
+
+	// todo: move the looping out of this function
+	// todo: add a max number of iterations and fail if it fails
+
+	const cc::Vec3f cornerDiff = bb.getCorner(BoundingBox::Corner::BottomLeftBack) - bb.getCorner(BoundingBox::Corner::TopRightFront);
+	const float minDistance = cc::math::percent<float>(cornerDiff.magnitude(), 50.0f);
+	printf("MINIMUM DISTANCE: mindist: %f\n", minDistance);
+
+	do {
+		pos = bb.getCenter();
+		switch( newSide ) {
+			case 0: { // +x
+					pos.x += half.x;
+					pos.y += rnd.nextReal(-half.y, half.y);
+					pos.z += rnd.nextReal(-half.z, half.z);
+				break;
+			}
+			case 1: { // -x
+					pos.x -= half.x;
+					pos.y += rnd.nextReal(-half.y, half.y);
+					pos.z += rnd.nextReal(-half.z, half.z);
+				break;
+			}
+			case 2: { // +y
+					pos.y += half.y;
+					pos.x += rnd.nextReal(-half.x, half.x);
+					pos.z += rnd.nextReal(-half.z, half.z);
+				break;
+			}
+			case 3: { // -y
+					pos.y -= half.y;
+					pos.x += rnd.nextReal(-half.x, half.x);
+					pos.z += rnd.nextReal(-half.z, half.z);
+				break;
+			}
+			case 4: { // +z
+					pos.z += half.z;
+					pos.x += rnd.nextReal(-half.x, half.x);
+					pos.y += rnd.nextReal(-half.y, half.y);
+				break;
+			}
+			case 5: { // -z
+					pos.z -= half.z;
+					pos.x += rnd.nextReal(-half.x, half.x);
+					pos.y += rnd.nextReal(-half.y, half.y);
+				break;
+			}
+		}
+
+		printf("Generated point with distance: %f\n", lastPoint != nullptr ? lastPoint->distance(pos) : 0.0f);
+		fflush(stdout);
+
+	} while(lastPoint != nullptr && lastPoint->distance(pos) < minDistance);
+
+
+	return pos;
 }
