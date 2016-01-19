@@ -139,7 +139,7 @@ namespace MayaHelper {
 		MGlobal::executeCommand(cp.c_str());
 	}
 
-	static void moveVerticesAlongNormal( MObject mesh, float amount, bool invert ) {
+	static void moveVerticesAlongNormal( MObject mesh, double amount, bool invert ) {
 		MItMeshVertex it(mesh);
 		while( !it.isDone() ) {
 			MVector normal;

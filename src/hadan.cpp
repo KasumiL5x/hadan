@@ -3,7 +3,9 @@
 #include <ctime>
 #include <memory>
 #include <maya/MArgList.h>
+#include <maya/MArgDatabase.h>
 #include <maya/MDagPath.h>
+#include "Syntax.hpp"
 #include "MayaHelper.hpp"
 #include "points/PointGenFactory.hpp"
 #include "cells/CellGenFactory.hpp"
@@ -29,47 +31,24 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	std::strftime(startTimeStr, sizeof(startTimeStr), "%X", std::localtime(&epochTime));
 	Log::info("Hadan starting at " + std::string(startTimeStr) + "\n");
 
+	// parse incoming arguments
+	if( !parseArgs(args) ) {
+		Log::error("Error: Failed to parse arguments.\n");
+		return MS::kFailure;
+	}
+
 	// randomize seed
 	srand(static_cast<unsigned int>(startTime.time_since_epoch().count()));
 
-	// check arguments length
-	if( args.length() < 3 ) {
-		Log::error("Error: Incorrect number of arguments.\n");
-		return MS::kFailure;
-	}
-
-	// get separation distance
-	const float separationDistance = static_cast<float>(args.asDouble(2));
-
-	// get and validate number of slices
-	const int numSlices = args.asInt(1);
-	if( numSlices < 1 ) {
-		Log::error("Error: Must have at least one slice!\n");
-		return MS::kFailure;
-	}
-
-	// get the input object's dag path and check that it exists
-	MDagPath inputObjectPath;
-	if( !MayaHelper::getObjectFromString(args.asString(0).asChar(), inputObjectPath) ) {
-		Log::error("Error: Given object not found.\n");
-		return MS::kFailure;
-	}
-
-	// check that the input object has a mesh fn
-	if( !MayaHelper::hasMesh(inputObjectPath) ) {
-		Log::error("Error: Given object is not a mesh.\n");
-		return MS::kFailure;
-	}
-
 	// convert the input object to a mesh and check if it has holes
-	MFnMesh mayaMesh(inputObjectPath);
+	MFnMesh mayaMesh(_inputMesh);
 	if( MayaHelper::doesMeshHaveHoles(mayaMesh) ) {
 		Log::error("Error: Mesh cannot have holes.\n");
 		return MS::kFailure;
 	}
 
 	// ensure that the mesh is fully closed (all edges must have two faces)
-	if( !MayaHelper::isMeshFullyClosed(inputObjectPath) ) {
+	if( !MayaHelper::isMeshFullyClosed(_inputMesh) ) {
 		Log::error("Error: Mesh is not closed.  An edge somewhere has only a single face.\n");
 		return MS::kFailure;
 	}
@@ -82,7 +61,7 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// create a sample point generator and generate sample points
 	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(PointGenFactory::Type::Bezier);
 	std::vector<cc::Vec3f> samplePoints;
-	pointGenerator->generateSamplePoints(fromMaya, static_cast<unsigned int>(numSlices), samplePoints);
+	pointGenerator->generateSamplePoints(fromMaya, _sliceCount, samplePoints);
 
 	if( samplePoints.empty() ) {
 		Log::error("Error: Not enough sample points were generated.\n");
@@ -136,15 +115,15 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	}
 
 	// shrink vertices of chunks along normals
-	if( separationDistance != 0.0f ) {
+	if( _separationDistance != 0.0 ) {
 		for( auto& mesh : allGeneratedMeshes ) {
-			MayaHelper::moveVerticesAlongNormal(mesh, separationDistance, true);
+			MayaHelper::moveVerticesAlongNormal(mesh, _separationDistance, true);
 		}
 	}
 
 	// end with only the source mesh selected (for easy deleting, etc.)
 	MSelectionList sourceObjectSelectionList;
-	sourceObjectSelectionList.add(inputObjectPath);
+	sourceObjectSelectionList.add(_inputMesh);
 	MGlobal::setActiveSelectionList(sourceObjectSelectionList);
 
 
@@ -173,5 +152,52 @@ bool Hadan::isUndoable() const {
 }
 
 bool Hadan::hasSyntax() const {
+	return true;
+}
+
+bool Hadan::parseArgs( const MArgList& args ) {
+	// read input args from database with syntax
+	const MArgDatabase db(HadanArgs::Syntax(), args);
+
+	// clear existing arg values
+	_inputMesh = MDagPath();
+	_sliceCount = 0;
+	_separationDistance = 0.0;
+
+	// parse and validate mesh name
+	if( !db.isFlagSet(HadanArgs::MeshName) ) {
+		Log::error("Error: Required argument -meshname (-mn) is missing.\n");
+		return false;
+	}
+	MString meshNameStr;
+	db.getFlagArgument(HadanArgs::MeshName, 0, meshNameStr);
+	if( !MayaHelper::getObjectFromString(meshNameStr.asChar(), _inputMesh) ) {
+		Log::error("Error: Given object not found.\n");
+		return false;
+	}
+	if( !MayaHelper::hasMesh(_inputMesh) ) {
+		Log::error("Error: Given object is not a mesh.\n");
+		return false;
+	}
+
+	// parse and validate slice count
+	if( !db.isFlagSet(HadanArgs::SliceCount) ) {
+		Log::error("Error: Required argument -slicecount (-sc) is missing.\n");
+		return false;
+	}
+	db.getFlagArgument(HadanArgs::SliceCount, 0, _sliceCount);
+	if( 0 == _sliceCount ) {
+		Log::error("Error: Must have at least one slice.\n");
+		return false;
+	}
+
+	// parse separation distance
+	if( !db.isFlagSet(HadanArgs::SeparateDistance) ) {
+		Log::info("Argument -separationdistance (-sd) was missing; using default value of 0.\n");
+		_separationDistance = 0.0;
+	} else {
+		db.getFlagArgument(HadanArgs::SeparateDistance, 0, _separationDistance);
+	}
+
 	return true;
 }

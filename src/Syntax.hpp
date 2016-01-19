@@ -3,27 +3,30 @@
 
 #include <maya/MSyntax.h>
 
-// mesh name
-const char* MeshName = "-mn";
-const char* MeshNameLong = "-meshname";
-const MSyntax::MArgType MeshNameType = MSyntax::kString;
+namespace HadanArgs {
+	// mesh name
+	static const char* MeshName = "-mn";
+	static const char* MeshNameLong = "-meshname";
+	static const MSyntax::MArgType MeshNameType = MSyntax::kString;
 
-// slice count
-const char* SliceCount = "-sc";
-const char* SliceCountLong = "-slicecount";
-const MSyntax::MArgType SliceCountType = MSyntax::kDouble;
+	// slice count
+	static const char* SliceCount = "-sc";
+	static const char* SliceCountLong = "-slicecount";
+	static const MSyntax::MArgType SliceCountType = MSyntax::kUnsigned;
 
-// separation distance
-const char* SeparateDistance = "-sd";
-const char* SeparateDistanceLong = "-separationdistance";
-const MSyntax::MArgType SeparateDistanceType = MSyntax::kDouble;
+	// separation distance
+	static const char* SeparateDistance = "-sd";
+	static const char* SeparateDistanceLong = "-separationdistance";
+	static const MSyntax::MArgType SeparateDistanceType = MSyntax::kDouble;
 
-MSyntax HadanSyntax() {
-	MSyntax syntax;
-	syntax.addFlag(MeshName, MeshNameLong, MeshNameType);
-	syntax.addFlag(SliceCount, SliceCountLong, SliceCountType);
-	syntax.addFlag(SeparateDistance, SeparateDistanceLong, SeparateDistanceType);
-	return syntax;
+
+	static MSyntax Syntax() {
+		MSyntax syntax;
+		syntax.addFlag(MeshName, MeshNameLong, MeshNameType);
+		syntax.addFlag(SliceCount, SliceCountLong, SliceCountType);
+		syntax.addFlag(SeparateDistance, SeparateDistanceLong, SeparateDistanceType);
+		return syntax;
+	}
 }
 
 #endif /* __syntax__ */

@@ -21,6 +21,7 @@
 #define __hadan__
 
 #include <maya/MPxCommand.h>
+#include <maya/MDagPath.h>
 
 class Hadan : public MPxCommand {
 public:
@@ -32,6 +33,14 @@ public:
 	virtual MStatus redoIt() override;
 	virtual bool isUndoable() const override;
 	virtual bool hasSyntax() const override;
+
+private:
+	bool parseArgs( const MArgList& args );
+
+private:
+	MDagPath _inputMesh;
+	unsigned int _sliceCount;
+	double _separationDistance;
 };
 
 #endif /* __hadan__ */

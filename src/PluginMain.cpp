@@ -8,7 +8,7 @@ void* HadanCreator() {
 
 MStatus initializePlugin( MObject obj ) {
 	MFnPlugin plugin(obj, "KasumiL5x", "0.1-dev", "Any");
-	const MStatus status = plugin.registerCommand("hadan", HadanCreator, HadanSyntax);
+	const MStatus status = plugin.registerCommand("hadan", HadanCreator, HadanArgs::Syntax);
 	if( status != MS::kSuccess ) {
 		status.perror("registerCommand");
 		return status;
