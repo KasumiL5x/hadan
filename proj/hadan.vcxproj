@@ -24,12 +24,14 @@
     <ClCompile Include="..\src\Plane.cpp" />
     <ClCompile Include="..\src\PluginMain.cpp" />
     <ClCompile Include="..\src\points\Bezier\BezierPointGen.cpp" />
+    <ClCompile Include="..\src\points\Cluster\ClusterPointGen.cpp" />
     <ClCompile Include="..\src\points\TestPointGen\TestPointGen.cpp" />
     <ClCompile Include="..\src\points\Uniform\UniformPointGen.cpp" />
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClipMesh.cpp" />
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\points\Cluster\ClusterPointGen.hpp" />
     <ClInclude Include="..\src\Syntax.hpp" />
     <ClInclude Include="..\src\BezierPath.hpp" />
     <ClInclude Include="..\src\BoundingBox.hpp" />

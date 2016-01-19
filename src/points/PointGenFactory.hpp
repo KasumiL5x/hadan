@@ -5,6 +5,7 @@
 #include "IPointGen.hpp"
 #include "Uniform/UniformPointGen.hpp"
 #include "Bezier/BezierPointGen.hpp"
+#include "Cluster/ClusterPointGen.hpp"
 #include "TestPointGen/TestPointGen.hpp"
 
 class PointGenFactory {
@@ -13,6 +14,7 @@ public:
 		Invalid,
 		Uniform,
 		Bezier,
+		Cluster,
 		Test
 	};
 
@@ -24,6 +26,10 @@ public:
 
 			case Type::Bezier: {
 				return std::make_unique<BezierPointGen>();
+			}
+
+			case Type::Cluster: {
+				return std::make_unique<ClusterPointGen>();
 			}
 
 			case Type::Test: {
