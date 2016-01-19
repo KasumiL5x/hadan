@@ -26,7 +26,6 @@ MStatus Hadan::doIt( const MArgList& args ) {
 
 	// print start time
 	const std::time_t epochTime = std::chrono::system_clock::to_time_t(startTime);
-	//const std::string startTimeStr = std::ctime(&epochTime);
 	char startTimeStr[100];
 	std::strftime(startTimeStr, sizeof(startTimeStr), "%X", std::localtime(&epochTime));
 	Log::info("Hadan starting at " + std::string(startTimeStr) + "\n");
@@ -163,6 +162,7 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	_sliceCount = 0;
 	_pointsGenType = PointGenFactory::Type::Invalid;
 	_separationDistance = 0.0;
+	_userPoints.clear();
 
 	// parse and validate mesh name
 	if( !db.isFlagSet(HadanArgs::MeshName) ) {
@@ -215,6 +215,21 @@ bool Hadan::parseArgs( const MArgList& args ) {
 		_separationDistance = 0.0;
 	} else {
 		db.getFlagArgument(HadanArgs::SeparateDistance, 0, _separationDistance);
+	}
+
+	// parse user's optional points list
+	const unsigned int pntUses = db.numberOfFlagUses(HadanArgs::Point);
+	for( unsigned int i = 0; i < pntUses; ++i ) {
+		MArgList pntArgsList;
+		db.getFlagArgumentList(HadanArgs::Point, i, pntArgsList);
+		if( pntArgsList.length() != 3 ) {
+			printf("Ignoring -pnt (-point) %d because it was formatted incorrectly.\n", i);
+			continue;
+		}
+		unsigned int dummyIndex = 0;
+		const MVector vector = pntArgsList.asVector(dummyIndex, 3);
+		_userPoints.push_back(cc::Vec3f(static_cast<float>(vector.x), static_cast<float>(vector.y), static_cast<float>(vector.z)));
+		//printf("Parsed vector %d: %f, %f, %f\n", i, vector.x, vector.y, vector.z);
 	}
 
 	return true;

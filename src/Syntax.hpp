@@ -24,13 +24,24 @@ namespace HadanArgs {
 	static const char* SeparateDistanceLong = "-separationdistance";
 	static const MSyntax::MArgType SeparateDistanceType = MSyntax::kDouble;
 
+	// user-provided point
+	static const char* Point = "-pnt";
+	static const char* PointLong = "-point";
+	static const MSyntax::MArgType PointType = MSyntax::MArgType::kDouble;
 
 	static MSyntax Syntax() {
 		MSyntax syntax;
+		// mesh name
 		syntax.addFlag(MeshName, MeshNameLong, MeshNameType);
+		// slice count
 		syntax.addFlag(SliceCount, SliceCountLong, SliceCountType);
+		// fracture type
 		syntax.addFlag(FractureType, FractureTypeLong, FractureTypeType);
+		// separate distance
 		syntax.addFlag(SeparateDistance, SeparateDistanceLong, SeparateDistanceType);
+		// point (x, y, z; can be repeated)
+		syntax.addFlag(Point, PointLong, PointType, PointType, PointType);
+		syntax.makeFlagMultiUse(Point);
 		return syntax;
 	}
 }

@@ -22,6 +22,7 @@
 
 #include <maya/MPxCommand.h>
 #include <maya/MDagPath.h>
+#include <cc/Vec3.hpp>
 #include "points/PointGenFactory.hpp"
 
 class Hadan : public MPxCommand {
@@ -43,6 +44,7 @@ private:
 	unsigned int _sliceCount;
 	PointGenFactory::Type _pointsGenType;
 	double _separationDistance;
+	std::vector<cc::Vec3f> _userPoints;
 };
 
 #endif /* __hadan__ */
