@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="..\src\BoundingBox.cpp" />
-    <ClCompile Include="..\src\hadan.cpp" />
     <ClCompile Include="..\src\Model.cpp" />
     <ClCompile Include="..\src\Plane.cpp" />
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.cpp">
@@ -27,6 +26,8 @@
     <ClCompile Include="..\src\points\Bezier\BezierPointGen.cpp">
       <Filter>points\Bezier</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Hadan.cpp" />
+    <ClCompile Include="..\src\PluginMain.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.hpp" />
@@ -80,6 +81,8 @@
     <ClInclude Include="..\src\points\PointsUItils.hpp">
       <Filter>points</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\Hadan.hpp" />
+    <ClInclude Include="..\src\Syntax.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="slicing">

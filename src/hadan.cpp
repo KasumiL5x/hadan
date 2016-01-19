@@ -1,38 +1,24 @@
-/**
- * hadan
- *
- * author:
- *    daniel green
- *
- * usage:
- *    hadan <mesh_name> <slice_count> <separate_dist>
- *    <mesh_name>     is a string representing the path of the mesh to fracture
- *    <slice_count>   is the number of slices the source geometry should be split into (must be >=1)
- *    <separate_dist> is how far to push chunks' vertices along their normal to separate geometry (can be zero)
- */
-
-// todo:
-//    - fix plane in world space drawing position bug
-//    - add ability to push vertices along negative normals by a fraction to shrink mesh (once normals are generated properly), mainly for stacking
-//    - preserve UVs and somehow add a separate material on the inside
-//    - cluster mode (generate X primary random points, then Y secondary point around those primary points w/ a random distance)
-
+#include "Hadan.hpp"
 #include <chrono>
 #include <ctime>
-#include <maya/MSimple.h>
-#include <maya/MFnMesh.h>
-#include <maya/MGlobal.h>
-#include <maya/MFnSet.h>
-#include "Model.hpp"
+#include <memory>
+#include <maya/MArgList.h>
+#include <maya/MDagPath.h>
 #include "MayaHelper.hpp"
-#include <cells/CellGenFactory.hpp>
-#include <points/PointGenFactory.hpp>
-#include <slicing/MeshSlicerFactory.hpp>
+#include "points/PointGenFactory.hpp"
+#include "cells/CellGenFactory.hpp"
+#include "slicing/MeshSlicerFactory.hpp"
+#include <maya/MFnSet.h>
 #include "Log.hpp"
 
-DeclareSimpleCommand(hadan, "KasumiL5x", "0.0.1-dev");
+Hadan::Hadan()
+	: MPxCommand() {
+}
 
-MStatus hadan::doIt( const MArgList& args ) {
+Hadan::~Hadan() {
+}
+
+MStatus Hadan::doIt( const MArgList& args ) {
 	// get start time
 	const auto startTime = std::chrono::system_clock::now();
 
@@ -170,4 +156,22 @@ MStatus hadan::doIt( const MArgList& args ) {
 	Log::info(timeTakenStr + chunkStr);
 
 	return MStatus::kSuccess;
+}
+
+MStatus Hadan::undoIt() {
+	Log::warning("Hadan::undoIt() not yet implemented.\n");
+	return MStatus::kFailure;
+}
+
+MStatus Hadan::redoIt() {
+	Log::warning("Hadan::redoIt() not yet implemented.\n");
+	return MStatus::kFailure;
+}
+
+bool Hadan::isUndoable() const {
+	return true;
+}
+
+bool Hadan::hasSyntax() const {
+	return true;
 }

@@ -9,6 +9,7 @@
 #include <maya/MItMeshEdge.h>
 #include <maya/MPointArray.h>
 #include <maya/MItMeshVertex.h>
+#include <maya/MGlobal.h>
 #include "Model.hpp"
 
 namespace MayaHelper {

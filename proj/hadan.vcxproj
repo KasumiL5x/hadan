@@ -19,9 +19,10 @@
     <ClCompile Include="..\src\BoundingBox.cpp" />
     <ClCompile Include="..\src\cells\Cell.cpp" />
     <ClCompile Include="..\src\cells\VoronoiCelGen\VoronoiCellGen.cpp" />
-    <ClCompile Include="..\src\hadan.cpp" />
+    <ClCompile Include="..\src\Hadan.cpp" />
     <ClCompile Include="..\src\Model.cpp" />
     <ClCompile Include="..\src\Plane.cpp" />
+    <ClCompile Include="..\src\PluginMain.cpp" />
     <ClCompile Include="..\src\points\Bezier\BezierPointGen.cpp" />
     <ClCompile Include="..\src\points\TestPointGen\TestPointGen.cpp" />
     <ClCompile Include="..\src\points\Uniform\UniformPointGen.cpp" />
@@ -29,12 +30,14 @@
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\Syntax.hpp" />
     <ClInclude Include="..\src\BezierPath.hpp" />
     <ClInclude Include="..\src\BoundingBox.hpp" />
     <ClInclude Include="..\src\cells\Cell.hpp" />
     <ClInclude Include="..\src\cells\CellGenFactory.hpp" />
     <ClInclude Include="..\src\cells\ICellGen.hpp" />
     <ClInclude Include="..\src\cells\VoronoiCelGen\VoronoiCellGen.hpp" />
+    <ClInclude Include="..\src\Hadan.hpp" />
     <ClInclude Include="..\src\Log.hpp" />
     <ClInclude Include="..\src\MayaHelper.hpp" />
     <ClInclude Include="..\src\Model.hpp" />
