@@ -59,7 +59,7 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	fromMaya.buildExtendedData();
 
 	// create a sample point generator and generate sample points
-	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(PointGenFactory::Type::Bezier);
+	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(_pointsGenType);
 	std::vector<cc::Vec3f> samplePoints;
 	pointGenerator->generateSamplePoints(fromMaya, _sliceCount, samplePoints);
 
@@ -126,7 +126,6 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	sourceObjectSelectionList.add(_inputMesh);
 	MGlobal::setActiveSelectionList(sourceObjectSelectionList);
 
-
 	// print completion stats
 	const auto endTime = std::chrono::system_clock::now();
 	const std::chrono::duration<double> timeDiff = endTime - startTime;
@@ -162,6 +161,7 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	// clear existing arg values
 	_inputMesh = MDagPath();
 	_sliceCount = 0;
+	_pointsGenType = PointGenFactory::Type::Invalid;
 	_separationDistance = 0.0;
 
 	// parse and validate mesh name
@@ -188,6 +188,24 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	db.getFlagArgument(HadanArgs::SliceCount, 0, _sliceCount);
 	if( 0 == _sliceCount ) {
 		Log::error("Error: Must have at least one slice.\n");
+		return false;
+	}
+
+	// parse fracture type
+	if( !db.isFlagSet(HadanArgs::FractureType) ) {
+		Log::error("Error: Required argument -fracturetype (-ft) is missing.\n");
+		return false;
+	}
+	MString fractureTypeStr;
+	db.getFlagArgument(HadanArgs::FractureType, 0, fractureTypeStr);
+	if( strcmp(fractureTypeStr.asChar(), "uniform") == 0 ) {
+		_pointsGenType = PointGenFactory::Type::Uniform;
+	} else if( strcmp(fractureTypeStr.asChar(), "bezier") == 0 ) {
+		_pointsGenType = PointGenFactory::Type::Bezier;
+	} else if( strcmp(fractureTypeStr.asChar(), "test") == 0 ) {
+		_pointsGenType = PointGenFactory::Type::Test;
+	} else {
+		Log::error("Error: Unknown fracture type.\n");
 		return false;
 	}
 

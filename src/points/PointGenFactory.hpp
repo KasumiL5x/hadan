@@ -10,6 +10,7 @@
 class PointGenFactory {
 public:
 	enum class Type {
+		Invalid,
 		Uniform,
 		Bezier,
 		Test

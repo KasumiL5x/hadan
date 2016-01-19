@@ -14,6 +14,11 @@ namespace HadanArgs {
 	static const char* SliceCountLong = "-slicecount";
 	static const MSyntax::MArgType SliceCountType = MSyntax::kUnsigned;
 
+	// fracture type
+	static const char* FractureType = "-ft";
+	static const char* FractureTypeLong = "-fracturetype";
+	static const MSyntax::MArgType FractureTypeType = MSyntax::kString;
+
 	// separation distance
 	static const char* SeparateDistance = "-sd";
 	static const char* SeparateDistanceLong = "-separationdistance";
@@ -24,6 +29,7 @@ namespace HadanArgs {
 		MSyntax syntax;
 		syntax.addFlag(MeshName, MeshNameLong, MeshNameType);
 		syntax.addFlag(SliceCount, SliceCountLong, SliceCountType);
+		syntax.addFlag(FractureType, FractureTypeLong, FractureTypeType);
 		syntax.addFlag(SeparateDistance, SeparateDistanceLong, SeparateDistanceType);
 		return syntax;
 	}

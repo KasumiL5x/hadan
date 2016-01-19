@@ -22,6 +22,7 @@
 
 #include <maya/MPxCommand.h>
 #include <maya/MDagPath.h>
+#include "points/PointGenFactory.hpp"
 
 class Hadan : public MPxCommand {
 public:
@@ -40,6 +41,7 @@ private:
 private:
 	MDagPath _inputMesh;
 	unsigned int _sliceCount;
+	PointGenFactory::Type _pointsGenType;
 	double _separationDistance;
 };
 
