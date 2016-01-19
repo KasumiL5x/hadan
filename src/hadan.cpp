@@ -203,7 +203,7 @@ bool Hadan::parseArgs( const MArgList& args ) {
 		_pointsGenType = PointGenFactory::Type::Uniform;
 	} else if( strcmp(fractureTypeStr.asChar(), "bezier") == 0 ) {
 		_pointsGenType = PointGenFactory::Type::Bezier;
-	} else if( strcmp(fractureTypeStr.asChar(), "cluster") ) {
+	} else if( strcmp(fractureTypeStr.asChar(), "cluster") == 0 ) {
 		_pointsGenType = PointGenFactory::Type::Cluster;
 	} else if( strcmp(fractureTypeStr.asChar(), "test") == 0 ) {
 		_pointsGenType = PointGenFactory::Type::Test;

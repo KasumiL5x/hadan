@@ -13,7 +13,7 @@ void BezierPointGen::setUserPoints( const std::vector<cc::Vec3f>& userPoints ) {
 	_controlPoints = userPoints;
 }
 
-void BezierPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) const {
+void BezierPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) {
 	printf("Generating bezier:\n");
 
 	// get model's bounding box

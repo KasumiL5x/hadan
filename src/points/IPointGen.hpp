@@ -24,7 +24,7 @@ public:
 	 * @param[in]  pointCount  Number of points requested to be generated.
 	 * @param[out] outPoints   Output vector of generated points.
 	 */
-	virtual void generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) const=0;
+	virtual void generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints )=0;
 };
 
 #endif /* __isamplepointgen__ */

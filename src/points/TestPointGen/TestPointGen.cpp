@@ -14,7 +14,7 @@ TestPointGen::~TestPointGen() {
 void TestPointGen::setUserPoints( const std::vector<cc::Vec3f>& userPoints ) {
 }
 
-void TestPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) const {
+void TestPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) {
 	const BoundingBox bbox = sourceModel.computeBoundingBox();
 	const float minx = bbox.minX();
 	const float miny = bbox.minY();
