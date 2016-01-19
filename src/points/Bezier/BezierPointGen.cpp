@@ -50,11 +50,18 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const unsig
 
 		// fourth is on another side and must be a certain percentage of the size of the bounding box away from the first point
 		// TODO: add an interation count, accepting last try if exceeding, to avoid infinite loop
+		const unsigned int MAX_ITERATIONS = 10;
+		unsigned int iteration = 0;
 		int p3Side = -1;
 		cc::Vec3f p3;
 		do {
 			p3 = PointsUtils::randomPointOnBboxSide(bbox, p3Side, p0Side);
 			printf("\t%s with distance %f\n", p3.distance(p0) < minDistance ? "FAILED" : "SUCCEEDED", p3.distance(p0));
+			if( iteration++ >= MAX_ITERATIONS ) { // increment and check
+				printf("\tMaximum iterations reached (%d), accepting last value.\n", MAX_ITERATIONS);
+				break;
+			}
+			
 		} while(p3.distance(p0) < minDistance);
 		bezierPoints.push_back(p3);
 		printf("\tp3: face %d at (%f, %f, %f)\n", p3Side, p3.x, p3.y, p3.z);	
