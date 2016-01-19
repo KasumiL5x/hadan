@@ -9,8 +9,8 @@ BezierPointGen::BezierPointGen()
 BezierPointGen::~BezierPointGen() {
 }
 
-void BezierPointGen::addControlPoints( const cc::Vec3f& cp ) {
-	_controlPoints.push_back(cp);
+void BezierPointGen::setUserPoints( const std::vector<cc::Vec3f>& userPoints ) {
+	_controlPoints = userPoints;
 }
 
 void BezierPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) const {

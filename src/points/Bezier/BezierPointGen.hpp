@@ -10,7 +10,7 @@ public:
 	BezierPointGen();
 	~BezierPointGen();
 
-	void addControlPoints( const cc::Vec3f& cp );
+	virtual void setUserPoints( const std::vector<cc::Vec3f>& userPoints ) override;
 	virtual void generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) const override;
 
 private:

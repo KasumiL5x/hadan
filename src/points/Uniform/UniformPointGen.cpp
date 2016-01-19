@@ -8,6 +8,9 @@ UniformPointGen::UniformPointGen()
 UniformPointGen::~UniformPointGen() {
 }
 
+void UniformPointGen::setUserPoints( const std::vector<cc::Vec3f>& userPoints ) {
+}
+
 void UniformPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) const {
 	const BoundingBox bb = sourceModel.computeBoundingBox();
 	std::random_device rnd;

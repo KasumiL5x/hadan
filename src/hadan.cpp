@@ -60,6 +60,7 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// create a sample point generator and generate sample points
 	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(_pointsGenType);
 	std::vector<cc::Vec3f> samplePoints;
+	pointGenerator->setUserPoints(_userPoints);
 	pointGenerator->generateSamplePoints(fromMaya, _sliceCount, samplePoints);
 
 	if( samplePoints.empty() ) {

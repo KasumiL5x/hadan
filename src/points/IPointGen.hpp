@@ -13,6 +13,12 @@ public:
 	}
 
 	/**
+	 * Sets the user-provided points that can be optionally used in the point generation.
+	 * @param userPoints Vector of positions.
+	 */
+	virtual void setUserPoints( const std::vector<cc::Vec3f>& userPoints )=0;
+
+	/**
 	 * Generates a vector of sample points.
 	 * @param[in]  sourceModel Input Model used to generate points.
 	 * @param[in]  pointCount  Number of points requested to be generated.
