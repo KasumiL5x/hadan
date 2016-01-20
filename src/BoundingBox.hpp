@@ -31,6 +31,7 @@ public:
 	float maxZ() const;
 
 	cc::Vec3f getCorner( Corner corner ) const;
+	float getDiagonalDistance() const;
 
 private:
 	cc::Vec3f _center;

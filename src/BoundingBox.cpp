@@ -80,3 +80,8 @@ cc::Vec3f BoundingBox::getCorner( Corner corner ) const {
 	}
 	return point;
 }
+
+float BoundingBox::getDiagonalDistance() const {
+	const cc::Vec3f cornerDiff = getCorner(Corner::BottomLeftBack) - getCorner(Corner::TopRightFront);
+	return cornerDiff.magnitude();
+}

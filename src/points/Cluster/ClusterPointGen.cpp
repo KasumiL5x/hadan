@@ -25,10 +25,9 @@ void ClusterPointGen::generateSamplePoints( const Model& sourceModel, const Poin
 		primaryPoints.push_back(PointsUtils::randomPointInBbox(bbox));
 	}
 
+	// push back primary points and generate and add all secondary points
 	Random<double, int> rnd;
-
-	const cc::Vec3f cornerDiff = bbox.getCorner(BoundingBox::Corner::BottomLeftBack) - bbox.getCorner(BoundingBox::Corner::TopRightFront);
-	const double fluxAmount = cc::math::percent<double>(static_cast<double>(cornerDiff.magnitude()), static_cast<float>(info.flux));
+	const double fluxAmount = cc::math::percent<double>(static_cast<double>(bbox.getDiagonalDistance()), static_cast<float>(info.flux));
 	for( unsigned int i = 0; i < static_cast<unsigned int>(primaryPoints.size()); ++i ) {
 		const cc::Vec3f& curr = primaryPoints[i];
 		outPoints.push_back(curr);
@@ -42,7 +41,7 @@ void ClusterPointGen::generateSamplePoints( const Model& sourceModel, const Poin
 		}
 	}
 
-	// generate secondary uniform points to even out the effect
+	// generate tertiary uniform points to even out the effect
 	for( unsigned int i = 0; i < info.uniformCount; ++i ) {
 		outPoints.push_back(PointsUtils::randomPointInBbox(bbox));
 	}
