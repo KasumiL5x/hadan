@@ -10,42 +10,40 @@ ClusterPointGen::ClusterPointGen()
 ClusterPointGen::~ClusterPointGen() {
 }
 
-void ClusterPointGen::setFlux( const float flux ) {
-	_flux = flux;
-}
-
-void ClusterPointGen::setUserPoints( const std::vector<cc::Vec3f>& userPoints ) {
-	_primaryPoints = userPoints;
-}
-
-void ClusterPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) {
-	if( cc::math::equal<float>(_flux, 0.0f) ) {
+void ClusterPointGen::generateSamplePoints( const Model& sourceModel, const PointGenInfo& info, std::vector<cc::Vec3f>& outPoints ) {
+	if( cc::math::equal<double>(info.flux, 0.0) ) {
 		Log::warning("Warning: Fluctuation percentate for cluster fracture must be nonzero.  Fracturing may not occur.\n");
 	}
 
 	const BoundingBox& bbox = sourceModel.computeBoundingBox();
 
-	if( 0 == _primaryPoints.size() ) {
-		for( unsigned int i = 0; i < pointCount; ++i ) {
-			_primaryPoints.push_back(PointsUtils::randomPointInBbox(bbox));
+	// initialize to user-provided points
+	std::vector<cc::Vec3f> primaryPoints = info.userPoints;
+	
+	// randomly generate some extra points in addition to user-provided ones
+	for( unsigned int i = 0; i < info.primaryCount; ++i ) {
+		primaryPoints.push_back(PointsUtils::randomPointInBbox(bbox));
+	}
+
+	Random<double, int> rnd;
+
+	const cc::Vec3f cornerDiff = bbox.getCorner(BoundingBox::Corner::BottomLeftBack) - bbox.getCorner(BoundingBox::Corner::TopRightFront);
+	const double fluxAmount = cc::math::percent<double>(static_cast<double>(cornerDiff.magnitude()), static_cast<float>(info.flux));
+	for( unsigned int i = 0; i < static_cast<unsigned int>(primaryPoints.size()); ++i ) {
+		const cc::Vec3f& curr = primaryPoints[i];
+		outPoints.push_back(curr);
+
+		for( unsigned int j = 0; j < info.secondaryCount; ++j ) {
+			cc::Vec3f second = curr;
+			second.x += static_cast<float>(rnd.nextReal(-fluxAmount, fluxAmount)); // cannot be zero or cells can fail to generate
+			second.y += static_cast<float>(rnd.nextReal(-fluxAmount, fluxAmount));
+			second.z += static_cast<float>(rnd.nextReal(-fluxAmount, fluxAmount));
+			outPoints.push_back(second);
 		}
 	}
 
-	Random<float, int> rnd;
-
-	const cc::Vec3f cornerDiff = bbox.getCorner(BoundingBox::Corner::BottomLeftBack) - bbox.getCorner(BoundingBox::Corner::TopRightFront);
-	const float fluxAmount = cc::math::percent<float>(cornerDiff.magnitude(), _flux);
-	const float SECONDARY_ITERATIONS = 20;
-	for( unsigned int i = 0; i < static_cast<unsigned int>(_primaryPoints.size()); ++i ) {
-		const cc::Vec3f& curr = _primaryPoints[i];
-		outPoints.push_back(curr);
-
-		for( unsigned int j = 0; j < SECONDARY_ITERATIONS; ++j ) {
-			cc::Vec3f second = curr;
-			second.x += rnd.nextReal(0.0f, fluxAmount);
-			second.y += rnd.nextReal(0.0f, fluxAmount);
-			second.z += rnd.nextReal(0.0f, fluxAmount);
-			outPoints.push_back(second);
-		}
+	// generate secondary uniform points to even out the effect
+	for( unsigned int i = 0; i < info.uniformCount; ++i ) {
+		outPoints.push_back(PointsUtils::randomPointInBbox(bbox));
 	}
 }

@@ -8,9 +8,7 @@ public:
 	TestPointGen();
 	~TestPointGen();
 
-	virtual void setFlux( const float flux ) override;
-	virtual void setUserPoints( const std::vector<cc::Vec3f>& userPoints ) override;
-	virtual void generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) override;
+	virtual void generateSamplePoints( const Model& sourceModel, const PointGenInfo& info, std::vector<cc::Vec3f>& outPoints ) override;
 
 private:
 	cc::Vec3f randomPointInBounds( float minx, float maxx, float miny, float maxy, float minz, float maxz ) const;

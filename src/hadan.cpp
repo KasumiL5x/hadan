@@ -14,7 +14,7 @@
 #include "Log.hpp"
 
 Hadan::Hadan()
-	: MPxCommand() {
+	: MPxCommand(), _inputMesh(), _pointsGenType(PointGenFactory::Type::Invalid), _separationDistance(0.0), _pointGenInfo() {
 }
 
 Hadan::~Hadan() {
@@ -60,9 +60,7 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// create a sample point generator and generate sample points
 	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(_pointsGenType);
 	std::vector<cc::Vec3f> samplePoints;
-	pointGenerator->setFlux(static_cast<float>(_flux));
-	pointGenerator->setUserPoints(_userPoints);
-	pointGenerator->generateSamplePoints(fromMaya, _sliceCount, samplePoints);
+	pointGenerator->generateSamplePoints(fromMaya, _pointGenInfo, samplePoints);
 
 	if( samplePoints.empty() ) {
 		Log::error("Error: Not enough sample points were generated.\n");
@@ -122,6 +120,8 @@ MStatus Hadan::doIt( const MArgList& args ) {
 		}
 	}
 
+	// todo: harden edges AGAIN as moving vertices will change the average normals etc.
+
 	// end with only the source mesh selected (for easy deleting, etc.)
 	MSelectionList sourceObjectSelectionList;
 	sourceObjectSelectionList.add(_inputMesh);
@@ -161,11 +161,9 @@ bool Hadan::parseArgs( const MArgList& args ) {
 
 	// clear existing arg values
 	_inputMesh = MDagPath();
-	_sliceCount = 0;
 	_pointsGenType = PointGenFactory::Type::Invalid;
 	_separationDistance = 0.0;
-	_flux = 0.0;
-	_userPoints.clear();
+	_pointGenInfo = PointGenInfo();
 
 	// parse and validate mesh name
 	if( !db.isFlagSet(HadanArgs::MeshName) ) {
@@ -180,17 +178,6 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	}
 	if( !MayaHelper::hasMesh(_inputMesh) ) {
 		Log::error("Error: Given object is not a mesh.\n");
-		return false;
-	}
-
-	// parse and validate slice count
-	if( !db.isFlagSet(HadanArgs::SliceCount) ) {
-		Log::error("Error: Required argument -slicecount (-sc) is missing.\n");
-		return false;
-	}
-	db.getFlagArgument(HadanArgs::SliceCount, 0, _sliceCount);
-	if( 0 == _sliceCount ) {
-		Log::error("Error: Must have at least one slice.\n");
 		return false;
 	}
 
@@ -215,20 +202,16 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	}
 
 	// parse separation distance
-	if( !db.isFlagSet(HadanArgs::SeparateDistance) ) {
-		Log::info("Argument -separationdistance (-sd) was missing; using default value of 0.\n");
-		_separationDistance = 0.0;
-	} else {
-		db.getFlagArgument(HadanArgs::SeparateDistance, 0, _separationDistance);
-	}
+	db.getFlagArgument(HadanArgs::SeparateDistance, 0, _separationDistance);
 
-	// parse fluctuation amount
-	if( !db.isFlagSet(HadanArgs::FluxPercentage) ) {
-		Log::info("Argument -fluctuation (-flux) was missing; using default value of 0.\n");
-		_flux = 0.0;
-	} else {
-		db.getFlagArgument(HadanArgs::FluxPercentage, 0, _flux);
-	}
+	// parse uniform count
+	db.getFlagArgument(HadanArgs::UniformCount, 0, _pointGenInfo.uniformCount);
+	// parse primary count
+	db.getFlagArgument(HadanArgs::PrimaryCount, 0, _pointGenInfo.primaryCount);
+	// parse secondary count
+	db.getFlagArgument(HadanArgs::SecondaryCount, 0, _pointGenInfo.secondaryCount);
+	// parse flux
+	db.getFlagArgument(HadanArgs::FluxPercentage, 0, _pointGenInfo.flux);
 
 	// parse user's optional points list
 	const unsigned int pntUses = db.numberOfFlagUses(HadanArgs::Point);
@@ -241,8 +224,7 @@ bool Hadan::parseArgs( const MArgList& args ) {
 		}
 		unsigned int dummyIndex = 0;
 		const MVector vector = pntArgsList.asVector(dummyIndex, 3);
-		_userPoints.push_back(cc::Vec3f(static_cast<float>(vector.x), static_cast<float>(vector.y), static_cast<float>(vector.z)));
-		//printf("Parsed vector %d: %f, %f, %f\n", i, vector.x, vector.y, vector.z);
+		_pointGenInfo.userPoints.push_back(cc::Vec3f(static_cast<float>(vector.x), static_cast<float>(vector.y), static_cast<float>(vector.z)));
 	}
 
 	return true;

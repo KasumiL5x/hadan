@@ -89,6 +89,9 @@
     <ClInclude Include="..\src\points\Cluster\ClusterPointGen.hpp">
       <Filter>points\Cluster</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\points\PointGenInfo.hpp">
+      <Filter>points</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="slicing">

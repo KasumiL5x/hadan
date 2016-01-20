@@ -6,27 +6,37 @@
 namespace HadanArgs {
 	// mesh name
 	static const char* MeshName = "-mn";
-	static const char* MeshNameLong = "-meshname";
+	static const char* MeshNameLong = "-meshName";
 	static const MSyntax::MArgType MeshNameType = MSyntax::kString;
-
-	// slice count
-	static const char* SliceCount = "-sc";
-	static const char* SliceCountLong = "-slicecount";
-	static const MSyntax::MArgType SliceCountType = MSyntax::kUnsigned;
 
 	// fracture type
 	static const char* FractureType = "-ft";
-	static const char* FractureTypeLong = "-fracturetype";
+	static const char* FractureTypeLong = "-fractureType";
 	static const MSyntax::MArgType FractureTypeType = MSyntax::kString;
+
+	// uniform count
+	static const char* UniformCount = "-uc";
+	static const char* UniformCountLong = "-uniformCount";
+	static const MSyntax::MArgType UniformCountType = MSyntax::kUnsigned;
+
+	// primary count
+	static const char* PrimaryCount = "-pc";
+	static const char* PrimaryCountLong = "-primaryCount";
+	static const MSyntax::MArgType PrimaryCountType = MSyntax::kUnsigned;
+
+	// secondary count
+	static const char* SecondaryCount = "-sc";
+	static const char* SecondaryCountLong = "-secondaryCount";
+	static const MSyntax::MArgType SecondaryCountType = MSyntax::kUnsigned;
 
 	// separation distance
 	static const char* SeparateDistance = "-sd";
-	static const char* SeparateDistanceLong = "-separationdistance";
+	static const char* SeparateDistanceLong = "-separationDistance";
 	static const MSyntax::MArgType SeparateDistanceType = MSyntax::kDouble;
 
 	// fluctuation distance
 	static const char* FluxPercentage = "-flp";
-	static const char* FluxPercentageLong = "-fluxpercentage";
+	static const char* FluxPercentageLong = "-fluxPercent";
 	static const MSyntax::MArgType FluxPercentageType = MSyntax::kDouble;
 
 	// user-provided point
@@ -36,17 +46,13 @@ namespace HadanArgs {
 
 	static MSyntax Syntax() {
 		MSyntax syntax;
-		// mesh name
 		syntax.addFlag(MeshName, MeshNameLong, MeshNameType);
-		// slice count
-		syntax.addFlag(SliceCount, SliceCountLong, SliceCountType);
-		// fracture type
 		syntax.addFlag(FractureType, FractureTypeLong, FractureTypeType);
-		// separate distance
+		syntax.addFlag(UniformCount, UniformCountLong, UniformCountType);
+		syntax.addFlag(PrimaryCount, PrimaryCountLong, PrimaryCountType);
+		syntax.addFlag(SecondaryCount, SecondaryCountLong, SecondaryCountType);
 		syntax.addFlag(SeparateDistance, SeparateDistanceLong, SeparateDistanceType);
-		// fluctuation
 		syntax.addFlag(FluxPercentage, FluxPercentageLong, FluxPercentageType);
-		// point (x, y, z; can be repeated)
 		syntax.addFlag(Point, PointLong, PointType, PointType, PointType);
 		syntax.makeFlagMultiUse(Point);
 		return syntax;

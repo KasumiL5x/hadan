@@ -5,13 +5,51 @@
  *    daniel green
  *
  * usage:
- *    hadan <mesh_name> <slice_count> <separate_dist>
- *    <mesh_name>     is a string representing the path of the mesh to fracture
- *    <slice_count>   is the number of slices the source geometry should be split into (must be >=1)
- *    <separate_dist> is how far to push chunks' vertices along their normal to separate geometry (can be zero)
+ *    [meshName/mn];           string;    Name of object to fracture.
+ *    [fractureType/ft];       string;    Type of fracture.  Options: uniform bezier cluster test
+ *    [uniformCount/uc];       uint;      Number of uniform points to generate.
+ *    [primaryCount/pc];       uint;      Number of primary points to generate.
+ *    [secondaryCount/sc];     uint;      Number of secondary points to generate.
+ *    [separationDistance/sd]; double;    Distance to move chunks' vertices along their normals.
+ *    [fluxPercent/flp];       double;    Percentage relative to the size of the object's bounding volume to flux points by.
+ *    [point/pnt];             double x3; Soruce points.  Can be repeated.
+ *
+ * Uniform fracturing:
+ *    hadan -mn pCube1 -ft uniform -uc 10
+ *    [uniformCount/uc]
+ *    Simple uniform point generation within the object's bounding box.
+ *
+ *    [uniformCount/uc] points are randomly generated within the object's bounding box.
+ *
+ * Bezier fracturing:
+ *    hadan -mn pCube1 -ft bezier -uc 10 -flp 15.0 (-pnt 0 0 0 -pnt 1 1 1...)
+ *    [uniformCount/uc] [fluxPercent/flp] [point/pnt]
+ *    Simulates a propagating crack using a bezier curve and uniform points.
+ *
+ *    The generation differs based on the number of [point/pnt]s provided.  If four [point/pnt]s are given, they are assumed
+ *    to make up a curve.  If two [point/pnt]s are given, they are assumed to the the start and end points respectively, and
+ *    the intermediate two are randomly generated within the object's bounding box.  If no [point/pnt]s are provided, then
+ *    all four points are randomly generated.  The start and end are generated on the surface of the bounding box, and will
+ *    attempt to space themselves [fluxPercent/flp] of the bounding box's total size apart.  If they reach the maximum iteration
+ *    count, the last attempt its taken, regardless of the distance.  The two intermediate points are randomly generated as before.
+ *    The curve is sampled to generated [CHANGEME] A FIXED NUMBER of points.  These points are then randomized with a distance of
+ *    [fluxPercent/flp] of the bounding box's size.  [uniformCount/uc] randomly generated points within the object's bounding box
+ *    are also added for variety.
+ *
+ * Cluster fracturing:
+ *    hadan -mn pCube1 -ft cluster -uc 10 -pc 5 -sc 20 -flp 10.0 (-pnt 0 0 0 -pnt 1 1 1...)
+ *    [uniformCount/uc] [primaryCount/pc] [secondaryCount/sc] [fluxPercent/flp] [point/pnt]
+ *    A set of primary points are used to source local clusters of secondary points, with a sprinkle of uniform on top.
+ *
+ *    User-provided [point/pnt]s are appended with [primaryCount/pc] randomly generated points within the object's bounding box.
+ *    For each of these points, [secondaryCount/sc] points are generated around it.  The distance from the original point is
+ *    controlled by [fluxPercent/flp], which is a percentage of the total size of the object's bounding box.
+ *    [uniformCount/uc] randomly generated points within the object's bounding box are also added to increase variation.
  */
 
 // todo:
+//    - expose minimum distance, as it is hardcoded inside bezier
+//    - expose number of samples of bezier curve (currently hardcoded)
 //    - fix plane in world space drawing position bug
 //    - preserve UVs and somehow add a separate material on the inside
 //    - add generated pieces to a group
@@ -23,6 +61,7 @@
 #include <maya/MDagPath.h>
 #include <cc/Vec3.hpp>
 #include "points/PointGenFactory.hpp"
+#include "points/PointGenInfo.hpp"
 
 class Hadan : public MPxCommand {
 public:
@@ -40,11 +79,9 @@ private:
 
 private:
 	MDagPath _inputMesh;
-	unsigned int _sliceCount;
 	PointGenFactory::Type _pointsGenType;
 	double _separationDistance;
-	std::vector<cc::Vec3f> _userPoints;
-	double _flux;
+	PointGenInfo _pointGenInfo;
 };
 
 #endif /* __hadan__ */

@@ -3,36 +3,31 @@
 #include <BezierPath.hpp>
 
 BezierPointGen::BezierPointGen()
-	: IPointGen(), _flux(0.0f) {
+	: IPointGen() {
 }
 
 BezierPointGen::~BezierPointGen() {
 }
 
-void BezierPointGen::setFlux( const float flux ) {
-	_flux = flux;
-}
-
-void BezierPointGen::setUserPoints( const std::vector<cc::Vec3f>& userPoints ) {
-	_controlPoints = userPoints;
-}
-
-void BezierPointGen::generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) {
+void BezierPointGen::generateSamplePoints( const Model& sourceModel, const PointGenInfo& info, std::vector<cc::Vec3f>& outPoints ) {
 	printf("Generating bezier:\n");
 
 	// get model's bounding box
 	const BoundingBox& bbox = sourceModel.computeBoundingBox();
 
+	// set control points to user-provided points
+	std::vector<cc::Vec3f> controlPoints = info.userPoints;
+
 	std::vector<cc::Vec3f> bezierPoints;
-	if( 4 == _controlPoints.size() ) { // all control points are provided
+	if( 4 == controlPoints.size() ) { // all control points are provided
 		printf("\tall points provided; building curve from points\n");
-		bezierPoints = bezierPoints;
-	} else if( 2 == _controlPoints.size() ) { // start and end points are provided; generate random midpoints
+		bezierPoints = controlPoints;
+	} else if( 2 == controlPoints.size() ) { // start and end points are provided; generate random midpoints
 		printf("\tstart and end points provided; generating intermediate points\n");
-		bezierPoints.push_back(_controlPoints[0]);
+		bezierPoints.push_back(controlPoints[0]);
 		bezierPoints.push_back(PointsUtils::randomPointInBbox(bbox));
 		bezierPoints.push_back(PointsUtils::randomPointInBbox(bbox));
-		bezierPoints.push_back(_controlPoints[1]);
+		bezierPoints.push_back(controlPoints[1]);
 	} else { // no control points provided (or too many); randomly generate all (p0 and p3 on faces, p1 and p2 randomly inside)
 		printf("\tno points provided; generating all points\n");
 		// get distance from one corner of the bbox to the other
@@ -78,9 +73,9 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const unsig
 	}
 
 	// fluctuate points from curve to break how uniform they appear
-	if( _flux != 0.0f ) {
+	if( !cc::math::equal<double>(info.flux, 0.0) ) {
 		const cc::Vec3f cornerDiff = bbox.getCorner(BoundingBox::Corner::BottomLeftBack) - bbox.getCorner(BoundingBox::Corner::TopRightFront);
-		const float fluxAmount = cc::math::percent<float>(cornerDiff.magnitude(), _flux);
+		const float fluxAmount = cc::math::percent<float>(cornerDiff.magnitude(), info.flux);
 		Random<float, int> rnd;
 		for( auto& pnt : outPoints ) {
 			pnt += cc::Vec3f(rnd.nextReal(-fluxAmount, fluxAmount), rnd.nextReal(-fluxAmount, fluxAmount), rnd.nextReal(-fluxAmount, fluxAmount));
@@ -88,7 +83,7 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const unsig
 	}
 
 	// add some uniformly random points to add some extra detail away from the curve
-	for( unsigned int i = 0; i < pointCount; ++i ) {
+	for( unsigned int i = 0; i < info.uniformCount; ++i ) {
 		outPoints.push_back(PointsUtils::randomPointInBbox(bbox));
 	}
 
