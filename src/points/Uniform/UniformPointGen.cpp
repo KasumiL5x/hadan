@@ -1,5 +1,5 @@
 #include "UniformPointGen.hpp"
-#include "../PointsUItils.hpp"
+#include "../PointsUtils.hpp"
 
 UniformPointGen::UniformPointGen()
 	: IPointGen() {

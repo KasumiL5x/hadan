@@ -1,5 +1,5 @@
 #include "ClusterPointGen.hpp"
-#include <points/PointsUItils.hpp>
+#include <points/PointsUtils.hpp>
 #include <Random.hpp>
 #include <Log.hpp>
 
