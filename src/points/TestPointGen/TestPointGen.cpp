@@ -11,6 +11,9 @@ TestPointGen::TestPointGen()
 TestPointGen::~TestPointGen() {
 }
 
+void TestPointGen::setFlux( const float flux ) {
+}
+
 void TestPointGen::setUserPoints( const std::vector<cc::Vec3f>& userPoints ) {
 }
 

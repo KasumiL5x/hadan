@@ -8,6 +8,9 @@ UniformPointGen::UniformPointGen()
 UniformPointGen::~UniformPointGen() {
 }
 
+void UniformPointGen::setFlux( const float flux ) {
+}
+
 void UniformPointGen::setUserPoints( const std::vector<cc::Vec3f>& userPoints ) {
 }
 

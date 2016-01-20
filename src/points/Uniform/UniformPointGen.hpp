@@ -8,6 +8,7 @@ public:
 	UniformPointGen();
 	~UniformPointGen();
 
+	virtual void setFlux( const float flux ) override;
 	virtual void setUserPoints( const std::vector<cc::Vec3f>& userPoints ) override;
 	virtual void generateSamplePoints( const Model& sourceModel, const unsigned int pointCount, std::vector<cc::Vec3f>& outPoints ) override;
 };

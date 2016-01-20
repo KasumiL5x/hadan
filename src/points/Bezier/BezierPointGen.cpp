@@ -3,10 +3,14 @@
 #include <BezierPath.hpp>
 
 BezierPointGen::BezierPointGen()
-	: IPointGen() {
+	: IPointGen(), _flux(0.0f) {
 }
 
 BezierPointGen::~BezierPointGen() {
+}
+
+void BezierPointGen::setFlux( const float flux ) {
+	_flux = flux;
 }
 
 void BezierPointGen::setUserPoints( const std::vector<cc::Vec3f>& userPoints ) {
@@ -49,7 +53,6 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const unsig
 		printf("\tp2: (%f, %f, %f)\n", bezierPoints.back().x, bezierPoints.back().y, bezierPoints.back().z);
 
 		// fourth is on another side and must be a certain percentage of the size of the bounding box away from the first point
-		// TODO: add an interation count, accepting last try if exceeding, to avoid infinite loop
 		const unsigned int MAX_ITERATIONS = 10;
 		unsigned int iteration = 0;
 		int p3Side = -1;
@@ -75,10 +78,13 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const unsig
 	}
 
 	// fluctuate points from curve to break how uniform they appear
-	const float FLUX = 0.05f;
-	Random<float, int> rnd;
-	for( auto& pnt : outPoints ) {
-		pnt += cc::Vec3f(rnd.nextReal(-FLUX, FLUX), rnd.nextReal(-FLUX, FLUX), rnd.nextReal(-FLUX, FLUX));
+	if( _flux != 0.0f ) {
+		const cc::Vec3f cornerDiff = bbox.getCorner(BoundingBox::Corner::BottomLeftBack) - bbox.getCorner(BoundingBox::Corner::TopRightFront);
+		const float fluxAmount = cc::math::percent<float>(cornerDiff.magnitude(), _flux);
+		Random<float, int> rnd;
+		for( auto& pnt : outPoints ) {
+			pnt += cc::Vec3f(rnd.nextReal(-fluxAmount, fluxAmount), rnd.nextReal(-fluxAmount, fluxAmount), rnd.nextReal(-fluxAmount, fluxAmount));
+		}
 	}
 
 	// add some uniformly random points to add some extra detail away from the curve

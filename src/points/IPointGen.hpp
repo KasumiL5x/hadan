@@ -13,6 +13,13 @@ public:
 	}
 
 	/**
+	 * Sets the fluctuation range as a percentage of the size of the bounding box.
+	 * The size of the bounding box is defined as the distance from opposing corner points.
+	 * @param flux Fluctuation amount.
+	 */
+	virtual void setFlux( const float flux )=0;
+
+	/**
 	 * Sets the user-provided points that can be optionally used in the point generation.
 	 * @param userPoints Vector of positions.
 	 */

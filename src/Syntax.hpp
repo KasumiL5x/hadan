@@ -24,10 +24,15 @@ namespace HadanArgs {
 	static const char* SeparateDistanceLong = "-separationdistance";
 	static const MSyntax::MArgType SeparateDistanceType = MSyntax::kDouble;
 
+	// fluctuation distance
+	static const char* FluxPercentage = "-flp";
+	static const char* FluxPercentageLong = "-fluxpercentage";
+	static const MSyntax::MArgType FluxPercentageType = MSyntax::kDouble;
+
 	// user-provided point
 	static const char* Point = "-pnt";
 	static const char* PointLong = "-point";
-	static const MSyntax::MArgType PointType = MSyntax::MArgType::kDouble;
+	static const MSyntax::MArgType PointType = MSyntax::kDouble;
 
 	static MSyntax Syntax() {
 		MSyntax syntax;
@@ -39,6 +44,8 @@ namespace HadanArgs {
 		syntax.addFlag(FractureType, FractureTypeLong, FractureTypeType);
 		// separate distance
 		syntax.addFlag(SeparateDistance, SeparateDistanceLong, SeparateDistanceType);
+		// fluctuation
+		syntax.addFlag(FluxPercentage, FluxPercentageLong, FluxPercentageType);
 		// point (x, y, z; can be repeated)
 		syntax.addFlag(Point, PointLong, PointType, PointType, PointType);
 		syntax.makeFlagMultiUse(Point);

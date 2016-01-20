@@ -60,6 +60,7 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// create a sample point generator and generate sample points
 	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(_pointsGenType);
 	std::vector<cc::Vec3f> samplePoints;
+	pointGenerator->setFlux(static_cast<float>(_flux));
 	pointGenerator->setUserPoints(_userPoints);
 	pointGenerator->generateSamplePoints(fromMaya, _sliceCount, samplePoints);
 
@@ -163,6 +164,7 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	_sliceCount = 0;
 	_pointsGenType = PointGenFactory::Type::Invalid;
 	_separationDistance = 0.0;
+	_flux = 0.0;
 	_userPoints.clear();
 
 	// parse and validate mesh name
@@ -218,6 +220,14 @@ bool Hadan::parseArgs( const MArgList& args ) {
 		_separationDistance = 0.0;
 	} else {
 		db.getFlagArgument(HadanArgs::SeparateDistance, 0, _separationDistance);
+	}
+
+	// parse fluctuation amount
+	if( !db.isFlagSet(HadanArgs::FluxPercentage) ) {
+		Log::info("Argument -fluctuation (-flux) was missing; using default value of 0.\n");
+		_flux = 0.0;
+	} else {
+		db.getFlagArgument(HadanArgs::FluxPercentage, 0, _flux);
 	}
 
 	// parse user's optional points list
