@@ -12,7 +12,7 @@
  *    [secondaryCount/sc];     uint;      Number of secondary points to generate.
  *    [separationDistance/sd]; double;    Distance to move chunks' vertices along their normals.
  *    [fluxPercent/flp];       double;    Percentage relative to the size of the object's bounding volume to flux points by.
- *    [point/pnt];             double x3; Soruce points.  Can be repeated.
+ *    [point/pnt];             double x3; Source points.  Can be repeated.
  *
  * Uniform fracturing:
  *    hadan -mn pCube1 -ft uniform -uc 10
