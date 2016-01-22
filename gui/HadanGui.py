@@ -2,11 +2,75 @@
 
 import sys
 from PySide import QtCore, QtGui
+import maya.cmds as cmds
+import maya.mel as mel
 
 class HadanGui(QtGui.QMainWindow):
 	def __init__(self):
 		super(HadanGui, self).__init__()
 		self.__build_ui()
+		self.__source_positions = {}
+		self.__command_str = ''
+	#end
+
+	def __run_command(self):
+		self.__recompute_command()
+		mel.eval(self.__command_str)
+	#end
+
+	def __recompute_command(self):
+		self.__command_str = 'hadan '
+		self.__command_str += '-mn pCube1 '
+
+		fracture_type = self.__get_current_fracture_type()
+
+		if fracture_type == 'Uniform':
+			self.__command_str += '-ft uniform '
+			self.__command_str += '-uc %d ' % (self.spin_uniform_uniform.value())
+		elif fracture_type == 'Cluster':
+			self.__command_str += '-ft cluster '
+			self.__command_str += '-uc %d ' % (self.spin_cluster_uniform.value())
+			self.__command_str += '-pc %d ' % (self.spin_cluster_primary.value())
+			self.__command_str += '-sc %d ' % (self.spin_cluster_secondary.value())
+			self.__command_str += '-flp %f ' % (self.spin_cluster_flux.value())
+		elif fracture_type == 'Bezier':
+			self.__command_str += '-ft bezier '
+			self.__command_str += '-uc %d ' % (self.spin_uniform_bezier.value())
+			self.__command_str += '-flp %f ' % (self.spin_bezier_flux.value())
+
+		for pnt in self.__source_positions:
+			if not cmds.objExists(pnt):
+				continue
+			pos = cmds.xform(pnt, q=True, ws=True, t=True)
+			self.__command_str += '-pnt %f %f %f ' % (pos[0], pos[1], pos[2])
+
+		self.txt_generated_command.setText(self.__command_str)
+	#end
+
+	def __get_current_fracture_type(self):
+		return self.cb_fracture_type.currentText()
+	#end
+
+	def __rebuild_source_positions_list(self):
+		self.lv_source_positions.clear()
+		for curr in self.__source_positions:
+			self.lv_source_positions.addItem(curr)
+	#end
+
+	def __add_selected_callback(self):
+		for curr in cmds.ls(sl=True, type='transform'):
+			if curr in self.__source_positions:
+				continue
+			self.__source_positions[curr] = curr
+		self.__rebuild_source_positions_list()
+	#end
+
+	def __remove_selected_callback(self):
+		item = self.lv_source_positions.currentItem()
+		if None is item:
+			return
+		del self.__source_positions[item.text()]
+		self.__rebuild_source_positions_list()
 	#end
 
 	def __fracture_type_changed(self):
@@ -45,15 +109,6 @@ class HadanGui(QtGui.QMainWindow):
 		self.lbl_title.setFont(font)
 		self.lbl_title.setObjectName("lbl_title")
 		self.lbl_title.setText(QtGui.QApplication.translate("Hadan", "破断", None, QtGui.QApplication.UnicodeUTF8))
-
-		# btn_fracture
-		self.btn_fracture = QtGui.QPushButton(self)
-		self.btn_fracture.setGeometry(QtCore.QRect(10, 450, 431, 31))
-		font = QtGui.QFont()
-		font.setPointSize(16)
-		self.btn_fracture.setFont(font)
-		self.btn_fracture.setObjectName("btn_fracture")
-		self.btn_fracture.setText("Fracture")
 
 		# tab_main
 		self.tab_main = QtGui.QTabWidget(self)
@@ -129,6 +184,7 @@ class HadanGui(QtGui.QMainWindow):
 		self.btn_remove_source_position.setFont(font_8)
 		self.btn_remove_source_position.setObjectName("btn_remove_source_position")
 		self.btn_remove_source_position.setText("Remove")
+		self.btn_remove_source_position.clicked.connect(self.__remove_selected_callback)
 
 		# btn_add_selected_source_position
 		self.btn_add_selected_source_position = QtGui.QPushButton(self.tabpage_basic)
@@ -136,9 +192,10 @@ class HadanGui(QtGui.QMainWindow):
 		self.btn_add_selected_source_position.setFont(font_8)
 		self.btn_add_selected_source_position.setObjectName("btn_add_selected_source_position")
 		self.btn_add_selected_source_position.setText("Add Selected")
+		self.btn_add_selected_source_position.clicked.connect(self.__add_selected_callback)
 
 		# lv_source_positions
-		self.lv_source_positions = QtGui.QListView(self.tabpage_basic)
+		self.lv_source_positions = QtGui.QListWidget(self.tabpage_basic)
 		self.lv_source_positions.setGeometry(QtCore.QRect(10, 200, 401, 101))
 		self.lv_source_positions.setObjectName("lv_source_positions")
 
@@ -285,6 +342,16 @@ class HadanGui(QtGui.QMainWindow):
 		self.frame_uniform.setVisible(True)
 		self.frame_cluster.setVisible(False)
 		self.frame_bezier.setVisible(False)
+
+		# btn_fracture
+		self.btn_fracture = QtGui.QPushButton(self)
+		self.btn_fracture.setGeometry(QtCore.QRect(10, 450, 431, 31))
+		font = QtGui.QFont()
+		font.setPointSize(16)
+		self.btn_fracture.setFont(font)
+		self.btn_fracture.setObjectName("btn_fracture")
+		self.btn_fracture.setText("Fracture")
+		self.btn_fracture.clicked.connect(self.__run_command)
 
 		# lbl_copyright
 		self.lbl_copyright = QtGui.QLabel(self)
