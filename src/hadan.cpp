@@ -11,6 +11,7 @@
 #include "cells/CellGenFactory.hpp"
 #include "slicing/MeshSlicerFactory.hpp"
 #include <maya/MFnSet.h>
+#include <maya/MProgressWindow.h>
 #include "Log.hpp"
 
 Hadan::Hadan()
@@ -36,8 +37,24 @@ MStatus Hadan::doIt( const MArgList& args ) {
 		return MS::kFailure;
 	}
 
+	// reserve progress window (fail if already being used)
+	if( !MProgressWindow::reserve() ) {
+		Log::error("Error: Progress window already in use.\n");
+		return MS::kFailure;
+	}
+	// configure progress window
+	MProgressWindow::setProgressRange(0, 5);
+	MProgressWindow::setTitle("Hadan");
+	MProgressWindow::setInterruptable(true);
+	MProgressWindow::setProgress(0);
+	MProgressWindow::startProgress();
+
 	// randomize seed
 	srand(static_cast<unsigned int>(startTime.time_since_epoch().count()));
+
+	// set progress status
+	MProgressWindow::setProgressStatus("parsing input");
+	MProgressWindow::advanceProgress(1);
 
 	// convert the input object to a mesh and check if it has holes
 	MFnMesh mayaMesh(_inputMesh);
@@ -57,6 +74,10 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	MayaHelper::copyMFnMeshToModel(mayaMesh, fromMaya);
 	fromMaya.buildExtendedData();
 
+	// set progress status
+	MProgressWindow::setProgressStatus("generating points");
+	MProgressWindow::advanceProgress(1);
+
 	// create a sample point generator and generate sample points
 	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(_pointsGenType);
 	std::vector<cc::Vec3f> samplePoints;
@@ -66,6 +87,10 @@ MStatus Hadan::doIt( const MArgList& args ) {
 		Log::error("Error: Not enough sample points were generated.\n");
 		return MS::kFailure;
 	}
+
+	// set progress status
+	MProgressWindow::setProgressStatus("generating cells");
+	MProgressWindow::advanceProgress(1);
 
 	// create a plane generator and generate cutting planes
 	std::unique_ptr<ICellGen> cellGenerator = CellGenFactory::create(CellGenFactory::Type::Voronoi);
@@ -83,6 +108,10 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// create a mesh slicer
 	std::unique_ptr<IMeshSlicer> meshSlicer = MeshSlicerFactory::create(MeshSlicerFactory::Type::ClosedConvex);
 
+	// set progress status
+	MProgressWindow::setProgressStatus("slicing geometry");
+	MProgressWindow::advanceProgress(1);
+
 	// cut out all cells creating a new piece of geometry for each
 	for( unsigned int i = 0; i < static_cast<unsigned int>(outCells.size()); ++i ) {
 		const Cell& currCell = outCells[i];
@@ -95,6 +124,10 @@ MStatus Hadan::doIt( const MArgList& args ) {
 		MayaHelper::copyModelToMFnMesh(outModel, outCellMesh);
 		allGeneratedMeshes.push_back(outCellMesh.object());
 	}
+
+	// set progress status
+	MProgressWindow::setProgressStatus("post processing");
+	MProgressWindow::advanceProgress(1);
 
 	// run mel commands on the generated chunks
 	for( const auto& mesh : allGeneratedMeshes ) {
@@ -126,6 +159,9 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	MSelectionList sourceObjectSelectionList;
 	sourceObjectSelectionList.add(_inputMesh);
 	MGlobal::setActiveSelectionList(sourceObjectSelectionList);
+
+	// end progress window
+	MProgressWindow::endProgress();
 
 	// print completion stats
 	const auto endTime = std::chrono::system_clock::now();
