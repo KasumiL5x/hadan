@@ -11,7 +11,7 @@
 #include "cells/CellGenFactory.hpp"
 #include "slicing/MeshSlicerFactory.hpp"
 #include <maya/MFnSet.h>
-#include <maya/MProgressWindow.h>
+#include "ProgressHelper.hpp"
 #include "Log.hpp"
 
 Hadan::Hadan()
@@ -22,6 +22,15 @@ Hadan::~Hadan() {
 }
 
 MStatus Hadan::doIt( const MArgList& args ) {
+	// reserve progress window (fail if already being used)
+	if( !ProgressHelper::init() ) {
+		Log::error("Error: Progress window already in use.\n");
+		return MS::kFailure;
+	}
+	// set number of steps
+	ProgressHelper::setRange(0, ProgressHelper::TOTAL_STEPS);
+	ProgressHelper::start();
+
 	// get start time
 	const auto startTime = std::chrono::system_clock::now();
 
@@ -31,41 +40,29 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	std::strftime(startTimeStr, sizeof(startTimeStr), "%X", std::localtime(&epochTime));
 	Log::info("Hadan starting at " + std::string(startTimeStr) + "\n");
 
+	// update progress
+	ProgressHelper::setStatus("Parsing input...");
+	ProgressHelper::setProgress(0);
+
 	// parse incoming arguments
 	if( !parseArgs(args) ) {
 		Log::error("Error: Failed to parse arguments.\n");
+		ProgressHelper::end();
 		return MS::kFailure;
 	}
-
-	// reserve progress window (fail if already being used)
-	if( !MProgressWindow::reserve() ) {
-		Log::error("Error: Progress window already in use.\n");
-		return MS::kFailure;
-	}
-	// configure progress window
-	MProgressWindow::setProgressRange(0, 5);
-	MProgressWindow::setTitle("Hadan");
-	MProgressWindow::setInterruptable(true);
-	MProgressWindow::setProgress(0);
-	MProgressWindow::startProgress();
-
-	// randomize seed
-	srand(static_cast<unsigned int>(startTime.time_since_epoch().count()));
-
-	// set progress status
-	MProgressWindow::setProgressStatus("parsing input");
-	MProgressWindow::advanceProgress(1);
 
 	// convert the input object to a mesh and check if it has holes
 	MFnMesh mayaMesh(_inputMesh);
 	if( MayaHelper::doesMeshHaveHoles(mayaMesh) ) {
 		Log::error("Error: Mesh cannot have holes.\n");
+		ProgressHelper::end();
 		return MS::kFailure;
 	}
 
 	// ensure that the mesh is fully closed (all edges must have two faces)
 	if( !MayaHelper::isMeshFullyClosed(_inputMesh) ) {
 		Log::error("Error: Mesh is not closed.  An edge somewhere has only a single face.\n");
+		ProgressHelper::end();
 		return MS::kFailure;
 	}
 
@@ -74,9 +71,9 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	MayaHelper::copyMFnMeshToModel(mayaMesh, fromMaya);
 	fromMaya.buildExtendedData();
 
-	// set progress status
-	MProgressWindow::setProgressStatus("generating points");
-	MProgressWindow::advanceProgress(1);
+	// update progress
+	ProgressHelper::setStatus("Generating points...");
+	ProgressHelper::setProgress(1);
 
 	// create a sample point generator and generate sample points
 	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(_pointsGenType);
@@ -85,12 +82,13 @@ MStatus Hadan::doIt( const MArgList& args ) {
 
 	if( samplePoints.empty() ) {
 		Log::error("Error: Not enough sample points were generated.\n");
+		ProgressHelper::end();
 		return MS::kFailure;
 	}
 
-	// set progress status
-	MProgressWindow::setProgressStatus("generating cells");
-	MProgressWindow::advanceProgress(1);
+	// update progress
+	ProgressHelper::setStatus("Generating cells...");
+	ProgressHelper::setProgress(2);
 
 	// create a plane generator and generate cutting planes
 	std::unique_ptr<ICellGen> cellGenerator = CellGenFactory::create(CellGenFactory::Type::Voronoi);
@@ -99,18 +97,20 @@ MStatus Hadan::doIt( const MArgList& args ) {
 
 	if( outCells.empty() ) {
 		Log::error("Error: Generated cells were inadequate.\n");
+		ProgressHelper::end();
 		return MS::kFailure;
 	}
+
+	// update progress
+	ProgressHelper::setStatus("Slicing geometry...");
+	ProgressHelper::setProgress(3);
+	ProgressHelper::setRange(0, outCells.size());
 
 	// used to assign materials later
 	std::vector<MObject> allGeneratedMeshes;
 
 	// create a mesh slicer
 	std::unique_ptr<IMeshSlicer> meshSlicer = MeshSlicerFactory::create(MeshSlicerFactory::Type::ClosedConvex);
-
-	// set progress status
-	MProgressWindow::setProgressStatus("slicing geometry");
-	MProgressWindow::advanceProgress(1);
 
 	// cut out all cells creating a new piece of geometry for each
 	for( unsigned int i = 0; i < static_cast<unsigned int>(outCells.size()); ++i ) {
@@ -123,11 +123,13 @@ MStatus Hadan::doIt( const MArgList& args ) {
 		MFnMesh outCellMesh;
 		MayaHelper::copyModelToMFnMesh(outModel, outCellMesh);
 		allGeneratedMeshes.push_back(outCellMesh.object());
+		ProgressHelper::setProgress(i);
 	}
 
-	// set progress status
-	MProgressWindow::setProgressStatus("post processing");
-	MProgressWindow::advanceProgress(1);
+	// update progress
+	ProgressHelper::setRange(0, ProgressHelper::TOTAL_STEPS);
+	ProgressHelper::setStatus("Post-processing...");
+	ProgressHelper::setProgress(4);
 
 	// run mel commands on the generated chunks
 	for( const auto& mesh : allGeneratedMeshes ) {
@@ -160,15 +162,15 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	sourceObjectSelectionList.add(_inputMesh);
 	MGlobal::setActiveSelectionList(sourceObjectSelectionList);
 
-	// end progress window
-	MProgressWindow::endProgress();
-
 	// print completion stats
 	const auto endTime = std::chrono::system_clock::now();
 	const std::chrono::duration<double> timeDiff = endTime - startTime;
 	const std::string timeTakenStr = "Hadan finished in " + std::to_string(timeDiff.count()) + "s. ";
 	const std::string chunkStr = std::to_string(allGeneratedMeshes.size()) + "/" + std::to_string(outCells.size()) + " chunks generated.\n";
 	Log::info(timeTakenStr + chunkStr);
+
+	// end progress window
+	ProgressHelper::end();
 
 	return MStatus::kSuccess;
 }

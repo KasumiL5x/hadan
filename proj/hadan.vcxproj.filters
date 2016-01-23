@@ -92,6 +92,7 @@
     <ClInclude Include="..\src\points\PointsUtils.hpp">
       <Filter>points</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\ProgressHelper.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="slicing">
