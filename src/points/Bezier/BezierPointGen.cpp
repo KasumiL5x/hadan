@@ -75,7 +75,7 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const Point
 	// fluctuate points from curve to break how uniform they appear
 	if( !cc::math::equal<double>(info.flux, 0.0) ) {
 		const cc::Vec3f cornerDiff = bbox.getCorner(BoundingBox::Corner::BottomLeftBack) - bbox.getCorner(BoundingBox::Corner::TopRightFront);
-		const float fluxAmount = cc::math::percent<float>(cornerDiff.magnitude(), info.flux);
+		const float fluxAmount = cc::math::percent<float>(cornerDiff.magnitude(), static_cast<float>(info.flux));
 		Random<float, int> rnd;
 		for( auto& pnt : outPoints ) {
 			pnt += cc::Vec3f(rnd.nextReal(-fluxAmount, fluxAmount), rnd.nextReal(-fluxAmount, fluxAmount), rnd.nextReal(-fluxAmount, fluxAmount));

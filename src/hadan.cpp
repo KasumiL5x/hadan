@@ -12,6 +12,7 @@
 #include "slicing/MeshSlicerFactory.hpp"
 #include <maya/MFnSet.h>
 #include "Log.hpp"
+#include "ProgressHelper.hpp"
 
 Hadan::Hadan()
 	: MPxCommand(), _inputMesh(), _pointsGenType(PointGenFactory::Type::Invalid), _separationDistance(0.0), _pointGenInfo() {
@@ -21,6 +22,12 @@ Hadan::~Hadan() {
 }
 
 MStatus Hadan::doIt( const MArgList& args ) {
+	// initialize progress counter
+	if( !ProgressHelper::init() ) {
+		Log::error("Error: Failed to reserve progress window; it is already in use.\n");
+		return MS::kFailure;
+	}
+
 	// get start time
 	const auto startTime = std::chrono::system_clock::now();
 
@@ -33,11 +40,14 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// parse incoming arguments
 	if( !parseArgs(args) ) {
 		Log::error("Error: Failed to parse arguments.\n");
+		ProgressHelper::end();
 		return MS::kFailure;
 	}
 
 	// validate input mesh
 	if( !validateInputMesh() ) {
+		Log::error("Error: Failed to validate mesh.\n");
+		ProgressHelper::end();
 		return MS::kFailure;
 	}
 
@@ -47,12 +57,14 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// generate sample points
 	if( !generateSamplePoints() ) {
 		Log::error("Error: Not enough sample points were generated.\n");
+		ProgressHelper::end();
 		return MS::kFailure;
 	}
 
 	// generating cutting cells
 	if( !generateCuttingCells() ) {
 		Log::error("Error: Generated cutting cells were inadequate.\n");
+		ProgressHelper::end();
 		return MS::kFailure;
 	}
 
@@ -71,8 +83,6 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// shrink vertices of chunks along normals
 	separateCells();
 
-	// todo: harden edges AGAIN as moving vertices will change the average normals etc.
-
 	// end with only the source mesh selected (for easy deleting, etc.)
 	restoreInitialSelection();
 
@@ -82,6 +92,9 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	const std::string timeTakenStr = "Hadan finished in " + std::to_string(timeDiff.count()) + "s. ";
 	const std::string chunkStr = std::to_string(_generatedMeshes.size()) + "/" + std::to_string(_cuttingCells.size()) + " chunks generated.\n";
 	Log::info(timeTakenStr + chunkStr);
+
+	// end progress window
+	ProgressHelper::end();
 
 	return MStatus::kSuccess;
 }
@@ -105,6 +118,8 @@ bool Hadan::hasSyntax() const {
 }
 
 bool Hadan::parseArgs( const MArgList& args ) {
+	ProgressHelper::begin(8, "Parsing input...");
+
 	// read input args from database with syntax
 	const MArgDatabase db(HadanArgs::Syntax(), args);
 
@@ -125,6 +140,7 @@ bool Hadan::parseArgs( const MArgList& args ) {
 		Log::error("Error: Given object not found.\n");
 		return false;
 	}
+	ProgressHelper::advance();
 
 	// parse fracture type
 	if( !db.isFlagSet(HadanArgs::FractureType) ) {
@@ -145,18 +161,27 @@ bool Hadan::parseArgs( const MArgList& args ) {
 		Log::error("Error: Unknown fracture type.\n");
 		return false;
 	}
+	ProgressHelper::advance();
 
 	// parse separation distance
 	db.getFlagArgument(HadanArgs::SeparateDistance, 0, _separationDistance);
+	ProgressHelper::advance();
 
 	// parse uniform count
 	db.getFlagArgument(HadanArgs::UniformCount, 0, _pointGenInfo.uniformCount);
+	ProgressHelper::advance();
+
 	// parse primary count
 	db.getFlagArgument(HadanArgs::PrimaryCount, 0, _pointGenInfo.primaryCount);
+	ProgressHelper::advance();
+
 	// parse secondary count
 	db.getFlagArgument(HadanArgs::SecondaryCount, 0, _pointGenInfo.secondaryCount);
+	ProgressHelper::advance();
+
 	// parse flux
 	db.getFlagArgument(HadanArgs::FluxPercentage, 0, _pointGenInfo.flux);
+	ProgressHelper::advance();
 
 	// parse user's optional points list
 	const unsigned int pntUses = db.numberOfFlagUses(HadanArgs::Point);
@@ -171,11 +196,14 @@ bool Hadan::parseArgs( const MArgList& args ) {
 		const MVector vector = pntArgsList.asVector(dummyIndex, 3);
 		_pointGenInfo.userPoints.push_back(cc::Vec3f(static_cast<float>(vector.x), static_cast<float>(vector.y), static_cast<float>(vector.z)));
 	}
+	ProgressHelper::advance();
 
 	return true;
 }
 
 bool Hadan::validateInputMesh() const {
+	ProgressHelper::begin(3, "Validating mesh...");
+
 	MFnMesh mesh(_inputMesh);
 
 	// check it is a mesh
@@ -183,42 +211,52 @@ bool Hadan::validateInputMesh() const {
 		Log::error("Error: Input object is not a mesh.\n");
 		return false;
 	}
+	ProgressHelper::advance();
 
 	// check that the mesh does not have any holes
 	if( MayaHelper::doesMeshHaveHoles(mesh) ) {
 		Log::error("Error: Mesh cannot have holes.\n");
 		return false;
 	}
+	ProgressHelper::advance();
 
 	// ensure the that mesh is fully closed (all edges must have two faces)
 	if( !MayaHelper::isMeshFullyClosed(_inputMesh) ) {
 		Log::error("Error: Mesh is not closed.  All edges must have two faces.\n");
 		return false;
 	}
+	ProgressHelper::advance();
 
 	return true;
 }
 
 void Hadan::copyMeshFromMaya() {
+	ProgressHelper::begin(0, "Copying mesh...");
+
 	MayaHelper::copyMFnMeshToModel(MFnMesh(_inputMesh), _modelFromMaya);
 	_modelFromMaya.buildExtendedData();
 }
 
 bool Hadan::generateSamplePoints() {
+	ProgressHelper::begin(0, "Generating points...");
+
 	std::unique_ptr<IPointGen> gen = PointGenFactory::create(_pointsGenType);
 	gen->generateSamplePoints(_modelFromMaya, _pointGenInfo, _samplePoints);
 	return !_samplePoints.empty();
 }
 
 bool Hadan::generateCuttingCells() {
+	ProgressHelper::begin(0, "Generating cells...");
+
 	std::unique_ptr<ICellGen> gen = CellGenFactory::create(CellGenFactory::Type::Voronoi);
 	gen->generate(_modelFromMaya.computeBoundingBox(), _samplePoints, _cuttingCells);
 	return !_cuttingCells.empty();
 }
 
 void Hadan::performCutting() {
-	std::unique_ptr<IMeshSlicer> slicer = MeshSlicerFactory::create(MeshSlicerFactory::Type::ClosedConvex);
+	ProgressHelper::begin(static_cast<int>(_cuttingCells.size()), "Slicing geometry...");
 
+	std::unique_ptr<IMeshSlicer> slicer = MeshSlicerFactory::create(MeshSlicerFactory::Type::ClosedConvex);
 	for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
 		const Cell& cell = _cuttingCells[i];
 
@@ -231,24 +269,36 @@ void Hadan::performCutting() {
 		MFnMesh outMesh;
 		MayaHelper::copyModelToMFnMesh(outModel, outMesh);
 		_generatedMeshes.push_back(outMesh.object());
+
+		ProgressHelper::advance();
 	}
 }
 
 void Hadan::centerAllPivots() {
+	ProgressHelper::begin(static_cast<int>(_generatedMeshes.size()), "Centering pivots...");
+
 	for( const auto& mesh : _generatedMeshes ) {
 		const std::string meshName = std::string(MFnMesh(mesh).fullPathName().asChar());
 		MayaHelper::centerPivot(meshName);
+
+		ProgressHelper::advance();
 	}
 }
 
 void Hadan::softenAllEdges() {
+	ProgressHelper::begin(static_cast<int>(_generatedMeshes.size()), "Softening edges...");
+
 	for( const auto& mesh : _generatedMeshes ) {
 		const std::string meshName = std::string(MFnMesh(mesh).fullPathName().asChar());
 		MayaHelper::softenMeshEdge(meshName);
+
+		ProgressHelper::advance();
 	}
 }
 
 void Hadan::applyMaterials() {
+	ProgressHelper::begin(static_cast<int>(_generatedMeshes.size()), "Applying materials...");
+
 	MSelectionList shadingSelectionList;
 	MGlobal::getSelectionListByName("initialShadingGroup", shadingSelectionList);
 	MObject shadingGroupObj;
@@ -256,13 +306,19 @@ void Hadan::applyMaterials() {
 	MFnSet shadingGroupFn(shadingGroupObj);
 	for( const auto& mesh : _generatedMeshes ) {
 		shadingGroupFn.addMember(mesh);
+
+		ProgressHelper::advance();
 	}
 }
 
 void Hadan::separateCells() {
-	if( _separationDistance != 0.0 ) {
+	ProgressHelper::begin(static_cast<int>(_generatedMeshes.size()), "Separating cells...");
+
+	if( !cc::math::equal<double>(_separationDistance, 0.0) ) {
 		for( const auto& mesh : _generatedMeshes ) {
 			MayaHelper::moveVerticesAlongNormal(mesh, _separationDistance, true);
+
+			ProgressHelper::advance();
 		}
 	}
 }

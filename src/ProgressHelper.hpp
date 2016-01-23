@@ -12,24 +12,18 @@ namespace ProgressHelper {
 		}
 		MProgressWindow::setTitle("Hadan");
 		MProgressWindow::setInterruptable(false);
+		MProgressWindow::startProgress();
 		return true;
 	}
 
-	static void setRange( int min, int max ) {
-		MProgressWindow::setProgressRange(min, max);
-		MProgressWindow::setProgress(min);
-	}
-
-	static void start() {
-		MProgressWindow::startProgress();
-	}
-
-	static void setStatus( const char* text ) {
+	static void begin( int max, const char* text ) {
 		MProgressWindow::setProgressStatus(text);
+		MProgressWindow::setProgressRange(0, max);
+		MProgressWindow::setProgress(0);
 	}
 
-	static void setProgress( int val ) {
-		MProgressWindow::setProgress(val);
+	static void advance() {
+		MProgressWindow::advanceProgress(1);
 	}
 
 	static void end() {
