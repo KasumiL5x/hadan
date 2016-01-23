@@ -11,7 +11,6 @@
 #include "cells/CellGenFactory.hpp"
 #include "slicing/MeshSlicerFactory.hpp"
 #include <maya/MFnSet.h>
-#include "ProgressHelper.hpp"
 #include "Log.hpp"
 
 Hadan::Hadan()
@@ -22,15 +21,6 @@ Hadan::~Hadan() {
 }
 
 MStatus Hadan::doIt( const MArgList& args ) {
-	// reserve progress window (fail if already being used)
-	if( !ProgressHelper::init() ) {
-		Log::error("Error: Progress window already in use.\n");
-		return MS::kFailure;
-	}
-	// set number of steps
-	ProgressHelper::setRange(0, ProgressHelper::TOTAL_STEPS);
-	ProgressHelper::start();
-
 	// get start time
 	const auto startTime = std::chrono::system_clock::now();
 
@@ -40,137 +30,58 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	std::strftime(startTimeStr, sizeof(startTimeStr), "%X", std::localtime(&epochTime));
 	Log::info("Hadan starting at " + std::string(startTimeStr) + "\n");
 
-	// update progress
-	ProgressHelper::setStatus("Parsing input...");
-	ProgressHelper::setProgress(0);
-
 	// parse incoming arguments
 	if( !parseArgs(args) ) {
 		Log::error("Error: Failed to parse arguments.\n");
-		ProgressHelper::end();
 		return MS::kFailure;
 	}
 
-	// convert the input object to a mesh and check if it has holes
-	MFnMesh mayaMesh(_inputMesh);
-	if( MayaHelper::doesMeshHaveHoles(mayaMesh) ) {
-		Log::error("Error: Mesh cannot have holes.\n");
-		ProgressHelper::end();
+	// validate input mesh
+	if( !validateInputMesh() ) {
 		return MS::kFailure;
 	}
 
-	// ensure that the mesh is fully closed (all edges must have two faces)
-	if( !MayaHelper::isMeshFullyClosed(_inputMesh) ) {
-		Log::error("Error: Mesh is not closed.  An edge somewhere has only a single face.\n");
-		ProgressHelper::end();
-		return MS::kFailure;
-	}
+	// copy maya mesh into local model
+	copyMeshFromMaya();
 
-	// copy maya mesh into custom model and build extended data
-	Model fromMaya;
-	MayaHelper::copyMFnMeshToModel(mayaMesh, fromMaya);
-	fromMaya.buildExtendedData();
-
-	// update progress
-	ProgressHelper::setStatus("Generating points...");
-	ProgressHelper::setProgress(1);
-
-	// create a sample point generator and generate sample points
-	std::unique_ptr<IPointGen> pointGenerator = PointGenFactory::create(_pointsGenType);
-	std::vector<cc::Vec3f> samplePoints;
-	pointGenerator->generateSamplePoints(fromMaya, _pointGenInfo, samplePoints);
-
-	if( samplePoints.empty() ) {
+	// generate sample points
+	if( !generateSamplePoints() ) {
 		Log::error("Error: Not enough sample points were generated.\n");
-		ProgressHelper::end();
 		return MS::kFailure;
 	}
 
-	// update progress
-	ProgressHelper::setStatus("Generating cells...");
-	ProgressHelper::setProgress(2);
-
-	// create a plane generator and generate cutting planes
-	std::unique_ptr<ICellGen> cellGenerator = CellGenFactory::create(CellGenFactory::Type::Voronoi);
-	std::vector<Cell> outCells;
-	cellGenerator->generate(fromMaya.computeBoundingBox(), samplePoints, outCells);
-
-	if( outCells.empty() ) {
-		Log::error("Error: Generated cells were inadequate.\n");
-		ProgressHelper::end();
+	// generating cutting cells
+	if( !generateCuttingCells() ) {
+		Log::error("Error: Generated cutting cells were inadequate.\n");
 		return MS::kFailure;
 	}
 
-	// update progress
-	ProgressHelper::setStatus("Slicing geometry...");
-	ProgressHelper::setProgress(3);
-	ProgressHelper::setRange(0, outCells.size());
+	// cut out all cells, creating a new piece of geometry for each
+	performCutting();
 
-	// used to assign materials later
-	std::vector<MObject> allGeneratedMeshes;
+	// center pivots of all chunks
+	centerAllPivots();
 
-	// create a mesh slicer
-	std::unique_ptr<IMeshSlicer> meshSlicer = MeshSlicerFactory::create(MeshSlicerFactory::Type::ClosedConvex);
+	// soften edges of all objects
+	softenAllEdges();
 
-	// cut out all cells creating a new piece of geometry for each
-	for( unsigned int i = 0; i < static_cast<unsigned int>(outCells.size()); ++i ) {
-		const Cell& currCell = outCells[i];
-		Model outModel;
-		if( !meshSlicer->slice(fromMaya, currCell, outModel) ) {
-			Log::warning("Warning: Failed to slice using cell " + std::to_string(i) + ".  This is sometimes expected.\n");
-			continue;
-		}
-		MFnMesh outCellMesh;
-		MayaHelper::copyModelToMFnMesh(outModel, outCellMesh);
-		allGeneratedMeshes.push_back(outCellMesh.object());
-		ProgressHelper::setProgress(i);
-	}
-
-	// update progress
-	ProgressHelper::setRange(0, ProgressHelper::TOTAL_STEPS);
-	ProgressHelper::setStatus("Post-processing...");
-	ProgressHelper::setProgress(4);
-
-	// run mel commands on the generated chunks
-	for( const auto& mesh : allGeneratedMeshes ) {
-		const std::string meshName = std::string(MFnMesh(mesh).fullPathName().asChar());
-		MayaHelper::softenMeshEdge(meshName);
-		MayaHelper::centerPivot(meshName);
-	}
-
-	// get and assign the default material to all created meshes
-	MSelectionList shadingSelectionList;
-	MGlobal::getSelectionListByName("initialShadingGroup", shadingSelectionList);
-	MObject shadingGroupObj;
-	shadingSelectionList.getDependNode(0, shadingGroupObj);
-	MFnSet shadingGroupFn(shadingGroupObj);
-	for( auto& mesh : allGeneratedMeshes ) {
-		shadingGroupFn.addMember(mesh);
-	}
+	// apply default material to all generated cells
+	applyMaterials();
 
 	// shrink vertices of chunks along normals
-	if( _separationDistance != 0.0 ) {
-		for( auto& mesh : allGeneratedMeshes ) {
-			MayaHelper::moveVerticesAlongNormal(mesh, _separationDistance, true);
-		}
-	}
+	separateCells();
 
 	// todo: harden edges AGAIN as moving vertices will change the average normals etc.
 
 	// end with only the source mesh selected (for easy deleting, etc.)
-	MSelectionList sourceObjectSelectionList;
-	sourceObjectSelectionList.add(_inputMesh);
-	MGlobal::setActiveSelectionList(sourceObjectSelectionList);
+	restoreInitialSelection();
 
 	// print completion stats
 	const auto endTime = std::chrono::system_clock::now();
 	const std::chrono::duration<double> timeDiff = endTime - startTime;
 	const std::string timeTakenStr = "Hadan finished in " + std::to_string(timeDiff.count()) + "s. ";
-	const std::string chunkStr = std::to_string(allGeneratedMeshes.size()) + "/" + std::to_string(outCells.size()) + " chunks generated.\n";
+	const std::string chunkStr = std::to_string(_generatedMeshes.size()) + "/" + std::to_string(_cuttingCells.size()) + " chunks generated.\n";
 	Log::info(timeTakenStr + chunkStr);
-
-	// end progress window
-	ProgressHelper::end();
 
 	return MStatus::kSuccess;
 }
@@ -203,7 +114,7 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	_separationDistance = 0.0;
 	_pointGenInfo = PointGenInfo();
 
-	// parse and validate mesh name
+	// parse and validate existance of mesh name
 	if( !db.isFlagSet(HadanArgs::MeshName) ) {
 		Log::error("Error: Required argument -meshname (-mn) is missing.\n");
 		return false;
@@ -212,10 +123,6 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	db.getFlagArgument(HadanArgs::MeshName, 0, meshNameStr);
 	if( !MayaHelper::getObjectFromString(meshNameStr.asChar(), _inputMesh) ) {
 		Log::error("Error: Given object not found.\n");
-		return false;
-	}
-	if( !MayaHelper::hasMesh(_inputMesh) ) {
-		Log::error("Error: Given object is not a mesh.\n");
 		return false;
 	}
 
@@ -266,4 +173,102 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	}
 
 	return true;
+}
+
+bool Hadan::validateInputMesh() const {
+	MFnMesh mesh(_inputMesh);
+
+	// check it is a mesh
+	if( !MayaHelper::hasMesh(_inputMesh) ) {
+		Log::error("Error: Input object is not a mesh.\n");
+		return false;
+	}
+
+	// check that the mesh does not have any holes
+	if( MayaHelper::doesMeshHaveHoles(mesh) ) {
+		Log::error("Error: Mesh cannot have holes.\n");
+		return false;
+	}
+
+	// ensure the that mesh is fully closed (all edges must have two faces)
+	if( !MayaHelper::isMeshFullyClosed(_inputMesh) ) {
+		Log::error("Error: Mesh is not closed.  All edges must have two faces.\n");
+		return false;
+	}
+
+	return true;
+}
+
+void Hadan::copyMeshFromMaya() {
+	MayaHelper::copyMFnMeshToModel(MFnMesh(_inputMesh), _modelFromMaya);
+	_modelFromMaya.buildExtendedData();
+}
+
+bool Hadan::generateSamplePoints() {
+	std::unique_ptr<IPointGen> gen = PointGenFactory::create(_pointsGenType);
+	gen->generateSamplePoints(_modelFromMaya, _pointGenInfo, _samplePoints);
+	return !_samplePoints.empty();
+}
+
+bool Hadan::generateCuttingCells() {
+	std::unique_ptr<ICellGen> gen = CellGenFactory::create(CellGenFactory::Type::Voronoi);
+	gen->generate(_modelFromMaya.computeBoundingBox(), _samplePoints, _cuttingCells);
+	return !_cuttingCells.empty();
+}
+
+void Hadan::performCutting() {
+	std::unique_ptr<IMeshSlicer> slicer = MeshSlicerFactory::create(MeshSlicerFactory::Type::ClosedConvex);
+
+	for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
+		const Cell& cell = _cuttingCells[i];
+
+		Model outModel;
+		if( !slicer->slice(_modelFromMaya, cell, outModel) ) {
+			Log::warning("Warning: Failed to slice using cell " + std::to_string(i) + ".  This is sometimes expected.\n");
+			continue;
+		}
+
+		MFnMesh outMesh;
+		MayaHelper::copyModelToMFnMesh(outModel, outMesh);
+		_generatedMeshes.push_back(outMesh.object());
+	}
+}
+
+void Hadan::centerAllPivots() {
+	for( const auto& mesh : _generatedMeshes ) {
+		const std::string meshName = std::string(MFnMesh(mesh).fullPathName().asChar());
+		MayaHelper::centerPivot(meshName);
+	}
+}
+
+void Hadan::softenAllEdges() {
+	for( const auto& mesh : _generatedMeshes ) {
+		const std::string meshName = std::string(MFnMesh(mesh).fullPathName().asChar());
+		MayaHelper::softenMeshEdge(meshName);
+	}
+}
+
+void Hadan::applyMaterials() {
+	MSelectionList shadingSelectionList;
+	MGlobal::getSelectionListByName("initialShadingGroup", shadingSelectionList);
+	MObject shadingGroupObj;
+	shadingSelectionList.getDependNode(0, shadingGroupObj);
+	MFnSet shadingGroupFn(shadingGroupObj);
+	for( const auto& mesh : _generatedMeshes ) {
+		shadingGroupFn.addMember(mesh);
+	}
+}
+
+void Hadan::separateCells() {
+	if( _separationDistance != 0.0 ) {
+		for( const auto& mesh : _generatedMeshes ) {
+			MayaHelper::moveVerticesAlongNormal(mesh, _separationDistance, true);
+		}
+	}
+}
+
+void Hadan::restoreInitialSelection() {
+	MSelectionList sourceObjectSelectionList;
+	sourceObjectSelectionList.add(_inputMesh);
+	MGlobal::setActiveSelectionList(sourceObjectSelectionList);
 }

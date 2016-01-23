@@ -84,7 +84,7 @@ namespace MayaHelper {
 		return false;
 	}
 
-	static bool hasMesh( MDagPath& path ) {
+	static bool hasMesh( const MDagPath& path ) {
 		return path.hasFn(MFn::kMesh);
 	}
 
@@ -109,7 +109,7 @@ namespace MayaHelper {
 		}
 	}
 
-	static bool isMeshFullyClosed( MDagPath& meshPath ) {
+	static bool isMeshFullyClosed( const MDagPath& meshPath ) {
 		MItMeshEdge it(meshPath);
 
 		int faceCount = 0;

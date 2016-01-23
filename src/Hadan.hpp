@@ -62,6 +62,8 @@
 #include <cc/Vec3.hpp>
 #include "points/PointGenFactory.hpp"
 #include "points/PointGenInfo.hpp"
+#include "Model.hpp"
+#include "cells/Cell.hpp"
 
 class Hadan : public MPxCommand {
 public:
@@ -76,12 +78,26 @@ public:
 
 private:
 	bool parseArgs( const MArgList& args );
+	bool validateInputMesh() const;
+	void copyMeshFromMaya();
+	bool generateSamplePoints();
+	bool generateCuttingCells();
+	void performCutting();
+	void centerAllPivots();
+	void softenAllEdges();
+	void applyMaterials();
+	void separateCells();
+	void restoreInitialSelection();
 
 private:
 	MDagPath _inputMesh;
 	PointGenFactory::Type _pointsGenType;
 	double _separationDistance;
 	PointGenInfo _pointGenInfo;
+	Model _modelFromMaya;
+	std::vector<cc::Vec3f> _samplePoints;
+	std::vector<Cell> _cuttingCells;
+	std::vector<MObject> _generatedMeshes;
 };
 
 #endif /* __hadan__ */
