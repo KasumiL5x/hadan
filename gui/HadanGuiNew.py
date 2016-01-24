@@ -33,6 +33,12 @@ class HadanGui(QtGui.QMainWindow):
 	#end
 
 	def __build_ui(self):
+		# create common fonts
+		font_10 = QtGui.QFont()
+		font_10.setPointSize(10)
+		font_12 = QtGui.QFont()
+		font_12.setPointSize(12)
+
 		# main window
 		self.setObjectName("self")
 		self.resize(400, 307)
@@ -74,9 +80,7 @@ class HadanGui(QtGui.QMainWindow):
 		# fracture type label
 		self.lbl_fractureType = QtGui.QLabel(self.tp_settings)
 		self.lbl_fractureType.setGeometry(QtCore.QRect(10, 10, 79, 16))
-		font = QtGui.QFont()
-		font.setPointSize(10)
-		self.lbl_fractureType.setFont(font)
+		self.lbl_fractureType.setFont(font_10)
 		self.lbl_fractureType.setObjectName("lbl_fractureType")
 		self.lbl_fractureType.setText(QtGui.QApplication.translate("Fracture Type", "Fracture Type", None, QtGui.QApplication.UnicodeUTF8))
 
@@ -101,18 +105,14 @@ class HadanGui(QtGui.QMainWindow):
 		# options label	
 		self.lbl_options = QtGui.QLabel(self.tp_settings)
 		self.lbl_options.setGeometry(QtCore.QRect(10, 35, 55, 19))
-		font = QtGui.QFont()
-		font.setPointSize(12)
-		self.lbl_options.setFont(font)
+		self.lbl_options.setFont(font_12)
 		self.lbl_options.setObjectName("lbl_options")
 		self.lbl_options.setText(QtGui.QApplication.translate("Options", "Options", None, QtGui.QApplication.UnicodeUTF8))
 
 		# uniform label
 		self.lbl_uniform = QtGui.QLabel(self.tp_settings)
 		self.lbl_uniform.setGeometry(QtCore.QRect(40, 65, 50, 16))
-		font = QtGui.QFont()
-		font.setPointSize(10)
-		self.lbl_uniform.setFont(font)
+		self.lbl_uniform.setFont(font_10)
 		self.lbl_uniform.setObjectName("lbl_uniform")
 		self.lbl_uniform.setText(QtGui.QApplication.translate("Uniform", "Uniform", None, QtGui.QApplication.UnicodeUTF8))
 
@@ -125,9 +125,7 @@ class HadanGui(QtGui.QMainWindow):
 		# primary label
 		self.lbl_primary = QtGui.QLabel(self.tp_settings)
 		self.lbl_primary.setGeometry(QtCore.QRect(40, 93, 49, 16))
-		font = QtGui.QFont()
-		font.setPointSize(10)
-		self.lbl_primary.setFont(font)
+		self.lbl_primary.setFont(font_10)
 		self.lbl_primary.setObjectName("lbl_primary")
 		self.lbl_primary.setText(QtGui.QApplication.translate("Primary", "Primary", None, QtGui.QApplication.UnicodeUTF8))
 
@@ -140,9 +138,7 @@ class HadanGui(QtGui.QMainWindow):
 		# secondary label
 		self.lbl_secondary = QtGui.QLabel(self.tp_settings)
 		self.lbl_secondary.setGeometry(QtCore.QRect(25, 123, 65, 16))
-		font = QtGui.QFont()
-		font.setPointSize(10)
-		self.lbl_secondary.setFont(font)
+		self.lbl_secondary.setFont(font_10)
 		self.lbl_secondary.setObjectName("lbl_secondary")
 		self.lbl_secondary.setText(QtGui.QApplication.translate("Secondary", "Secondary", None, QtGui.QApplication.UnicodeUTF8))
 
@@ -155,9 +151,7 @@ class HadanGui(QtGui.QMainWindow):
 		# flux label
 		self.lbl_flux = QtGui.QLabel(self.tp_settings)
 		self.lbl_flux.setGeometry(QtCore.QRect(192, 65, 23, 16))
-		font = QtGui.QFont()
-		font.setPointSize(10)
-		self.lbl_flux.setFont(font)
+		self.lbl_flux.setFont(font_10)
 		self.lbl_flux.setObjectName("lbl_flux")
 		self.lbl_flux.setText(QtGui.QApplication.translate("Flux", "Flux", None, QtGui.QApplication.UnicodeUTF8))
 
@@ -169,9 +163,7 @@ class HadanGui(QtGui.QMainWindow):
 		# gap label
 		self.lbl_gap = QtGui.QLabel(self.tp_settings)
 		self.lbl_gap.setGeometry(QtCore.QRect(193, 93, 27, 16))
-		font = QtGui.QFont()
-		font.setPointSize(10)
-		self.lbl_gap.setFont(font)
+		self.lbl_gap.setFont(font_10)
 		self.lbl_gap.setObjectName("lbl_gap")
 		self.lbl_gap.setText(QtGui.QApplication.translate("Gap", "Gap", None, QtGui.QApplication.UnicodeUTF8))
 
@@ -190,9 +182,7 @@ class HadanGui(QtGui.QMainWindow):
 		# fracture button
 		self.btn_fracture = QtGui.QPushButton(self.tp_settings)
 		self.btn_fracture.setGeometry(QtCore.QRect(10, 168, 355, 31))
-		font = QtGui.QFont()
-		font.setPointSize(12)
-		self.btn_fracture.setFont(font)
+		self.btn_fracture.setFont(font_12)
 		self.btn_fracture.setObjectName("btn_fracture")
 		self.btn_fracture.setText(QtGui.QApplication.translate("Fracture", "Fracture", None, QtGui.QApplication.UnicodeUTF8))
 		self.btn_fracture.clicked.connect(self.__fracture_cb)
@@ -238,9 +228,7 @@ class HadanGui(QtGui.QMainWindow):
 		# generated command label
 		self.lbl_generatedCommand = QtGui.QLabel(self.tp_advanced)
 		self.lbl_generatedCommand.setGeometry(QtCore.QRect(10, 10, 126, 16))
-		font = QtGui.QFont()
-		font.setPointSize(10)
-		self.lbl_generatedCommand.setFont(font)
+		self.lbl_generatedCommand.setFont(font_10)
 		self.lbl_generatedCommand.setObjectName("lbl_generatedCommand")
 		self.lbl_generatedCommand.setText(QtGui.QApplication.translate("Generated Command", "Generated Command", None, QtGui.QApplication.UnicodeUTF8))
 
