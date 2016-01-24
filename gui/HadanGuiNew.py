@@ -12,6 +12,26 @@ class HadanGui(QtGui.QMainWindow):
 		self.__build_ui()
 	#end
 
+	def __fracture_cb(self):
+		print 'Not yet implemented.'
+	#end
+
+	def __add_selected_cb(self):
+		print 'Not yet implemented.'
+	#end
+
+	def __remove_cb(self):
+		print 'Not yet implemented.'
+	#end
+
+	def __clear_cb(self):
+		print 'Not yet implemented.'
+	#end
+
+	def __how_to_use_cb(self):
+		print 'Not yet implemented.'
+	#end
+
 	def __build_ui(self):
 		# main window
 		self.setObjectName("self")
@@ -37,6 +57,7 @@ class HadanGui(QtGui.QMainWindow):
 		self.btn_howToUse.setGeometry(QtCore.QRect(315, 22, 75, 23))
 		self.btn_howToUse.setObjectName("btn_howToUse")
 		self.btn_howToUse.setText(QtGui.QApplication.translate("How To Use?", "How To Use?", None, QtGui.QApplication.UnicodeUTF8))
+		self.btn_howToUse.clicked.connect(self.__how_to_use_cb)
 
 		# main tab area
 		self.ta_main = QtGui.QTabWidget(self)
@@ -174,6 +195,7 @@ class HadanGui(QtGui.QMainWindow):
 		self.btn_fracture.setFont(font)
 		self.btn_fracture.setObjectName("btn_fracture")
 		self.btn_fracture.setText(QtGui.QApplication.translate("Fracture", "Fracture", None, QtGui.QApplication.UnicodeUTF8))
+		self.btn_fracture.clicked.connect(self.__fracture_cb)
 
 		# positions tab page
 		self.tp_positions = QtGui.QWidget()
@@ -191,18 +213,21 @@ class HadanGui(QtGui.QMainWindow):
 		self.btn_clear.setGeometry(QtCore.QRect(324, 177, 41, 23))
 		self.btn_clear.setObjectName("btn_clear")
 		self.btn_clear.setText(QtGui.QApplication.translate("Clear", "Clear", None, QtGui.QApplication.UnicodeUTF8))
+		self.btn_clear.clicked.connect(self.__clear_cb)
 
 		# remove button
 		self.btn_remove = QtGui.QPushButton(self.tp_positions)
 		self.btn_remove.setGeometry(QtCore.QRect(260, 177, 61, 23))
 		self.btn_remove.setObjectName("btn_remove")
 		self.btn_remove.setText(QtGui.QApplication.translate("Remove", "Remove", None, QtGui.QApplication.UnicodeUTF8))
+		self.btn_remove.clicked.connect(self.__remove_cb)
 
 		# add selected button
 		self.btn_addSelected = QtGui.QPushButton(self.tp_positions)
 		self.btn_addSelected.setGeometry(QtCore.QRect(10, 177, 81, 23))
 		self.btn_addSelected.setObjectName("btn_addSelected")
 		self.btn_addSelected.setText(QtGui.QApplication.translate("Add Selected", "Add Selected", None, QtGui.QApplication.UnicodeUTF8))
+		self.btn_addSelected.clicked.connect(self.__add_selected_cb)
 
 		# advanced tab page
 		self.tp_advanced = QtGui.QWidget()
