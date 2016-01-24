@@ -9,27 +9,103 @@ import os
 class HadanGui(QtGui.QMainWindow):
 	def __init__(self):
 		super(HadanGui, self).__init__()
+		self.__load_plugin()
 		self.__build_ui()
+		self.__command = ''
+		self.__positions = {}
+	#end
+
+	def __rebuild_command(self):
+		# command name
+		self.__command = 'hadan '
+
+		# object to fracture
+		self.__command += '-mn pCube1 '
+
+		# build based on fracture type
+		ft = self.__get_fracture_type()
+		if 'uniform' == ft:
+			self.__command += '-ft uniform '
+			self.__command += '-uc %d ' % (self.spin_uniform.value())
+			self.__command += ('-sd %f ' % (self.spin_gap.value())) if self.spin_gap.value() != 0.0 else ''
+		elif 'cluster' == ft:
+			self.__command += '-ft cluster '
+			self.__command += '-uc %d ' % (self.spin_uniform.value())
+			self.__command += '-pc %d ' % (self.spin_primary.value())
+			self.__command += '-sc %d ' % (self.spin_secondary.value())
+			self.__command += '-flp %f ' % (self.spin_flux.value())
+			self.__command += ('-sd %f ' % (self.spin_gap.value())) if self.spin_gap.value() != 0.0 else ''
+		elif 'bezier' == ft:
+			self.__command += '-ft bezier '
+			self.__command += '-uc %d ' % (self.spin_uniform.value())
+			self.__command += '-flp %f ' % (self.spin_flux.value())
+			self.__command += ('-sd %f ' % (self.spin_gap.value())) if self.spin_gap.value() != 0.0 else ''
+
+		# add all user points
+		for curr in self.__positions:
+			if not cmds.objExists(curr):
+				continue
+			pos = cmds.xform(curr, q=True, ws=True, t=True)
+			self.__command += '-pnt %f %f %f ' % (pos[0], pos[1], pos[2])
+		#end
+
+		# update generated command textarea
+		self.txt_generatedCommand.setText(self.__command)
+	#end
+
+	def __rebuild_positions_list(self):
+		self.lv_positions.clear()
+		for curr in self.__positions:
+			self.lv_positions.addItem(curr)
 	#end
 
 	def __fracture_cb(self):
-		print 'Not yet implemented.'
+		self.__rebuild_command()
+		mel.eval(self.__command)
 	#end
 
 	def __add_selected_cb(self):
-		print 'Not yet implemented.'
+		for curr in cmds.ls(sl=True, type='transform'):
+			if curr in self.__positions:
+				continue
+			self.__positions[curr] = curr
+		#end
+		self.__rebuild_positions_list()
 	#end
 
 	def __remove_cb(self):
-		print 'Not yet implemented.'
+		item = self.lv_positions.currentItem()
+		if None is item:
+			return
+		del self.__positions[item.text()]
+		self.__rebuild_positions_list()
 	#end
 
 	def __clear_cb(self):
-		print 'Not yet implemented.'
+		self.__positions = {}
+		self.__rebuild_positions_list()
 	#end
 
 	def __how_to_use_cb(self):
 		print 'Not yet implemented.'
+	#end
+
+	def __get_fracture_type(self):
+		return self.cb_fractureType.currentText().lower()
+	#end
+
+	def __load_plugin(self):
+		if not cmds.pluginInfo('hadan-d.mll', l=True, q=True):
+			if None == cmds.loadPlugin('hadan-d.mll', qt=True):
+				cmds.warning('Failed to load hadan plugin.')
+				return False
+		return True
+
+		# if not cmds.pluginInfo('hadan.mll', l=True, q=True):
+		# 	if None == cmds.loadPlugin('hadan.mll', qt=True):
+		# 		cmds.warning('Failed to load hadan plugin.')
+		# 		return False
+		# return True
 	#end
 
 	def __build_ui(self):
@@ -159,6 +235,8 @@ class HadanGui(QtGui.QMainWindow):
 		self.spin_flux = QtGui.QDoubleSpinBox(self.tp_settings)
 		self.spin_flux.setGeometry(QtCore.QRect(220, 62, 81, 22))
 		self.spin_flux.setObjectName("spin_flux")
+		self.spin_flux.setMaximum(100.0)
+		self.spin_flux.setSingleStep(0.1)
 
 		# gap label
 		self.lbl_gap = QtGui.QLabel(self.tp_settings)
@@ -171,6 +249,8 @@ class HadanGui(QtGui.QMainWindow):
 		self.spin_gap = QtGui.QDoubleSpinBox(self.tp_settings)
 		self.spin_gap.setGeometry(QtCore.QRect(220, 90, 81, 22))
 		self.spin_gap.setObjectName("spin_gap")
+		self.spin_gap.setMaximum(100.0)
+		self.spin_gap.setSingleStep(0.1)
 
 		# fracture split
 		self.split_fracture = QtGui.QFrame(self.tp_settings)
