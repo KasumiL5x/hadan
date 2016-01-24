@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>Dialog</string>
   </property>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="lbl_logo">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -31,20 +31,20 @@
     <string>The Logo Here</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="btn_howToUse">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>20</y>
+     <x>315</x>
+     <y>22</y>
      <width>75</width>
      <height>23</height>
     </rect>
    </property>
    <property name="text">
-    <string>Help</string>
+    <string>How To Use?</string>
    </property>
   </widget>
-  <widget class="QTabWidget" name="tabWidget">
+  <widget class="QTabWidget" name="ta_main">
    <property name="geometry">
     <rect>
      <x>10</x>
@@ -56,19 +56,34 @@
    <property name="currentIndex">
     <number>0</number>
    </property>
-   <widget class="QWidget" name="tab">
-    <property name="enabled">
-     <bool>true</bool>
-    </property>
+   <widget class="QWidget" name="tp_settings">
     <attribute name="title">
      <string>Settings</string>
     </attribute>
-    <widget class="QComboBox" name="comboBox">
+    <widget class="QLabel" name="lbl_fractureType">
      <property name="geometry">
       <rect>
-       <x>100</x>
+       <x>10</x>
        <y>10</y>
-       <width>71</width>
+       <width>79</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Fracture Type</string>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="cb_fractureType">
+     <property name="geometry">
+      <rect>
+       <x>95</x>
+       <y>7</y>
+       <width>69</width>
        <height>22</height>
       </rect>
      </property>
@@ -88,13 +103,26 @@
       </property>
      </item>
     </widget>
-    <widget class="QLabel" name="label_2">
+    <widget class="Line" name="split_options">
+     <property name="geometry">
+      <rect>
+       <x>70</x>
+       <y>40</y>
+       <width>301</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_options">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>25</y>
-       <width>61</width>
-       <height>31</height>
+       <y>35</y>
+       <width>55</width>
+       <height>19</height>
       </rect>
      </property>
      <property name="font">
@@ -106,26 +134,13 @@
       <string>Options</string>
      </property>
     </widget>
-    <widget class="Line" name="line">
+    <widget class="QLabel" name="lbl_uniform">
      <property name="geometry">
       <rect>
-       <x>70</x>
-       <y>33</y>
-       <width>301</width>
-       <height>20</height>
-      </rect>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_3">
-     <property name="geometry">
-      <rect>
-       <x>37</x>
-       <y>50</y>
+       <x>40</x>
+       <y>65</y>
        <width>45</width>
-       <height>21</height>
+       <height>16</height>
       </rect>
      </property>
      <property name="font">
@@ -137,23 +152,39 @@
       <string>Uniform</string>
      </property>
     </widget>
-    <widget class="QSpinBox" name="spinBox">
+    <widget class="QSpinBox" name="spin_uniform">
      <property name="geometry">
       <rect>
        <x>90</x>
-       <y>50</y>
-       <width>71</width>
+       <y>62</y>
+       <width>81</width>
        <height>22</height>
       </rect>
      </property>
+     <property name="maximum">
+      <number>999</number>
+     </property>
     </widget>
-    <widget class="QLabel" name="label_4">
+    <widget class="QSpinBox" name="spin_uniform_2">
      <property name="geometry">
       <rect>
-       <x>39</x>
-       <y>80</y>
+       <x>90</x>
+       <y>90</y>
+       <width>81</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>999</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="lbl_primary">
+     <property name="geometry">
+      <rect>
+       <x>40</x>
+       <y>93</y>
        <width>44</width>
-       <height>21</height>
+       <height>16</height>
       </rect>
      </property>
      <property name="font">
@@ -165,23 +196,26 @@
       <string>Primary</string>
      </property>
     </widget>
-    <widget class="QSpinBox" name="spinBox_2">
+    <widget class="QSpinBox" name="spin_uniform_3">
      <property name="geometry">
       <rect>
        <x>90</x>
-       <y>80</y>
-       <width>71</width>
+       <y>120</y>
+       <width>81</width>
        <height>22</height>
       </rect>
      </property>
+     <property name="maximum">
+      <number>999</number>
+     </property>
     </widget>
-    <widget class="QLabel" name="label_5">
+    <widget class="QLabel" name="lbl_secondary">
      <property name="geometry">
       <rect>
-       <x>22</x>
-       <y>110</y>
+       <x>25</x>
+       <y>123</y>
        <width>60</width>
-       <height>21</height>
+       <height>16</height>
       </rect>
      </property>
      <property name="font">
@@ -193,23 +227,13 @@
       <string>Secondary</string>
      </property>
     </widget>
-    <widget class="QSpinBox" name="spinBox_3">
+    <widget class="QLabel" name="lbl_flux">
      <property name="geometry">
       <rect>
-       <x>90</x>
-       <y>110</y>
-       <width>71</width>
-       <height>22</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_6">
-     <property name="geometry">
-      <rect>
-       <x>180</x>
-       <y>50</y>
+       <x>192</x>
+       <y>65</y>
        <width>23</width>
-       <height>21</height>
+       <height>16</height>
       </rect>
      </property>
      <property name="font">
@@ -221,23 +245,23 @@
       <string>Flux</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="doubleSpinBox">
+    <widget class="QDoubleSpinBox" name="spin_flux">
      <property name="geometry">
       <rect>
-       <x>210</x>
-       <y>50</y>
-       <width>71</width>
+       <x>220</x>
+       <y>62</y>
+       <width>81</width>
        <height>22</height>
       </rect>
      </property>
     </widget>
-    <widget class="QLabel" name="label_7">
+    <widget class="QLabel" name="lbl_gap">
      <property name="geometry">
       <rect>
-       <x>182</x>
-       <y>80</y>
+       <x>193</x>
+       <y>93</y>
        <width>22</width>
-       <height>21</height>
+       <height>16</height>
       </rect>
      </property>
      <property name="font">
@@ -249,53 +273,22 @@
       <string>Gap</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="doubleSpinBox_2">
+    <widget class="QDoubleSpinBox" name="spin_gap">
      <property name="geometry">
       <rect>
-       <x>210</x>
-       <y>80</y>
-       <width>71</width>
+       <x>220</x>
+       <y>90</y>
+       <width>81</width>
        <height>22</height>
       </rect>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_2">
+    <widget class="Line" name="split_fracture">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>172</y>
-       <width>351</width>
-       <height>31</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Fracture</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_8">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>10</y>
-       <width>79</width>
-       <height>16</height>
-      </rect>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>10</pointsize>
-      </font>
-     </property>
-     <property name="text">
-      <string>Fracture Type</string>
-     </property>
-    </widget>
-    <widget class="Line" name="line_2">
-     <property name="geometry">
-      <rect>
-       <x>0</x>
        <y>150</y>
-       <width>381</width>
+       <width>355</width>
        <height>20</height>
       </rect>
      </property>
@@ -303,22 +296,66 @@
       <enum>Qt::Horizontal</enum>
      </property>
     </widget>
+    <widget class="QPushButton" name="btn_fracture">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>170</y>
+       <width>355</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>12</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Fracture</string>
+     </property>
+    </widget>
    </widget>
-   <widget class="QWidget" name="tab_2">
+   <widget class="QWidget" name="tp_positions">
     <attribute name="title">
      <string>Positions</string>
     </attribute>
-    <widget class="QListView" name="listView">
+    <widget class="QListWidget" name="lv_positions">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>351</width>
+       <width>355</width>
        <height>161</height>
       </rect>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_3">
+    <widget class="QPushButton" name="btn_clear">
+     <property name="geometry">
+      <rect>
+       <x>324</x>
+       <y>180</y>
+       <width>41</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Clear</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_remove">
+     <property name="geometry">
+      <rect>
+       <x>260</x>
+       <y>180</y>
+       <width>61</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Remove</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="btn_addSelected">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -331,53 +368,17 @@
       <string>Add Selected</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="pushButton_4">
-     <property name="geometry">
-      <rect>
-       <x>314</x>
-       <y>180</y>
-       <width>41</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Clear</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pushButton_5">
-     <property name="geometry">
-      <rect>
-       <x>210</x>
-       <y>180</y>
-       <width>101</width>
-       <height>23</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Remove Selected</string>
-     </property>
-    </widget>
    </widget>
-   <widget class="QWidget" name="tab_3">
+   <widget class="QWidget" name="tp_advanced">
     <attribute name="title">
      <string>Advanced</string>
     </attribute>
-    <widget class="QLineEdit" name="lineEdit">
-     <property name="geometry">
-      <rect>
-       <x>10</x>
-       <y>30</y>
-       <width>351</width>
-       <height>20</height>
-      </rect>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_10">
+    <widget class="QLabel" name="lbl_generatedCommand">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>10</y>
-       <width>58</width>
+       <width>121</width>
        <height>16</height>
       </rect>
      </property>
@@ -387,12 +388,28 @@
       </font>
      </property>
      <property name="text">
-      <string>Command</string>
+      <string>Generated Command</string>
+     </property>
+    </widget>
+    <widget class="QLineEdit" name="txt_generatedCommand">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>355</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="readOnly">
+      <bool>true</bool>
+     </property>
+     <property name="placeholderText">
+      <string/>
      </property>
     </widget>
    </widget>
   </widget>
-  <widget class="QLabel" name="label_9">
+  <widget class="QLabel" name="lbl_website">
    <property name="geometry">
     <rect>
      <x>300</x>
