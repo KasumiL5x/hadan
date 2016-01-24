@@ -49,6 +49,9 @@ class HadanGui(QtGui.QMainWindow):
 			self.__command += '-pnt %f %f %f ' % (pos[0], pos[1], pos[2])
 		#end
 
+		# strip trailing whitespace
+		self.__command = self.__command.rstrip()
+
 		# update generated command textarea
 		self.txt_generatedCommand.setText(self.__command)
 	#end
@@ -61,6 +64,7 @@ class HadanGui(QtGui.QMainWindow):
 
 	def __fracture_cb(self):
 		self.__rebuild_command()
+		print 'Running command: ' + self.__command
 		mel.eval(self.__command)
 	#end
 
