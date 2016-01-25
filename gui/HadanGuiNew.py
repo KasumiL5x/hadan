@@ -28,7 +28,9 @@ class HadanHowTo(QtGui.QWidget):
 		split_options.setFrameShadow(QtGui.QFrame.Sunken)
 
 		hadan_str = 'Hadan is a multi-purpose fracturing tool.<br/><br/>'
-		usage_str = '<b>Usage</b><br/>Select an object, configure the tool, click <i>Fracture</i>!<br/><br/>'
+		usage_str = ('<b>Usage</b><br/>Select an object, configure the tool, click <i>Fracture</i>! ' +
+			'It is <b>very important</b> to check the <b>Output Window</b> for program status output. ' +
+			'<i>Gap</i> can be used to separate chunks by moving their vertices along their normals.<br/><br/>')
 		uniform_str = ('<b>Uniform</b><br/>' +
 			'Even randomly distributed points within the object\'s bounding box.<br/>' +
 			'<i>Uniform</i> points are randomly generated within the object\'s bounding box.<br/><br/>')
