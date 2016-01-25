@@ -6,6 +6,54 @@ import maya.cmds as cmds
 import maya.mel as mel
 import os
 
+class HadanHowTo(QtGui.QWidget):
+	def __init__(self):
+		QtGui.QWidget.__init__(self)
+		self.__build_ui()
+
+	def __build_ui(self):
+		self.setGeometry(QtCore.QRect(100, 100, 450, 500))
+		self.setWindowTitle(QtGui.QApplication.translate("Hadan", "破断", None, QtGui.QApplication.UnicodeUTF8))
+
+		title_lbl = QtGui.QLabel(self)
+		title_lbl.setGeometry(QtCore.QRect(10, 0, 75, 50))
+		font = QtGui.QFont()
+		font.setPointSize(16)
+		title_lbl.setFont(font)
+		title_lbl.setText("Help")
+
+		split_options = QtGui.QFrame(self)
+		split_options.setGeometry(QtCore.QRect(5, 40, 440, 16))
+		split_options.setFrameShape(QtGui.QFrame.HLine)
+		split_options.setFrameShadow(QtGui.QFrame.Sunken)
+
+		hadan_str = 'Hadan is a multi-purpose fracturing tool.<br/><br/>'
+		uniform_str = ('<b>Uniform</b><br/>' +
+			'Even randomly distributed points within the object\'s bounding box.<br/>' +
+			'<i>Uniform</i> points are randomly generated within the object\'s bounding box.<br/><br/>')
+		cluster_str = ('<b>Cluster</b><br/>' +
+			'Points source a cluster of surrounding points, joined by some uniform points.<br/>' +
+			'<i>Positions</i> are appended by <i>Primary</i> randomly generated points.  Each point is then ' +
+			'used to randomly generate <i>Secondary</i> points around it, within a distance of <i>Flux</i> percent ' +
+			'of the size of the object\'s bounding box.  <i>Uniform</i> randomly generated points are also added.<br/><br/>')
+		bezier_str = ('<b>Bezier</b><br/>' +
+			'Simulates a propagating crack using a bezier curve and uniform points.<br/>' +
+			'The process differs based on the number of <i>Positions</i>.  If none are provided, all four points of the curve ' +
+			'are randomly generated; the first and last are on the surface of the object, and will attempt to be placed at least ' +
+			'<b><i>[CHANGEME]</i></b> percent of the bounding box\'s size apart (although if a maximum iteration count is hit, the last attempt ' +
+			' will be taken regardless of the distance), and the two intermediate points are randomly generated within the object\'s ' +
+			'bounding box.  If two are provided, they are assumed to be the beginning and end points, respectively; the two intermediate ' +
+			'points will be generated randomly.  If all four are given, the curve is assumed to follow those points\' path.  ' +
+			'The bezier curve is sampled to generate <b><i>[CHANGEME]</i></b> points along the curve.  These sampled points are moved ' +
+			'randomly away from the curve in the range [<i>-Flux</i>, <i>Flux</i>] percent of the bounding box\'s size. ' +
+			'<i>Uniform</i> randomly generated points are also added for variation.')
+		tb = QtGui.QTextEdit(self)
+		tb.setGeometry(QtCore.QRect(5, 60, 440, 400))
+		tb.setReadOnly(True)
+		tb.setText(hadan_str + uniform_str + cluster_str + bezier_str)
+	#end
+#end
+
 class HadanGui(QtGui.QMainWindow):
 	def __init__(self):
 		super(HadanGui, self).__init__()
@@ -16,11 +64,17 @@ class HadanGui(QtGui.QMainWindow):
 	#end
 
 	def __rebuild_command(self):
+		selected_mesh = self.__get_selected_mesh()
+		if None == selected_mesh:
+			cmds.warning('Please select a mesh.')
+			self.txt_generatedCommand.setText("syntax error");
+			return
+
 		# command name
 		self.__command = 'hadan '
 
 		# object to fracture
-		self.__command += '-mn pCube1 '
+		self.__command += '-mn %s ' % str(selected_mesh)
 
 		# build based on fracture type
 		ft = self.__get_fracture_type()
@@ -54,6 +108,16 @@ class HadanGui(QtGui.QMainWindow):
 
 		# update generated command textarea
 		self.txt_generatedCommand.setText(self.__command)
+	#end
+
+	def __get_selected_mesh(self):
+		sl = cmds.ls(sl=True, type='transform')
+		if 1 != len(sl):
+			return None
+		for curr in cmds.listRelatives(sl):
+			if 'mesh' == cmds.nodeType(curr):
+				return sl[0]
+		return None
 	#end
 
 	def __rebuild_positions_list(self):
@@ -91,7 +155,13 @@ class HadanGui(QtGui.QMainWindow):
 	#end
 
 	def __how_to_use_cb(self):
-		print 'Not yet implemented.'
+		main_wnd_pos = self.pos()
+
+		self.help_wnd = HadanHowTo()
+		
+		self.help_wnd.setWindowModality(QtCore.Qt.ApplicationModal)
+		self.help_wnd.move(main_wnd_pos)
+		self.help_wnd.show()
 	#end
 
 	def __get_fracture_type(self):
