@@ -15,7 +15,6 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\BezierPath.cpp" />
     <ClCompile Include="..\src\BoundingBox.cpp" />
     <ClCompile Include="..\src\cells\Cell.cpp" />
     <ClCompile Include="..\src\cells\VoronoiCelGen\VoronoiCellGen.cpp" />
@@ -23,6 +22,7 @@
     <ClCompile Include="..\src\Model.cpp" />
     <ClCompile Include="..\src\Plane.cpp" />
     <ClCompile Include="..\src\PluginMain.cpp" />
+    <ClCompile Include="..\src\points\Bezier\BezierPath.cpp" />
     <ClCompile Include="..\src\points\Bezier\BezierPointGen.cpp" />
     <ClCompile Include="..\src\points\Cluster\ClusterPointGen.cpp" />
     <ClCompile Include="..\src\points\TestPointGen\TestPointGen.cpp" />
@@ -31,11 +31,11 @@
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\points\Bezier\BezierPath.hpp" />
     <ClInclude Include="..\src\points\Cluster\ClusterPointGen.hpp" />
     <ClInclude Include="..\src\points\PointGenInfo.hpp" />
     <ClInclude Include="..\src\ProgressHelper.hpp" />
     <ClInclude Include="..\src\Syntax.hpp" />
-    <ClInclude Include="..\src\BezierPath.hpp" />
     <ClInclude Include="..\src\BoundingBox.hpp" />
     <ClInclude Include="..\src\cells\Cell.hpp" />
     <ClInclude Include="..\src\cells\CellGenFactory.hpp" />

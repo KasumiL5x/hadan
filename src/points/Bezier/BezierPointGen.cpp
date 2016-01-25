@@ -1,6 +1,6 @@
 #include "BezierPointGen.hpp"
 #include <points/PointsUtils.hpp>
-#include <BezierPath.hpp>
+#include "BezierPath.hpp"
 
 BezierPointGen::BezierPointGen()
 	: IPointGen() {

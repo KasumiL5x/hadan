@@ -19,7 +19,6 @@
     <ClCompile Include="..\src\points\Uniform\UniformPointGen.cpp">
       <Filter>points\Uniform</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\BezierPath.cpp" />
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClipMesh.cpp">
       <Filter>slicing\ClosedConvexSlicer</Filter>
     </ClCompile>
@@ -30,6 +29,9 @@
     <ClCompile Include="..\src\PluginMain.cpp" />
     <ClCompile Include="..\src\points\Cluster\ClusterPointGen.cpp">
       <Filter>points\Cluster</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\points\Bezier\BezierPath.cpp">
+      <Filter>points\Bezier</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -73,7 +75,6 @@
     <ClInclude Include="..\src\points\Uniform\UniformPointGen.hpp">
       <Filter>points\Uniform</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\BezierPath.hpp" />
     <ClInclude Include="..\src\Random.hpp" />
     <ClInclude Include="..\src\slicing\ClosedConvexSlicer\ClipMesh.hpp">
       <Filter>slicing\ClosedConvexSlicer</Filter>
@@ -93,6 +94,9 @@
       <Filter>points</Filter>
     </ClInclude>
     <ClInclude Include="..\src\ProgressHelper.hpp" />
+    <ClInclude Include="..\src\points\Bezier\BezierPath.hpp">
+      <Filter>points\Bezier</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="slicing">
