@@ -46,11 +46,15 @@ class HadanHowTo(QtGui.QWidget):
 			'points will be generated randomly.  If all four are given, the curve is assumed to follow those points\' path.  ' +
 			'The bezier curve is sampled to generate <b><i>[CHANGEME]</i></b> points along the curve.  These sampled points are moved ' +
 			'randomly away from the curve in the range [<i>-Flux</i>, <i>Flux</i>] percent of the bounding box\'s size. ' +
-			'<i>Uniform</i> randomly generated points are also added for variation.')
+			'<i>Uniform</i> randomly generated points are also added for variation.<br/><br/>')
+		ui_str = ('The <i>Settings</i> tab is where the majority of configurable options can be tweaked.  The <i>Positions</i> ' +
+			'tab is where scene objects can be managed as sources.  For instance, as input for the <i>bezier</i> fracture mode.  Note that ' +
+			'object names are stored and are evaluated for positions only upon executing the fracture itself, so they can be added at any time. ' +
+			'The <i>Advanced</i> tab shows extra information, like the previously generated command.')
 		tb = QtGui.QTextEdit(self)
 		tb.setGeometry(QtCore.QRect(5, 60, 440, 400))
 		tb.setReadOnly(True)
-		tb.setText(hadan_str + uniform_str + cluster_str + bezier_str)
+		tb.setText(hadan_str + uniform_str + cluster_str + bezier_str + ui_str)
 	#end
 #end
 
