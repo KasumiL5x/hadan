@@ -28,6 +28,7 @@ class HadanHowTo(QtGui.QWidget):
 		split_options.setFrameShadow(QtGui.QFrame.Sunken)
 
 		hadan_str = 'Hadan is a multi-purpose fracturing tool.<br/><br/>'
+		usage_str = '<b>Usage</b><br/>Select an object, configure the tool, click <i>Fracture</i>!<br/><br/>'
 		uniform_str = ('<b>Uniform</b><br/>' +
 			'Even randomly distributed points within the object\'s bounding box.<br/>' +
 			'<i>Uniform</i> points are randomly generated within the object\'s bounding box.<br/><br/>')
@@ -54,7 +55,7 @@ class HadanHowTo(QtGui.QWidget):
 		tb = QtGui.QTextEdit(self)
 		tb.setGeometry(QtCore.QRect(5, 60, 440, 400))
 		tb.setReadOnly(True)
-		tb.setText(hadan_str + uniform_str + cluster_str + bezier_str + ui_str)
+		tb.setText(hadan_str + usage_str + uniform_str + cluster_str + bezier_str + ui_str)
 	#end
 #end
 
@@ -72,6 +73,7 @@ class HadanGui(QtGui.QMainWindow):
 		if None == selected_mesh:
 			cmds.warning('Please select a mesh.')
 			self.txt_generatedCommand.setText("syntax error");
+			self.__command = ''
 			return
 
 		# command name
