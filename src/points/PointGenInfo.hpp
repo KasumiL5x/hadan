@@ -11,6 +11,8 @@ struct PointGenInfo {
 	unsigned int primaryCount;
 	// secondary number of points
 	unsigned int secondaryCount;
+	// sample count
+	unsigned int samples;
 	// fluctuation percentage
 	double flux;
 	// user-provided source points
@@ -20,6 +22,7 @@ struct PointGenInfo {
 		uniformCount = 0;
 		primaryCount = 0;
 		secondaryCount = 0;
+		samples = 0;
 		flux = 0.0;
 		userPoints = std::vector<cc::Vec3f>();
 	}

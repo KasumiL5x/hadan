@@ -118,7 +118,7 @@ bool Hadan::hasSyntax() const {
 }
 
 bool Hadan::parseArgs( const MArgList& args ) {
-	//ProgressHelper::begin(8, "Parsing input...");
+	//ProgressHelper::begin(9, "Parsing input...");
 
 	// read input args from database with syntax
 	const MArgDatabase db(HadanArgs::Syntax(), args);
@@ -177,6 +177,10 @@ bool Hadan::parseArgs( const MArgList& args ) {
 
 	// parse secondary count
 	db.getFlagArgument(HadanArgs::SecondaryCount, 0, _pointGenInfo.secondaryCount);
+	//ProgressHelper::advance();
+
+	// parse sample count
+	db.getFlagArgument(HadanArgs::Samples, 0, _pointGenInfo.samples);
 	//ProgressHelper::advance();
 
 	// parse flux

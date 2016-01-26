@@ -1,6 +1,7 @@
 #include "BezierPointGen.hpp"
 #include <points/PointsUtils.hpp>
 #include "BezierPath.hpp"
+#include <Log.hpp>
 
 BezierPointGen::BezierPointGen()
 	: IPointGen() {
@@ -11,6 +12,10 @@ BezierPointGen::~BezierPointGen() {
 
 void BezierPointGen::generateSamplePoints( const Model& sourceModel, const PointGenInfo& info, std::vector<cc::Vec3f>& outPoints ) {
 	printf("Generating bezier:\n");
+
+	if( 0 == info.samples ) {
+		Log::warning("Warning: Curve will be ignored as Samples were zero.\n");
+	}
 
 	// get model's bounding box
 	const BoundingBox& bbox = sourceModel.computeBoundingBox();
@@ -68,7 +73,7 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const Point
 	// extract points along bezier curve
 	BezierPath bezier;
 	bezier.setControlPoints(bezierPoints);
-	for( auto& pnt : bezier.getDrawingPoints() ) {
+	for( auto& pnt : bezier.getDrawingPoints(info.samples) ) {
 		outPoints.push_back(pnt);
 	}
 

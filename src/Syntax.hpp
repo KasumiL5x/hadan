@@ -34,6 +34,11 @@ namespace HadanArgs {
 	static const char* SeparateDistanceLong = "-separationDistance";
 	static const MSyntax::MArgType SeparateDistanceType = MSyntax::kDouble;
 
+	// sample count
+	static const char* Samples = "-sam";
+	static const char* SamplesLong = "-sampleCount";
+	static const MSyntax::MArgType SamplesType = MSyntax::kUnsigned;
+
 	// fluctuation distance
 	static const char* FluxPercentage = "-flp";
 	static const char* FluxPercentageLong = "-fluxPercent";
@@ -52,6 +57,7 @@ namespace HadanArgs {
 		syntax.addFlag(PrimaryCount, PrimaryCountLong, PrimaryCountType);
 		syntax.addFlag(SecondaryCount, SecondaryCountLong, SecondaryCountType);
 		syntax.addFlag(SeparateDistance, SeparateDistanceLong, SeparateDistanceType);
+		syntax.addFlag(Samples, SamplesLong, SamplesType);
 		syntax.addFlag(FluxPercentage, FluxPercentageLong, FluxPercentageType);
 		syntax.addFlag(Point, PointLong, PointType, PointType, PointType);
 		syntax.makeFlagMultiUse(Point);

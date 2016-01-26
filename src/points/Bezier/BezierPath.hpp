@@ -15,13 +15,10 @@ public:
 	void interpolate( const std::vector<cc::Vec3f>& segmentPoints, float scale );
 	void samplePoints( const std::vector<cc::Vec3f>& sourcePoints, float minSqrDist, float maxSqrDist, float scale );
 	cc::Vec3f calculateBezierPoint( int curveIndex, float t );
-	std::vector<cc::Vec3f> getDrawingPoints();
+	std::vector<cc::Vec3f> getDrawingPoints( unsigned int samples );
 
 private:
 	cc::Vec3f calculateBezierPoint( float t, const cc::Vec3f& p0, const cc::Vec3f& p1, const cc::Vec3f& p2, const cc::Vec3f& p3 );
-
-private:
-	const unsigned int SEGMENTS_PER_CURVE;
 
 private:
 	std::vector<cc::Vec3f> _controlPoints;

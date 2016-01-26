@@ -1,8 +1,7 @@
 #include "BezierPath.hpp"
 #include <stack>
 
-BezierPath::BezierPath()
-	: SEGMENTS_PER_CURVE(40) {
+BezierPath::BezierPath() {
 }
 
 BezierPath::~BezierPath() {
@@ -98,7 +97,7 @@ cc::Vec3f BezierPath::calculateBezierPoint( int curveIndex, float t ) {
 	return calculateBezierPoint(t, p0, p1, p2, p3);
 }
 
-std::vector<cc::Vec3f> BezierPath::getDrawingPoints() {
+std::vector<cc::Vec3f> BezierPath::getDrawingPoints( unsigned int samples ) {
 	std::vector<cc::Vec3f> drawingPoints;
 	for( unsigned int curveIndex = 0; curveIndex < _curveCount; ++curveIndex ) {
 		// only do this for the first endpoint.  when i!=0 this coincides with the endpoint of the previous segment
@@ -106,8 +105,8 @@ std::vector<cc::Vec3f> BezierPath::getDrawingPoints() {
 			drawingPoints.push_back(calculateBezierPoint(curveIndex, 0));
 		}
 
-		for( unsigned int j = 1; j <= SEGMENTS_PER_CURVE; ++j ) {
-			const float t = static_cast<float>(j) / static_cast<float>(SEGMENTS_PER_CURVE);
+		for( unsigned int j = 1; j <= samples; ++j ) {
+			const float t = static_cast<float>(j) / static_cast<float>(samples);
 			drawingPoints.push_back(calculateBezierPoint(curveIndex, t));
 		}
 	}
