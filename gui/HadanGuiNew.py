@@ -100,6 +100,7 @@ class HadanGui(QtGui.QMainWindow):
 		elif 'bezier' == ft:
 			self.__command += '-ft bezier '
 			self.__command += '-uc %d ' % (self.spin_uniform.value())
+			self.__command += '-sam %d ' % (self.spin_samples.value())
 			self.__command += '-flp %f ' % (self.spin_flux.value())
 			self.__command += ('-sd %f ' % (self.spin_gap.value())) if self.spin_gap.value() != 0.0 else ''
 
@@ -308,31 +309,44 @@ class HadanGui(QtGui.QMainWindow):
 
 		# flux label
 		self.lbl_flux = QtGui.QLabel(self.tp_settings)
-		self.lbl_flux.setGeometry(QtCore.QRect(192, 65, 23, 16))
+		self.lbl_flux.setGeometry(QtCore.QRect(212, 65, 23, 16))
 		self.lbl_flux.setFont(font_10)
 		self.lbl_flux.setObjectName("lbl_flux")
 		self.lbl_flux.setText(QtGui.QApplication.translate("Flux", "Flux", None, QtGui.QApplication.UnicodeUTF8))
 
 		# spin flux
 		self.spin_flux = QtGui.QDoubleSpinBox(self.tp_settings)
-		self.spin_flux.setGeometry(QtCore.QRect(220, 62, 81, 22))
+		self.spin_flux.setGeometry(QtCore.QRect(237, 62, 81, 22))
 		self.spin_flux.setObjectName("spin_flux")
 		self.spin_flux.setMaximum(100.0)
 		self.spin_flux.setSingleStep(0.1)
 
 		# gap label
 		self.lbl_gap = QtGui.QLabel(self.tp_settings)
-		self.lbl_gap.setGeometry(QtCore.QRect(193, 93, 27, 16))
+		self.lbl_gap.setGeometry(QtCore.QRect(210, 93, 27, 16))
 		self.lbl_gap.setFont(font_10)
 		self.lbl_gap.setObjectName("lbl_gap")
 		self.lbl_gap.setText(QtGui.QApplication.translate("Gap", "Gap", None, QtGui.QApplication.UnicodeUTF8))
 
 		# spin gap
 		self.spin_gap = QtGui.QDoubleSpinBox(self.tp_settings)
-		self.spin_gap.setGeometry(QtCore.QRect(220, 90, 81, 22))
+		self.spin_gap.setGeometry(QtCore.QRect(237, 90, 81, 22))
 		self.spin_gap.setObjectName("spin_gap")
 		self.spin_gap.setMaximum(100.0)
 		self.spin_gap.setSingleStep(0.1)
+
+		# samples label
+		self.lbl_samples = QtGui.QLabel(self.tp_settings)
+		self.lbl_samples.setGeometry(QtCore.QRect(185, 120, 81, 22))
+		self.lbl_samples.setFont(font_10)
+		self.lbl_samples.setObjectName("lbl_samples")
+		self.lbl_samples.setText(QtGui.QApplication.translate("Samples", "Samples", None, QtGui.QApplication.UnicodeUTF8))
+
+		# spin samples
+		self.spin_samples = QtGui.QSpinBox(self.tp_settings)
+		self.spin_samples.setGeometry(QtCore.QRect(237, 120, 81, 22))
+		self.spin_samples.setObjectName("spin_samples")
+		self.spin_samples.setMaximum(999)
 
 		# fracture split
 		self.split_fracture = QtGui.QFrame(self.tp_settings)
