@@ -67,7 +67,7 @@ class HadanGui(QtGui.QMainWindow):
 		self.__load_plugin()
 		self.__build_ui()
 		self.__command = ''
-		self.__positions = {}
+		self.__positions = []
 	#end
 
 	def __rebuild_command(self):
@@ -145,7 +145,7 @@ class HadanGui(QtGui.QMainWindow):
 		for curr in cmds.ls(sl=True, type='transform'):
 			if curr in self.__positions:
 				continue
-			self.__positions[curr] = curr
+			self.__positions.append(curr)
 		#end
 		self.__rebuild_positions_list()
 	#end
@@ -154,12 +154,12 @@ class HadanGui(QtGui.QMainWindow):
 		item = self.lv_positions.currentItem()
 		if None is item:
 			return
-		del self.__positions[item.text()]
+		del self.__positions[self.__positions.index(item.text())]
 		self.__rebuild_positions_list()
 	#end
 
 	def __clear_cb(self):
-		self.__positions = {}
+		self.__positions = []
 		self.__rebuild_positions_list()
 	#end
 
@@ -167,7 +167,6 @@ class HadanGui(QtGui.QMainWindow):
 		main_wnd_pos = self.pos()
 
 		self.help_wnd = HadanHowTo()
-		
 		self.help_wnd.setWindowModality(QtCore.Qt.ApplicationModal)
 		self.help_wnd.move(main_wnd_pos)
 		self.help_wnd.show()
