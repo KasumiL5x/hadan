@@ -141,6 +141,25 @@ class HadanGui(QtGui.QMainWindow):
 		mel.eval(self.__command)
 	#end
 
+	def __move_position_up(self):
+		curr_idx = self.lv_positions.currentIndex().row()
+		# cannot move top element or no selection
+		if curr_idx <= 0:
+			return
+		self.__positions[curr_idx], self.__positions[curr_idx-1] = self.__positions[curr_idx-1], self.__positions[curr_idx]
+		self.__rebuild_positions_list()
+		self.lv_positions.setCurrentRow(curr_idx-1)
+	#end
+
+	def __move_position_down(self):
+		curr_idx = self.lv_positions.currentIndex().row()
+		if -1 == curr_idx or curr_idx >= self.lv_positions.count()-1:
+			return
+		self.__positions[curr_idx], self.__positions[curr_idx+1] = self.__positions[curr_idx+1], self.__positions[curr_idx]
+		self.__rebuild_positions_list()
+		self.lv_positions.setCurrentRow(curr_idx+1)
+	#end
+
 	def __add_selected_cb(self):
 		for curr in cmds.ls(sl=True, type='transform'):
 			if curr in self.__positions:
@@ -372,6 +391,20 @@ class HadanGui(QtGui.QMainWindow):
 		self.lv_positions = QtGui.QListWidget(self.tp_positions)
 		self.lv_positions.setGeometry(QtCore.QRect(10, 10, 355, 161))
 		self.lv_positions.setObjectName("lv_positions")
+
+		# move up button
+		self.btn_move_up = QtGui.QPushButton(self.tp_positions)
+		self.btn_move_up.setGeometry(QtCore.QRect(340, 10, 25, 20))
+		self.btn_move_up.setObjectName("btn_move_up")
+		self.btn_move_up.setText(QtGui.QApplication.translate("^", "^", None, QtGui.QApplication.UnicodeUTF8))
+		self.btn_move_up.clicked.connect(self.__move_position_up)
+
+		# move down button
+		self.btn_move_down = QtGui.QPushButton(self.tp_positions)
+		self.btn_move_down.setGeometry(QtCore.QRect(340, 35, 25, 20))
+		self.btn_move_down.setObjectName("self.btn_move_down")
+		self.btn_move_down.setText(QtGui.QApplication.translate("v", "v", None, QtGui.QApplication.UnicodeUTF8))
+		self.btn_move_down.clicked.connect(self.__move_position_down)
 
 		# clear button
 		self.btn_clear = QtGui.QPushButton(self.tp_positions)
