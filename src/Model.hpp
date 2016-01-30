@@ -36,8 +36,8 @@ public:
 
 	const std::vector<Vertex>& getVertices() const;
 	const std::vector<int>& getIndices() const;
-	const std::vector<Triangle> getTriangles() const;
-	const std::vector<Edge> getEdges() const;
+	const std::vector<Triangle>& getTriangles() const;
+	const std::vector<Edge>& getEdges() const;
 
 	BoundingBox computeBoundingBox() const;
 

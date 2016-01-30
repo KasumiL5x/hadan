@@ -157,11 +157,11 @@ const std::vector<int>& Model::getIndices() const {
 	return _indices;
 }
 
-const std::vector<Model::Triangle> Model::getTriangles() const {
+const std::vector<Model::Triangle>& Model::getTriangles() const {
 	return _triangles;
 }
 
-const std::vector<Model::Edge> Model::getEdges() const {
+const std::vector<Model::Edge>& Model::getEdges() const {
 	return _edges;
 }
 
