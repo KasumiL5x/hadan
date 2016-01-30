@@ -64,6 +64,8 @@
 #include "points/PointGenInfo.hpp"
 #include "Model.hpp"
 #include "cells/Cell.hpp"
+#include "slicing/IMeshSlicer.hpp"
+#include <mutex>
 
 class Hadan : public MPxCommand {
 public:
@@ -82,6 +84,7 @@ private:
 	void copyMeshFromMaya();
 	bool generateSamplePoints();
 	bool generateCuttingCells();
+	void doSingleCut( const Cell& cell, int id, std::shared_ptr<IMeshSlicer> slicer );
 	void performCutting();
 	void centerAllPivots();
 	void softenAllEdges();
@@ -98,6 +101,7 @@ private:
 	std::vector<cc::Vec3f> _samplePoints;
 	std::vector<Cell> _cuttingCells;
 	std::vector<MObject> _generatedMeshes;
+	std::vector<Model> _generatedModels;
 };
 
 #endif /* __hadan__ */

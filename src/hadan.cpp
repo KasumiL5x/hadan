@@ -12,7 +12,10 @@
 #include "slicing/MeshSlicerFactory.hpp"
 #include <maya/MFnSet.h>
 #include "Log.hpp"
+#include <thread>
 //#include "ProgressHelper.hpp"
+
+static std::mutex GeneratedMeshesMutex;
 
 Hadan::Hadan()
 	: MPxCommand(), _inputMesh(), _pointsGenType(PointGenFactory::Type::Invalid), _separationDistance(0.0), _pointGenInfo() {
@@ -257,25 +260,50 @@ bool Hadan::generateCuttingCells() {
 	return !_cuttingCells.empty();
 }
 
+void Hadan::doSingleCut( const Cell& cell, int id, std::shared_ptr<IMeshSlicer> slicer ) {
+	Model outModel;
+	if( !slicer->slice(_modelFromMaya, cell, outModel) ) {
+		//Log::warning("Warning: Failed to slice using cell " + std::to_string(id) + ".  This is sometimes expected.\n");
+		return;
+	}
+
+	std::lock_guard<std::mutex> lk(GeneratedMeshesMutex);
+	_generatedModels.push_back(outModel);
+}
+
 void Hadan::performCutting() {
 	//ProgressHelper::begin(static_cast<int>(_cuttingCells.size()), "Slicing geometry...");
 
-	std::unique_ptr<IMeshSlicer> slicer = MeshSlicerFactory::create(MeshSlicerFactory::Type::ClosedConvex);
+	//std::unique_ptr<IMeshSlicer> slicer = MeshSlicerFactory::create(MeshSlicerFactory::Type::ClosedConvex);
+	std::shared_ptr<IMeshSlicer> slicer = std::make_shared<ClosedConvexSlicer>();
+	std::vector<std::thread> cuttingThreads;
 	for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
-		const Cell& cell = _cuttingCells[i];
-
-		Model outModel;
-		if( !slicer->slice(_modelFromMaya, cell, outModel) ) {
-			Log::warning("Warning: Failed to slice using cell " + std::to_string(i) + ".  This is sometimes expected.\n");
-			continue;
-		}
-
-		MFnMesh outMesh;
-		MayaHelper::copyModelToMFnMesh(outModel, outMesh);
-		_generatedMeshes.push_back(outMesh.object());
-
-		//ProgressHelper::advance();
+		cuttingThreads.push_back(std::thread(&Hadan::doSingleCut, this, _cuttingCells[i], i, slicer));
 	}
+	for( auto& t : cuttingThreads ) {
+		t.join();
+	}
+	for( auto& mdl : _generatedModels ) {
+		MFnMesh outMesh;
+		MayaHelper::copyModelToMFnMesh(mdl, outMesh);
+		_generatedMeshes.push_back(outMesh.object());
+	}
+
+	//for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
+	//	const Cell& cell = _cuttingCells[i];
+
+	//	Model outModel;
+	//	if( !slicer->slice(_modelFromMaya, cell, outModel) ) {
+	//		Log::warning("Warning: Failed to slice using cell " + std::to_string(i) + ".  This is sometimes expected.\n");
+	//		continue;
+	//	}
+
+	//	MFnMesh outMesh;
+	//	MayaHelper::copyModelToMFnMesh(outModel, outMesh);
+	//	_generatedMeshes.push_back(outMesh.object());
+
+	//	//ProgressHelper::advance();
+	//}
 }
 
 void Hadan::centerAllPivots() {
