@@ -20,6 +20,7 @@
     <ClCompile Include="..\src\cells\VoronoiCelGen\VoronoiCellGen.cpp" />
     <ClCompile Include="..\src\Hadan.cpp" />
     <ClCompile Include="..\src\Model.cpp" />
+    <ClCompile Include="..\src\MTLog.cpp" />
     <ClCompile Include="..\src\Plane.cpp" />
     <ClCompile Include="..\src\PluginMain.cpp" />
     <ClCompile Include="..\src\points\Bezier\BezierPath.cpp" />
@@ -31,6 +32,7 @@
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\MTLog.hpp" />
     <ClInclude Include="..\src\points\Bezier\BezierPath.hpp" />
     <ClInclude Include="..\src\points\Cluster\ClusterPointGen.hpp" />
     <ClInclude Include="..\src\points\PointGenInfo.hpp" />

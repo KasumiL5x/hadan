@@ -33,6 +33,7 @@
     <ClCompile Include="..\src\points\Bezier\BezierPath.cpp">
       <Filter>points\Bezier</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\MTLog.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.hpp" />
@@ -97,6 +98,7 @@
     <ClInclude Include="..\src\points\Bezier\BezierPath.hpp">
       <Filter>points\Bezier</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\MTLog.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="slicing">
