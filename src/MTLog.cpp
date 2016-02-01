@@ -1,5 +1,6 @@
 #include "MTLog.hpp"
 #include <iostream>
+#include <maya/MGlobal.h>
 
 MTLog::MTLog() {
 	_thread = std::thread{&MTLog::processEntries, this};
@@ -11,9 +12,9 @@ MTLog* MTLog::instance() {
 	return &inst;
 }
 
-void MTLog::log( const std::string& entry ) {
+void MTLog::log( const std::string& entry,  Destination destination ) {
 	std::unique_lock<std::mutex> lock(_mutex);
-	_queue.push(entry);
+	_queue.push(Message(entry, destination));
 	_condVar.notify_all();
 }
 
@@ -28,7 +29,17 @@ void MTLog::processEntries() {
 				break; // finished with queue, break to wait for data in queue with cond var
 			} else {
 				// output
-				std::cout << _queue.front().c_str();
+				const Message& msg = _queue.front();
+				switch( msg.destination ) {
+					case Destination::Maya: {
+						MGlobal::displayInfo(msg.message.c_str());
+						break;
+					}
+					case Destination::Std: {
+						fprintf(stdout, msg.message.c_str());
+						break;
+					}
+				}
 				_queue.pop();
 			}
 			lock.unlock();

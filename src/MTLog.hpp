@@ -10,6 +10,21 @@
 // based on Logger class from Professional C++, page 772
 class MTLog {
 public:
+	enum class Destination {
+		Std,
+		Maya
+	};
+
+	struct Message {
+		std::string message;
+		Destination destination;
+
+		Message( const std::string& msg, Destination dst )
+			: message(msg), destination(dst) {
+		}
+	};
+
+public:
 	MTLog();
 	MTLog( const MTLog& rhs)=delete;
 	MTLog& operator=( const MTLog& rhs )=delete;
@@ -26,7 +41,7 @@ public:
 	 * Logs a message.
 	 * @param log entry Message to log.
 	 */
-	void log( const std::string& entry );
+	void log( const std::string& entry, Destination destination=Destination::Std );
 
 private:
 	/**
@@ -37,7 +52,7 @@ private:
 private:
 	std::mutex _mutex; /**< Lock mutex for accessing the queue. */
 	std::condition_variable _condVar; /**< Condition variable to wait for non-empty queue. */
-	std::queue<std::string> _queue; /**< Queue of messages to be logged. */
+	std::queue<Message> _queue; /**< Queue of messages to be logged. */
 	std::thread _thread; /**< Thread for processing entries. */
 };
 
