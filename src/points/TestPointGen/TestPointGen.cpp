@@ -1,6 +1,4 @@
 #include "TestPointGen.hpp"
-#include <Random.hpp>
-#include <Log.hpp>
 
 TestPointGen::TestPointGen()
 	: IPointGen() {

@@ -37,7 +37,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.hpp" />
-    <ClInclude Include="..\src\Log.hpp" />
     <ClInclude Include="..\src\MayaHelper.hpp" />
     <ClInclude Include="..\src\Model.hpp" />
     <ClInclude Include="..\src\Plane.hpp" />

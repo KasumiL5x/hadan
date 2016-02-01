@@ -1,7 +1,7 @@
 #include "BezierPointGen.hpp"
 #include <points/PointsUtils.hpp>
 #include "BezierPath.hpp"
-#include <Log.hpp>
+#include "../../MTLog.hpp"
 
 BezierPointGen::BezierPointGen()
 	: IPointGen() {
@@ -14,7 +14,7 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const Point
 	printf("Generating bezier:\n");
 
 	if( 0 == info.samples ) {
-		Log::warning("Warning: Curve will be ignored as Samples were zero.\n");
+		MTLog::instance()->log("Warning: Curve will be ignored as Samples were zero.\n");
 	}
 
 	// get model's bounding box

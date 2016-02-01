@@ -37,6 +37,7 @@ void MTLog::processEntries() {
 					}
 					case Destination::Std: {
 						fprintf(stdout, msg.message.c_str());
+						fflush(stdout);
 						break;
 					}
 				}

@@ -1,7 +1,7 @@
 #include "ClusterPointGen.hpp"
 #include <points/PointsUtils.hpp>
 #include <Random.hpp>
-#include <Log.hpp>
+#include "../../MTLog.hpp"
 
 ClusterPointGen::ClusterPointGen()
 	: IPointGen() {
@@ -12,7 +12,7 @@ ClusterPointGen::~ClusterPointGen() {
 
 void ClusterPointGen::generateSamplePoints( const Model& sourceModel, const PointGenInfo& info, std::vector<cc::Vec3f>& outPoints ) {
 	if( cc::math::equal<double>(info.flux, 0.0) ) {
-		Log::warning("Warning: Fluctuation percentate for cluster fracture must be nonzero.  Fracturing may not occur.\n");
+		MTLog::instance()->log("Warning: Fluctuation percentate for cluster fracture must be nonzero.  Fracturing may not occur.\n");
 	}
 
 	const BoundingBox& bbox = sourceModel.computeBoundingBox();

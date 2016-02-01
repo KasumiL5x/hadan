@@ -11,7 +11,7 @@
 #include "cells/CellGenFactory.hpp"
 #include "slicing/MeshSlicerFactory.hpp"
 #include <maya/MFnSet.h>
-#include "Log.hpp"
+#include "MTLog.hpp"
 #include <thread>
 //#include "ProgressHelper.hpp"
 
@@ -38,18 +38,18 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	const std::time_t epochTime = std::chrono::system_clock::to_time_t(startTime);
 	char startTimeStr[100];
 	std::strftime(startTimeStr, sizeof(startTimeStr), "%X", std::localtime(&epochTime));
-	Log::info("Hadan starting at " + std::string(startTimeStr) + "\n");
+	MTLog::instance()->log("Hadan starting at " + std::string(startTimeStr) + "\n");
 
 	// parse incoming arguments
 	if( !parseArgs(args) ) {
-		Log::error("Error: Failed to parse arguments.\n");
+		MTLog::instance()->log("Error: Failed to parse arguments.\n");
 		//ProgressHelper::end();
 		return MS::kFailure;
 	}
 
 	// validate input mesh
 	if( !validateInputMesh() ) {
-		Log::error("Error: Failed to validate mesh.\n");
+		MTLog::instance()->log("Error: Failed to validate mesh.\n");
 		//ProgressHelper::end();
 		return MS::kFailure;
 	}
@@ -59,14 +59,14 @@ MStatus Hadan::doIt( const MArgList& args ) {
 
 	// generate sample points
 	if( !generateSamplePoints() ) {
-		Log::error("Error: Not enough sample points were generated.\n");
+		MTLog::instance()->log("Error: Not enough sample points were generated.\n");
 		//ProgressHelper::end();
 		return MS::kFailure;
 	}
 
 	// generating cutting cells
 	if( !generateCuttingCells() ) {
-		Log::error("Error: Generated cutting cells were inadequate.\n");
+		MTLog::instance()->log("Error: Generated cutting cells were inadequate.\n");
 		//ProgressHelper::end();
 		return MS::kFailure;
 	}
@@ -94,7 +94,7 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	const std::chrono::duration<double> timeDiff = endTime - startTime;
 	const std::string timeTakenStr = "Hadan finished in " + std::to_string(timeDiff.count()) + "s. ";
 	const std::string chunkStr = std::to_string(_generatedMeshes.size()) + "/" + std::to_string(_cuttingCells.size()) + " chunks generated.\n";
-	Log::info(timeTakenStr + chunkStr);
+	MTLog::instance()->log(timeTakenStr + chunkStr);
 
 	// end progress window
 	//ProgressHelper::end();
@@ -103,12 +103,12 @@ MStatus Hadan::doIt( const MArgList& args ) {
 }
 
 MStatus Hadan::undoIt() {
-	Log::warning("Hadan::undoIt() not yet implemented.\n");
+	MTLog::instance()->log("Warning: Hadan::undoIt() not yet implemented.\n");
 	return MStatus::kFailure;
 }
 
 MStatus Hadan::redoIt() {
-	Log::warning("Hadan::redoIt() not yet implemented.\n");
+	MTLog::instance()->log("Warning: Hadan::redoIt() not yet implemented.\n");
 	return MStatus::kFailure;
 }
 
@@ -134,20 +134,20 @@ bool Hadan::parseArgs( const MArgList& args ) {
 
 	// parse and validate existance of mesh name
 	if( !db.isFlagSet(HadanArgs::MeshName) ) {
-		Log::error("Error: Required argument -meshname (-mn) is missing.\n");
+		MTLog::instance()->log("Error: Required argument -meshname (-mn) is missing.\n");
 		return false;
 	}
 	MString meshNameStr;
 	db.getFlagArgument(HadanArgs::MeshName, 0, meshNameStr);
 	if( !MayaHelper::getObjectFromString(meshNameStr.asChar(), _inputMesh) ) {
-		Log::error("Error: Given object not found.\n");
+		MTLog::instance()->log("Error: Given object not found.\n");
 		return false;
 	}
 	//ProgressHelper::advance();
 
 	// parse fracture type
 	if( !db.isFlagSet(HadanArgs::FractureType) ) {
-		Log::error("Error: Required argument -fracturetype (-ft) is missing.\n");
+		MTLog::instance()->log("Error: Required argument -fracturetype (-ft) is missing.\n");
 		return false;
 	}
 	MString fractureTypeStr;
@@ -161,7 +161,7 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	} else if( strcmp(fractureTypeStr.asChar(), "test") == 0 ) {
 		_pointsGenType = PointGenFactory::Type::Test;
 	} else {
-		Log::error("Error: Unknown fracture type.\n");
+		MTLog::instance()->log("Error: Unknown fracture type.\n");
 		return false;
 	}
 	//ProgressHelper::advance();
@@ -215,21 +215,21 @@ bool Hadan::validateInputMesh() const {
 
 	// check it is a mesh
 	if( !MayaHelper::hasMesh(_inputMesh) ) {
-		Log::error("Error: Input object is not a mesh.\n");
+		MTLog::instance()->log("Error: Input object is not a mesh.\n");
 		return false;
 	}
 	//ProgressHelper::advance();
 
 	// check that the mesh does not have any holes
 	if( MayaHelper::doesMeshHaveHoles(mesh) ) {
-		Log::error("Error: Mesh cannot have holes.\n");
+		MTLog::instance()->log("Error: Mesh cannot have holes.\n");
 		return false;
 	}
 	//ProgressHelper::advance();
 
 	// ensure the that mesh is fully closed (all edges must have two faces)
 	if( !MayaHelper::isMeshFullyClosed(_inputMesh) ) {
-		Log::error("Error: Mesh is not closed.  All edges must have two faces.\n");
+		MTLog::instance()->log("Error: Mesh is not closed.  All edges must have two faces.\n");
 		return false;
 	}
 	//ProgressHelper::advance();
@@ -288,22 +288,6 @@ void Hadan::performCutting() {
 		MayaHelper::copyModelToMFnMesh(mdl, outMesh);
 		_generatedMeshes.push_back(outMesh.object());
 	}
-
-	//for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
-	//	const Cell& cell = _cuttingCells[i];
-
-	//	Model outModel;
-	//	if( !slicer->slice(_modelFromMaya, cell, outModel) ) {
-	//		Log::warning("Warning: Failed to slice using cell " + std::to_string(i) + ".  This is sometimes expected.\n");
-	//		continue;
-	//	}
-
-	//	MFnMesh outMesh;
-	//	MayaHelper::copyModelToMFnMesh(outModel, outMesh);
-	//	_generatedMeshes.push_back(outMesh.object());
-
-	//	//ProgressHelper::advance();
-	//}
 }
 
 void Hadan::centerAllPivots() {

@@ -44,7 +44,6 @@
     <ClInclude Include="..\src\cells\ICellGen.hpp" />
     <ClInclude Include="..\src\cells\VoronoiCelGen\VoronoiCellGen.hpp" />
     <ClInclude Include="..\src\Hadan.hpp" />
-    <ClInclude Include="..\src\Log.hpp" />
     <ClInclude Include="..\src\MayaHelper.hpp" />
     <ClInclude Include="..\src\Model.hpp" />
     <ClInclude Include="..\src\Plane.hpp" />
