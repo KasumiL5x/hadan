@@ -263,7 +263,7 @@ bool Hadan::generateCuttingCells() {
 void Hadan::doSingleCut( const Cell& cell, int id, std::shared_ptr<IMeshSlicer> slicer ) {
 	Model outModel;
 	if( !slicer->slice(_modelFromMaya, cell, outModel) ) {
-		//Log::warning("Warning: Failed to slice using cell " + std::to_string(id) + ".  This is sometimes expected.\n");
+		MTLog::instance()->log("Warning: Failed to slice using cell " + std::to_string(id) + ".  This is sometimes expected.\n");
 		return;
 	}
 
