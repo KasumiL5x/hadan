@@ -3,9 +3,14 @@
 
 import sys
 from PySide import QtCore, QtGui
+from shiboken import wrapInstance
+from maya import OpenMayaUI as omui
 import maya.cmds as cmds
 import maya.mel as mel
 import os
+
+maya_main_window_ptr = omui.MQtUtil().mainWindow()
+maya_main_window = wrapInstance(long(maya_main_window_ptr), QtGui.QWidget)
 
 class HadanHowTo(QtGui.QWidget):
 	def __init__(self):
@@ -227,6 +232,12 @@ class HadanGui(QtGui.QMainWindow):
 	#end
 
 	def __build_ui(self):
+		# set parent window to maya's window
+		self.setParent(maya_main_window)
+
+		# ensure type of window
+		self.setWindowFlags(QtCore.Qt.Window)
+
 		# create common fonts
 		font_10 = QtGui.QFont()
 		font_10.setPointSize(10)
@@ -481,15 +492,8 @@ class HadanGui(QtGui.QMainWindow):
 #end
 
 def main():
-	app = QtGui.QApplication.instance()
-	if not app:
-		app = QtGui.QApplication(sys.argv)
-		app.aboutToQuit.connect(app.deleteLater)
-	global hadan_gui
 	hadan_gui = HadanGui()
-	sys.exit(app.exec_())
-#end
+	return hadan_gui
 
 if __name__ == '__main__':
 	main()
-#end
