@@ -53,7 +53,7 @@ class HadanHowTo(QtGui.QWidget):
 			' will be taken regardless of the distance), and the two intermediate points are randomly generated within the object\'s ' +
 			'bounding box.  If two are provided, they are assumed to be the beginning and end points, respectively; the two intermediate ' +
 			'points will be generated randomly.  If all four are given, the curve is assumed to follow those points\' path.  ' +
-			'The bezier curve is sampled to generate <b><i>[CHANGEME]</i></b> points along the curve.  These sampled points are moved ' +
+			'The bezier curve is sampled to generate <i>Samples</i> points along the curve.  These sampled points are moved ' +
 			'randomly away from the curve in the range [<i>-Flux</i>, <i>Flux</i>] percent of the bounding box\'s size. ' +
 			'<i>Uniform</i> randomly generated points are also added for variation.<br/><br/>')
 		ui_str = ('The <i>Settings</i> tab is where the majority of configurable options can be tweaked.  The <i>Positions</i> ' +
