@@ -1,4 +1,5 @@
-# coding=utf-8
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import sys
 from PySide import QtCore, QtGui
@@ -196,17 +197,33 @@ class HadanGui(QtGui.QMainWindow):
 	#end
 
 	def __load_plugin(self):
-		if not cmds.pluginInfo('hadan-d.mll', l=True, q=True):
-			if None == cmds.loadPlugin('hadan-d.mll', qt=True):
+		hadan_file_name = None
+		# search all plugin directories for the hadan file
+		for curr_path in os.environ['MAYA_PLUG_IN_PATH'].split(';'):
+			# append trailing /
+			curr_dir = (curr_path + '/') if curr_path[-1] != '/' else (curr_path)
+			# check for hadan-d.mll
+			if os.path.isfile(curr_dir + 'hadan-d.mll'):
+				hadan_file_name = 'hadan-d.mll'
+				break
+			elif os.path.isfile(curr_dir + 'hadan.mll'):
+				hadan_file_name = 'hadan.mll'
+				break
+		#end
+
+		# make sure to fail if the file doesn't exist
+		if None == hadan_file_name:
+			cmds.warning('Could not find hadan plugin.')
+
+		# load found plugin
+		if not cmds.pluginInfo(hadan_file_name, l=True, q=True):
+			if None == cmds.loadPlugin(hadan_file_name, qt=True):
 				cmds.warning('Failed to load hadan plugin.')
 				return False
+			cmds.warning('Successfully loaded plugin: ' + hadan_file_name)
+		else:
+			cmds.warning('Skipped loading plugin: ' + hadan_file_name)
 		return True
-
-		# if not cmds.pluginInfo('hadan.mll', l=True, q=True):
-		# 	if None == cmds.loadPlugin('hadan.mll', qt=True):
-		# 		cmds.warning('Failed to load hadan plugin.')
-		# 		return False
-		# return True
 	#end
 
 	def __build_ui(self):
