@@ -277,21 +277,23 @@ void Hadan::doSingleCut( const Cell& cell, int id, std::shared_ptr<IMeshSlicer> 
 void Hadan::performCutting() {
 	//ProgressHelper::begin(static_cast<int>(_cuttingCells.size()), "Slicing geometry...");
 
-	//std::shared_ptr<IMeshSlicer> slicer = std::make_shared<MayaSlicer>();
 	std::shared_ptr<IMeshSlicer> slicer = std::make_shared<ClosedConvexSlicer>();
+
+	// single threaded
+	//for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
+	//	doSingleCut(_cuttingCells[i], i, slicer);
+	//}
+
+	// multi threaded
+	std::vector<std::thread> cuttingThreads;
 	for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
-		doSingleCut(_cuttingCells[i], i, slicer);
+		cuttingThreads.push_back(std::thread(&Hadan::doSingleCut, this, _cuttingCells[i], i, slicer));
+	}
+	for( auto& t : cuttingThreads ) {
+		t.join();
 	}
 
 
-	//std::shared_ptr<IMeshSlicer> slicer = std::make_shared<ClosedConvexSlicer>();
-	//std::vector<std::thread> cuttingThreads;
-	//for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
-	//	cuttingThreads.push_back(std::thread(&Hadan::doSingleCut, this, _cuttingCells[i], i, slicer));
-	//}
-	//for( auto& t : cuttingThreads ) {
-	//	t.join();
-	//}
 	for( auto& mdl : _generatedModels ) {
 		MFnMesh outMesh;
 		MayaHelper::copyModelToMFnMesh(mdl, outMesh);
