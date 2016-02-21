@@ -110,6 +110,9 @@ class HadanGui(QtGui.QMainWindow):
 			self.__command += '-flp %f ' % (self.spin_flux.value())
 			self.__command += ('-sd %f ' % (self.spin_gap.value())) if self.spin_gap.value() != 0.0 else ''
 
+		# seed value
+		self.__command += '-rs %d ' % (self.spin_speed.value())
+
 		# add all user points
 		for curr in self.__positions:
 			if not cmds.objExists(curr):
@@ -380,6 +383,19 @@ class HadanGui(QtGui.QMainWindow):
 		self.spin_gap.setObjectName("spin_gap")
 		self.spin_gap.setMaximum(100.0)
 		self.spin_gap.setSingleStep(0.1)
+
+		# seed label
+		self.lbl_seed = QtGui.QLabel(self.tp_settings)
+		self.lbl_seed.setGeometry(QtCore.QRect(185, 12, 31, 16))
+		self.lbl_seed.setFont(font_10)
+		self.lbl_seed.setObjectName("lbl_seed")
+		self.lbl_seed.setText(QtGui.QApplication.translate("Seed", "Seed", None, QtGui.QApplication.UnicodeUTF8))
+
+		# spin seed
+		self.spin_speed = QtGui.QSpinBox(self.tp_settings)
+		self.spin_speed.setGeometry(QtCore.QRect(220, 10, 81, 22))
+		self.spin_speed.setObjectName("spin_speed")
+		self.spin_speed.setMinimum(0)
 
 		# samples label
 		self.lbl_samples = QtGui.QLabel(self.tp_settings)

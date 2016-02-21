@@ -73,6 +73,7 @@ bool VoronoiCellGen::generate( const BoundingBox& bbox, const std::vector<cc::Ve
 
 					Plane plane;
 					if( PlaneHelper::planeFromPoints(facePoints, plane) ) {
+						plane.pointOnPlane = faceCenter;
 						newCell.addPlane(plane);
 					}
 

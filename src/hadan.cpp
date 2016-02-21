@@ -190,6 +190,9 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	db.getFlagArgument(HadanArgs::FluxPercentage, 0, _pointGenInfo.flux);
 	//ProgressHelper::advance();
 
+	// parse random seed
+	db.getFlagArgument(HadanArgs::HadanRandomSeed, 0, _pointGenInfo.seed);
+
 	// parse user's optional points list
 	const unsigned int pntUses = db.numberOfFlagUses(HadanArgs::Point);
 	for( unsigned int i = 0; i < pntUses; ++i ) {
@@ -274,15 +277,21 @@ void Hadan::doSingleCut( const Cell& cell, int id, std::shared_ptr<IMeshSlicer> 
 void Hadan::performCutting() {
 	//ProgressHelper::begin(static_cast<int>(_cuttingCells.size()), "Slicing geometry...");
 
-	//std::unique_ptr<IMeshSlicer> slicer = MeshSlicerFactory::create(MeshSlicerFactory::Type::ClosedConvex);
+	//std::shared_ptr<IMeshSlicer> slicer = std::make_shared<MayaSlicer>();
 	std::shared_ptr<IMeshSlicer> slicer = std::make_shared<ClosedConvexSlicer>();
-	std::vector<std::thread> cuttingThreads;
 	for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
-		cuttingThreads.push_back(std::thread(&Hadan::doSingleCut, this, _cuttingCells[i], i, slicer));
+		doSingleCut(_cuttingCells[i], i, slicer);
 	}
-	for( auto& t : cuttingThreads ) {
-		t.join();
-	}
+
+
+	//std::shared_ptr<IMeshSlicer> slicer = std::make_shared<ClosedConvexSlicer>();
+	//std::vector<std::thread> cuttingThreads;
+	//for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
+	//	cuttingThreads.push_back(std::thread(&Hadan::doSingleCut, this, _cuttingCells[i], i, slicer));
+	//}
+	//for( auto& t : cuttingThreads ) {
+	//	t.join();
+	//}
 	for( auto& mdl : _generatedModels ) {
 		MFnMesh outMesh;
 		MayaHelper::copyModelToMFnMesh(mdl, outMesh);

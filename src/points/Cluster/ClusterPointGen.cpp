@@ -1,7 +1,7 @@
 #include "ClusterPointGen.hpp"
-#include <points/PointsUtils.hpp>
 #include <Random.hpp>
 #include "../../MTLog.hpp"
+#include "../../Random.hpp"
 
 ClusterPointGen::ClusterPointGen()
 	: IPointGen() {
@@ -15,6 +15,9 @@ void ClusterPointGen::generateSamplePoints( const Model& sourceModel, const Poin
 		MTLog::instance()->log("Warning: Fluctuation percentate for cluster fracture must be nonzero.  Fracturing may not occur.\n");
 	}
 
+	// seeded random
+	Random<float, int> rnd(info.seed);
+
 	const BoundingBox& bbox = sourceModel.computeBoundingBox();
 
 	// initialize to user-provided points
@@ -22,12 +25,11 @@ void ClusterPointGen::generateSamplePoints( const Model& sourceModel, const Poin
 	
 	// randomly generate some extra points in addition to user-provided ones
 	for( unsigned int i = 0; i < info.primaryCount; ++i ) {
-		primaryPoints.push_back(PointsUtils::randomPointInBbox(bbox));
+		primaryPoints.push_back(rnd.pointInBBox(bbox));
 	}
 
 	// push back primary points and generate and add all secondary points
-	Random<double, int> rnd;
-	const double fluxAmount = cc::math::percent<double>(static_cast<double>(bbox.getDiagonalDistance()), static_cast<float>(info.flux));
+	const float fluxAmount = cc::math::percent<float>(static_cast<float>(bbox.getDiagonalDistance()), static_cast<float>(info.flux));
 	for( unsigned int i = 0; i < static_cast<unsigned int>(primaryPoints.size()); ++i ) {
 		const cc::Vec3f& curr = primaryPoints[i];
 		outPoints.push_back(curr);
@@ -43,6 +45,6 @@ void ClusterPointGen::generateSamplePoints( const Model& sourceModel, const Poin
 
 	// generate tertiary uniform points to even out the effect
 	for( unsigned int i = 0; i < info.uniformCount; ++i ) {
-		outPoints.push_back(PointsUtils::randomPointInBbox(bbox));
+		outPoints.push_back(rnd.pointInBBox(bbox));
 	}
 }

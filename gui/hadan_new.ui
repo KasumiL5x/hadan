@@ -314,6 +314,37 @@
       <string>Fracture</string>
      </property>
     </widget>
+    <widget class="QLabel" name="lbl_seed">
+     <property name="geometry">
+      <rect>
+       <x>185</x>
+       <y>123</y>
+       <width>31</width>
+       <height>16</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>10</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Seed</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="spin_seed">
+     <property name="geometry">
+      <rect>
+       <x>220</x>
+       <y>120</y>
+       <width>81</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="maximum">
+      <number>999</number>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tp_positions">
     <attribute name="title">

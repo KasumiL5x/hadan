@@ -5,6 +5,8 @@
 #include <cc/Vec3.hpp>
 
 struct PointGenInfo {
+	// seed used to reproduce point generation
+	unsigned int seed;
 	// amount of uniformly scattered points to generate
 	unsigned int uniformCount;
 	// primary number of points
@@ -19,6 +21,7 @@ struct PointGenInfo {
 	std::vector<cc::Vec3f> userPoints;
 
 	PointGenInfo() {
+		seed = 0;
 		uniformCount = 0;
 		primaryCount = 0;
 		secondaryCount = 0;

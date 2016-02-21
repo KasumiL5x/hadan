@@ -8,6 +8,7 @@
 struct Plane {
 	cc::Vec3f normal;
 	float constant;
+	cc::Vec3f pointOnPlane; // OPTIONAL - SET TO ZERO BY DEFAULT.
 
 	Plane()
 		: normal(cc::Vec3f::up()), constant(0.0f) {

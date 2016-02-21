@@ -51,7 +51,6 @@
     <ClInclude Include="..\src\points\Bezier\BezierPointGen.hpp" />
     <ClInclude Include="..\src\points\IPointGen.hpp" />
     <ClInclude Include="..\src\points\PointGenFactory.hpp" />
-    <ClInclude Include="..\src\points\PointsUtils.hpp" />
     <ClInclude Include="..\src\points\TestPointGen\TestPointGen.hpp" />
     <ClInclude Include="..\src\points\Uniform\UniformPointGen.hpp" />
     <ClInclude Include="..\src\Random.hpp" />

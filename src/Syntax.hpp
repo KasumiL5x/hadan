@@ -44,6 +44,11 @@ namespace HadanArgs {
 	static const char* FluxPercentageLong = "-fluxPercent";
 	static const MSyntax::MArgType FluxPercentageType = MSyntax::kDouble;
 
+	// random seed for reproducible results
+	static const char* HadanRandomSeed = "-rs";
+	static const char* HadanRandomSeedLong = "-randomseed";
+	static const MSyntax::MArgType HadanRandomSeedType = MSyntax::kUnsigned;
+
 	// user-provided point
 	static const char* Point = "-pnt";
 	static const char* PointLong = "-point";
@@ -59,6 +64,7 @@ namespace HadanArgs {
 		syntax.addFlag(SeparateDistance, SeparateDistanceLong, SeparateDistanceType);
 		syntax.addFlag(Samples, SamplesLong, SamplesType);
 		syntax.addFlag(FluxPercentage, FluxPercentageLong, FluxPercentageType);
+		syntax.addFlag(HadanRandomSeed, HadanRandomSeedLong, HadanRandomSeedType);
 		syntax.addFlag(Point, PointLong, PointType, PointType, PointType);
 		syntax.makeFlagMultiUse(Point);
 		return syntax;

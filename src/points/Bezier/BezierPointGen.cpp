@@ -1,7 +1,7 @@
 #include "BezierPointGen.hpp"
-#include <points/PointsUtils.hpp>
 #include "BezierPath.hpp"
 #include "../../MTLog.hpp"
+#include <Random.hpp>
 
 BezierPointGen::BezierPointGen()
 	: IPointGen() {
@@ -17,6 +17,9 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const Point
 		MTLog::instance()->log("Warning: Curve will be ignored as Samples were zero.\n");
 	}
 
+	// create seeded random
+	Random<float, int> rnd(info.seed);
+
 	// get model's bounding box
 	const BoundingBox& bbox = sourceModel.computeBoundingBox();
 
@@ -30,8 +33,8 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const Point
 	} else if( 2 == controlPoints.size() ) { // start and end points are provided; generate random midpoints
 		printf("\tstart and end points provided; generating intermediate points\n");
 		bezierPoints.push_back(controlPoints[0]);
-		bezierPoints.push_back(PointsUtils::randomPointInBbox(bbox));
-		bezierPoints.push_back(PointsUtils::randomPointInBbox(bbox));
+		bezierPoints.push_back(rnd.pointInBBox(bbox));
+		bezierPoints.push_back(rnd.pointInBBox(bbox));
 		bezierPoints.push_back(controlPoints[1]);
 	} else { // no control points provided (or too many); randomly generate all (p0 and p3 on faces, p1 and p2 randomly inside)
 		printf("\tno points provided; generating all points\n");
@@ -42,14 +45,14 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const Point
 
 		// first point (on surface of bounding box)
 		int p0Side = -1;
-		const cc::Vec3f p0 = PointsUtils::randomPointOnBboxSide(bbox, p0Side, -1);
+		const cc::Vec3f p0 = rnd.pointOnBbox(bbox, p0Side, -1);
 		bezierPoints.push_back(p0);
 		printf("\tp0: face %d at (%f, %f, %f)\n", p0Side, p0.x, p0.y, p0.z);
 
 		// second and third are randomly generated
-		bezierPoints.push_back(PointsUtils::randomPointInBbox(bbox));
+		bezierPoints.push_back(rnd.pointInBBox(bbox));
 		printf("\tp1: (%f, %f, %f)\n", bezierPoints.back().x, bezierPoints.back().y, bezierPoints.back().z);
-		bezierPoints.push_back(PointsUtils::randomPointInBbox(bbox));
+		bezierPoints.push_back(rnd.pointInBBox(bbox));
 		printf("\tp2: (%f, %f, %f)\n", bezierPoints.back().x, bezierPoints.back().y, bezierPoints.back().z);
 
 		// fourth is on another side and must be a certain percentage of the size of the bounding box away from the first point
@@ -58,7 +61,7 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const Point
 		int p3Side = -1;
 		cc::Vec3f p3;
 		do {
-			p3 = PointsUtils::randomPointOnBboxSide(bbox, p3Side, p0Side);
+			p3 = rnd.pointOnBbox(bbox, p3Side, p0Side);
 			printf("\t%s with distance %f\n", p3.distance(p0) < minDistance ? "FAILED" : "SUCCEEDED", p3.distance(p0));
 			if( iteration++ >= MAX_ITERATIONS ) { // increment and check
 				printf("\tMaximum iterations reached (%d), accepting last value.\n", MAX_ITERATIONS);
@@ -73,7 +76,8 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const Point
 	// extract points along bezier curve
 	BezierPath bezier;
 	bezier.setControlPoints(bezierPoints);
-	for( auto& pnt : bezier.getDrawingPoints(info.samples) ) {
+	//for( auto& pnt : bezier.getDrawingPoints(info.samples) ) {
+	for( auto& pnt : bezier.getDrawingPointsAlternate(info.samples) ) {
 		outPoints.push_back(pnt);
 	}
 
@@ -81,7 +85,6 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const Point
 	if( !cc::math::equal<double>(info.flux, 0.0) ) {
 		const cc::Vec3f cornerDiff = bbox.getCorner(BoundingBox::Corner::BottomLeftBack) - bbox.getCorner(BoundingBox::Corner::TopRightFront);
 		const float fluxAmount = cc::math::percent<float>(cornerDiff.magnitude(), static_cast<float>(info.flux));
-		Random<float, int> rnd;
 		for( auto& pnt : outPoints ) {
 			pnt += cc::Vec3f(rnd.nextReal(-fluxAmount, fluxAmount), rnd.nextReal(-fluxAmount, fluxAmount), rnd.nextReal(-fluxAmount, fluxAmount));
 		}
@@ -89,7 +92,7 @@ void BezierPointGen::generateSamplePoints( const Model& sourceModel, const Point
 
 	// add some uniformly random points to add some extra detail away from the curve
 	for( unsigned int i = 0; i < info.uniformCount; ++i ) {
-		outPoints.push_back(PointsUtils::randomPointInBbox(bbox));
+		outPoints.push_back(rnd.pointInBBox(bbox));
 	}
 
 	fflush(stdout);
