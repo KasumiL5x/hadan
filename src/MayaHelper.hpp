@@ -106,8 +106,29 @@ namespace MayaHelper {
 			faceCounts.append(3);
 		}
 
-		outMayaMesh.create(numVerts, numFaces, pointArray, faceCounts, faceConnects);
-		return false;
+		// set all uvs in order such that they map 1-to-1
+		MFloatArray UArray;
+		MFloatArray VArray;
+		for( const auto& vtx : model.getVertices() ) {
+			UArray.append(vtx.texcoord.x);
+			VArray.append(vtx.texcoord.y);
+		}
+
+		// create the actual mesh
+		outMayaMesh.create(numVerts, numFaces, pointArray, faceCounts, faceConnects, UArray, VArray);
+
+		// assign UVs to vertices
+		MIntArray uvCounts; // number of uvs per polygon; we assume triangles
+		MIntArray uvIds; // index of uv per vertex
+		for( int i = 0; i < numFaces; ++i ) {
+			uvCounts.append(3); // assume triangles
+		}
+		for( unsigned int i = 0; i < static_cast<unsigned int>(vertices.size()); ++i ) {
+			uvIds.append(i); // 1-1 mapping of vertex-uv
+		}
+		outMayaMesh.assignUVs(uvCounts, uvIds);
+
+		return true;
 	}
 
 	static bool hasMesh( const MDagPath& path ) {
