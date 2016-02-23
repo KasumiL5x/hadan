@@ -1,6 +1,7 @@
 #include "ClipMesh.hpp"
 #include <algorithm>
 #include <cc/TriMath.hpp>
+#include "../../MTLog.hpp"
 
 ClipMesh::CEdgePlus::CEdgePlus( int e, const CEdge& edge ) {
 	this->E = e;
@@ -39,6 +40,7 @@ ClipMesh::ClipMesh( Model& sourceModel ) {
 	_vertices.resize(srcVerts.size());
 	for( unsigned int i = 0; i < srcVerts.size(); ++i ) {
 		_vertices[i].point = srcVerts[i].position;
+		_vertices[i].uv = srcVerts[i].texcoord;
 	}
 	
 	// copy edges over
@@ -94,7 +96,7 @@ bool ClipMesh::convert( Model* outModel ) {
 			continue;
 		}
 		vMap[currVtx] = static_cast<unsigned int>(points.size());
-		points.push_back(Vertex(vtx.point));
+		points.push_back(Vertex(vtx.point, vtx.uv));
 	}
 
 	// check for all culled
@@ -131,7 +133,7 @@ void ClipMesh::printDebug( bool verbose ) {
 	printf("CVertex(%zd, %d visible)\n", _vertices.size(), visibleVertices);
 	if( verbose ) {
 		for( unsigned int i = 0; i < _vertices.size(); ++i ) {
-			printf("\t[%d] (%f, %f, %f); visible: %d\n", i, _vertices[i].point.x, _vertices[i].point.y, _vertices[i].point.z, _vertices[i].visible);
+			printf("\t[%d] ([%f, %f, %f]/[%f, %f]); visible: %d\n", i, _vertices[i].point.x, _vertices[i].point.y, _vertices[i].point.z, _vertices[i].uv.x, _vertices[i].uv.y, _vertices[i].visible);
 		}
 	}
 
@@ -243,6 +245,11 @@ void ClipMesh::processEdges() {
 		const cc::Vec3f p0 = _vertices[edge.vertex[0]].point;
 		const cc::Vec3f p1 = _vertices[edge.vertex[1]].point;
 		vertexNew.point = p0 + (d0/(d0 - d1))*(p1 - p0);
+
+		const cc::Vec2f& t0 = _vertices[edge.vertex[0]].uv;
+		const cc::Vec2f& t1 = _vertices[edge.vertex[1]].uv;
+		vertexNew.uv = t0 + (d0/(d0 - d1))*(t1 - t0);
+		//MTLog::instance()->log("UV: " + std::to_string(vertexNew.uv.x) + ", " + std::to_string(vertexNew.uv.y) + "\n");
 
 		if( d0 > 0.0f ) {
 			edge.vertex[1] = vNew;

@@ -106,27 +106,83 @@ namespace MayaHelper {
 			faceCounts.append(3);
 		}
 
+		// create the actual mesh
+		outMayaMesh.create(numVerts, numFaces, pointArray, faceCounts, faceConnects);
+
+		// create a new uvset if there isn't one already
+		MString uvSetName = ("uvset1");
+		if( outMayaMesh.getCurrentUVSetName(uvSetName) != MS::kSuccess ) {
+			uvSetName = "uvset1";
+			outMayaMesh.createUVSet(uvSetName);
+			outMayaMesh.setCurrentUVSetName(uvSetName);
+		}
+
+		// clear all existing uvs
+		outMayaMesh.clearUVs();
+
 		// set all uvs in order such that they map 1-to-1
 		MFloatArray UArray;
 		MFloatArray VArray;
-		for( const auto& vtx : model.getVertices() ) {
-			UArray.append(vtx.texcoord.x);
-			VArray.append(vtx.texcoord.y);
+		for( unsigned int i = 0; i < static_cast<unsigned int>(indices.size()); i += 3 ) {
+			UArray.append(vertices[indices[i+0]].texcoord.x); VArray.append(vertices[indices[i+0]].texcoord.y);
+			UArray.append(vertices[indices[i+1]].texcoord.x); VArray.append(vertices[indices[i+1]].texcoord.y);
+			UArray.append(vertices[indices[i+2]].texcoord.x); VArray.append(vertices[indices[i+2]].texcoord.y);
+
+		}
+		//for( const auto& vtx : model.getVertices() ) {
+		//	UArray.append(vtx.texcoord.x);
+		//	VArray.append(vtx.texcoord.y);
+		//}
+		const MStatus setUvStatus = outMayaMesh.setUVs(UArray, VArray, &uvSetName);
+		if( setUvStatus.error() || setUvStatus != MS::kSuccess ) {
+			MTLog::instance()->log("Failed to set UVs.\n");
+			MTLog::instance()->log(std::string(setUvStatus.errorString().asChar()) + "\n");
 		}
 
-		// create the actual mesh
-		outMayaMesh.create(numVerts, numFaces, pointArray, faceCounts, faceConnects, UArray, VArray);
+		MTLog::instance()->log("Number of UVs: " + std::to_string(outMayaMesh.numUVs(uvSetName)) + "\n");
 
-		// assign UVs to vertices
 		MIntArray uvCounts; // number of uvs per polygon; we assume triangles
 		MIntArray uvIds; // index of uv per vertex
 		for( int i = 0; i < numFaces; ++i ) {
-			uvCounts.append(3); // assume triangles
+			uvCounts.append(3);
 		}
-		for( unsigned int i = 0; i < static_cast<unsigned int>(vertices.size()); ++i ) {
-			uvIds.append(i); // 1-1 mapping of vertex-uv
+		for( unsigned int i = 0; i < static_cast<unsigned int>(indices.size()); ++i ) {
+			uvIds.append(indices[i]);
 		}
-		outMayaMesh.assignUVs(uvCounts, uvIds);
+		const MStatus uvStatus = outMayaMesh.assignUVs(uvCounts, uvIds, &uvSetName);
+		if( uvStatus.error() || uvStatus != MS::kSuccess ) {
+			MTLog::instance()->log("Failed to assign UVs.\n");
+			MTLog::instance()->log(std::string(uvStatus.errorString().asChar()) + "\n");
+		}
+
+		//// assign UVs to vertices
+		//MIntArray uvCounts; // number of uvs per polygon; we assume triangles
+		//MIntArray uvIds; // index of uv per vertex
+		//for( int i = 0; i < numFaces; ++i ) {
+		//	uvCounts.append(3); // assume triangles
+		//}
+		//for( unsigned int i = 0; i < static_cast<unsigned int>(vertices.size()); ++i ) {
+		//	uvIds.append(i); // 1-1 mapping of vertex-uv
+		//	if( i >= outMayaMesh.numUVs(uvSetName) ) {
+		//		MTLog::instance()->log("UV overflow at index " + std::to_string(i) + "\n");
+		//	}
+		//}
+		//if( (uvCounts.length() * 3) != uvIds.length() ) {
+		//	MTLog::instance()->log("Mismatch in UVs: (" + std::to_string(uvCounts.length()*3) + "/" + std::to_string(uvIds.length()) + "\n");
+		//}
+		//const MStatus uvStatus = outMayaMesh.assignUVs(uvCounts, uvIds, &uvSetName);
+		//if( uvStatus.error() || uvStatus != MS::kSuccess ) {
+		//	MTLog::instance()->log("Failed to assign UVs.\n");
+		//	MTLog::instance()->log(std::string(uvStatus.errorString().asChar()) + "\n");
+		//}
+
+		// for some reason, the above function is failing because the index "wasn't found"...
+		// "no element at given index" 
+		//
+		// a little more diffing tells me: "Invalid uvCounts array or invalid uvIds array"
+		// http://help.autodesk.com/view/MAYAUL/2016/ENU/?guid=__cpp_ref_class_m_fn_mesh_html
+		// http://help.autodesk.com/view/MAYAUL/2016/ENU/?guid=__cpp_ref__abc_import_2_mesh_helper_8cpp_example_html
+		// http://help.autodesk.com/view/MAYAUL/2016/ENU/?guid=__cpp_ref_mesh_reorder_2mesh_reorder_cmd_8cpp_example_html
 
 		return true;
 	}

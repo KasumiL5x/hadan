@@ -281,20 +281,23 @@ void Hadan::performCutting() {
 
 	std::shared_ptr<IMeshSlicer> slicer = std::make_shared<ClosedConvexSlicer>();
 
-	// single threaded
-	//for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
-	//	doSingleCut(_cuttingCells[i], i, slicer);
-	//}
+	const bool USE_MULTITHREADING = true;
 
-	// multi threaded
-	std::vector<std::thread> cuttingThreads;
-	for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
-		cuttingThreads.push_back(std::thread(&Hadan::doSingleCut, this, _cuttingCells[i], i, slicer));
+	if( USE_MULTITHREADING ) {
+		// multi threaded
+		std::vector<std::thread> cuttingThreads;
+		for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
+			cuttingThreads.push_back(std::thread(&Hadan::doSingleCut, this, _cuttingCells[i], i, slicer));
+		}
+		for( auto& t : cuttingThreads ) {
+			t.join();
+		}
+	} else {
+		// single threaded
+		for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
+			doSingleCut(_cuttingCells[i], i, slicer);
+		}
 	}
-	for( auto& t : cuttingThreads ) {
-		t.join();
-	}
-
 
 	for( auto& mdl : _generatedModels ) {
 		MFnMesh outMesh;
