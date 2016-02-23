@@ -111,7 +111,7 @@ class HadanGui(QtGui.QMainWindow):
 			self.__command += ('-sd %f ' % (self.spin_gap.value())) if self.spin_gap.value() != 0.0 else ''
 
 		# seed value
-		self.__command += '-rs %d ' % (self.spin_speed.value())
+		self.__command += '-rs %d ' % (self.spin_seed.value())
 
 		# add all user points
 		for curr in self.__positions:
@@ -204,21 +204,22 @@ class HadanGui(QtGui.QMainWindow):
 		return self.cb_fractureType.currentText().lower()
 	#end
 
-	def __load_plugin(self):
-		hadan_file_name = None
+	def __get_hadan_filename(self):
 		# search all plugin directories for the hadan file
 		for curr_path in os.environ['MAYA_PLUG_IN_PATH'].split(';'):
 			# append trailing /
 			curr_dir = (curr_path + '/') if curr_path[-1] != '/' else (curr_path)
 			# check for hadan-d.mll
 			if os.path.isfile(curr_dir + 'hadan-d.mll'):
-				hadan_file_name = 'hadan-d.mll'
-				break
+				return 'hadan-d.mll'
 			elif os.path.isfile(curr_dir + 'hadan.mll'):
-				hadan_file_name = 'hadan.mll'
-				break
+				return 'hadan.mll'
 		#end
+		return None
+	#end
 
+	def __load_plugin(self):
+		hadan_file_name = self.__get_hadan_filename()
 		# make sure to fail if the file doesn't exist
 		if None == hadan_file_name:
 			cmds.warning('Could not find hadan plugin.')
@@ -232,6 +233,28 @@ class HadanGui(QtGui.QMainWindow):
 		else:
 			cmds.warning('Skipped loading plugin: ' + hadan_file_name)
 		return True
+	#end
+
+	def __unload_plugin(self):
+		hadan_file_name = self.__get_hadan_filename()
+		# make sure to fail if the file doesn't exist
+		if None == hadan_file_name:
+			cmds.warning('Could not find hadan plugin.')
+
+		# unload found plugin
+		if cmds.pluginInfo(hadan_file_name, l=True, q=True):
+			if None == cmds.unloadPlugin(hadan_file_name, f=True):
+				cmds.warning('Failed to unload hadan plugin.')
+				return False
+			cmds.warning('Successfully unloaded plugin: ' + hadan_file_name)
+		else:
+			cmds.warning('Skipped unloading plugin: ' + hadan_file_name)
+		return True
+	#end
+
+	def closeEvent(self, event):
+		self.__unload_plugin()
+		event.accept() # let the window close
 	#end
 
 	def __build_ui(self):
@@ -392,10 +415,11 @@ class HadanGui(QtGui.QMainWindow):
 		self.lbl_seed.setText(QtGui.QApplication.translate("Seed", "Seed", None, QtGui.QApplication.UnicodeUTF8))
 
 		# spin seed
-		self.spin_speed = QtGui.QSpinBox(self.tp_settings)
-		self.spin_speed.setGeometry(QtCore.QRect(220, 10, 81, 22))
-		self.spin_speed.setObjectName("spin_speed")
-		self.spin_speed.setMinimum(0)
+		self.spin_seed = QtGui.QSpinBox(self.tp_settings)
+		self.spin_seed.setGeometry(QtCore.QRect(220, 10, 81, 22))
+		self.spin_seed.setObjectName("spin_speed")
+		self.spin_seed.setMinimum(0)
+		self.spin_seed.setMaximum(99999)
 
 		# samples label
 		self.lbl_samples = QtGui.QLabel(self.tp_settings)

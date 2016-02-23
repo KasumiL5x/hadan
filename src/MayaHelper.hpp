@@ -11,6 +11,7 @@
 #include <maya/MItMeshVertex.h>
 #include <maya/MGlobal.h>
 #include "Model.hpp"
+#include "MTLog.hpp"
 
 namespace MayaHelper {
 	static bool getObjectFromString( const std::string& path, MDagPath& outDagPath ) {
@@ -31,16 +32,41 @@ namespace MayaHelper {
 		return mesh.getHoles(holeInfoArray, holeVertexArray) != 0;
 	}
 
-	static void copyMFnMeshToModel( MFnMesh& mayaMesh, Model& outModel ) {
-		// get points
-		MPointArray points;
-		mayaMesh.getPoints(points, MSpace::kWorld);
-		for( unsigned int i = 0; i < points.length(); ++i ) {
-			const MPoint& pnt = points[i];
-			const float x = static_cast<float>(pnt.x);
-			const float y = static_cast<float>(pnt.y);
-			const float z = static_cast<float>(pnt.z);
-			outModel.addVertex(Vertex(cc::Vec3f(x, y, z)));
+	static void copyMFnMeshToModel( MDagPath& mayaMeshDagPath, Model& outModel ) {
+		MFnMesh mayaMesh(mayaMeshDagPath);
+		// does the mesh have uvs?
+		MStringArray uvSetNames;
+		mayaMesh.getUVSetNames(uvSetNames);
+		const bool hasUvs = (uvSetNames.length() > 0) && (mayaMesh.numUVs(uvSetNames[0]) > 0);
+
+		MItMeshVertex it(mayaMeshDagPath);
+		while( !it.isDone() ) {
+			// this is our vertex, not maya's
+			Vertex vtx;
+
+			// get position of the vertex
+			MStatus status;
+			MPoint pos = it.position(MSpace::kWorld, &status);
+			if( status.error() || status != MS::kSuccess ) {
+				MTLog::instance()->log("Failed to get pos.\n");
+			}
+			vtx.position = cc::Vec3f(static_cast<float>(pos.x), static_cast<float>(pos.y), static_cast<float>(pos.z));
+
+			// get the texcoord, if it has one
+			if( hasUvs ) {
+				int uvCount = 0;
+				it.numUVs(uvCount, &uvSetNames[0]);
+				if( uvCount > 0 ) {
+					float2 uvs;
+					it.getUV(uvs, &uvSetNames[0]);
+					vtx.texcoord = cc::Vec2f(uvs[0], uvs[1]);
+				}
+			}
+
+			// append vertex to our mesh
+			outModel.addVertex(vtx);
+
+			it.next();
 		}
 
 		// get triangles (indices)

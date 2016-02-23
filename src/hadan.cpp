@@ -40,6 +40,8 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	std::strftime(startTimeStr, sizeof(startTimeStr), "%X", std::localtime(&epochTime));
 	MTLog::instance()->log("Hadan starting at " + std::string(startTimeStr) + "\n");
 
+	MGlobal::clearSelectionList();
+
 	// parse incoming arguments
 	if( !parseArgs(args) ) {
 		MTLog::instance()->log("Error: Failed to parse arguments.\n");
@@ -243,7 +245,7 @@ bool Hadan::validateInputMesh() const {
 void Hadan::copyMeshFromMaya() {
 	//ProgressHelper::begin(0, "Copying mesh...");
 
-	MayaHelper::copyMFnMeshToModel(MFnMesh(_inputMesh), _modelFromMaya);
+	MayaHelper::copyMFnMeshToModel(_inputMesh, _modelFromMaya);
 	_modelFromMaya.buildExtendedData();
 }
 
