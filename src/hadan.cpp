@@ -69,17 +69,20 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// cut out all cells, creating a new piece of geometry for each
 	performCutting();
 
-	// center pivots of all chunks
+	// center all selected objects' pivots
 	centerAllPivots();
 
-	// soften edges of all objects
+	// clear selection
+	MGlobal::clearSelectionList();
+
+	// soften all edges
 	softenAllEdges();
 
 	// apply default material to all generated cells
 	applyMaterials();
 
 	// shrink vertices of chunks along normals
-	separateCells();
+	//separateCells();
 
 	// end with only the source mesh selected (for easy deleting, etc.)
 	restoreInitialSelection();
