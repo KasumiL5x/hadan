@@ -123,41 +123,41 @@ namespace MayaHelper {
 		{
 			std::unique_lock<std::mutex> lock(CreateMeshMutex);
 			outMayaMesh.create(numVerts, numFaces, pointArray, faceCounts, faceConnects);
+		}
 
-			// custom polySoftEdge in C++
-			MItMeshEdge edgeIt(outMayaMesh.object()); // BUG: Does NOT work with DAG paths!
-			while( !edgeIt.isDone() ) {
-				// if not 2 edges, harden
-				int faceCount = 0;
-				edgeIt.numConnectedFaces(faceCount);
-				if( faceCount != 2 ) {
+		// custom polySoftEdge in C++
+		MItMeshEdge edgeIt(outMayaMesh.object()); // BUG: Does NOT work with DAG paths!
+		while( !edgeIt.isDone() ) {
+			// if not 2 edges, harden
+			int faceCount = 0;
+			edgeIt.numConnectedFaces(faceCount);
+			if( faceCount != 2 ) {
+				edgeIt.setSmoothing(false);
+			} else {
+				// get connected faces (2)
+				MIntArray faceList;
+				edgeIt.getConnectedFaces(faceList);
+				// get normals of faces
+				MVector nrmA;
+				outMayaMesh.getPolygonNormal(faceList[0], nrmA);
+				MVector nrmB;
+				outMayaMesh.getPolygonNormal(faceList[1], nrmB);
+				const cc::Vec3f cc_a = cc::Vec3f(static_cast<float>(nrmA.x), static_cast<float>(nrmA.y), static_cast<float>(nrmA.z)).normalized();
+				const cc::Vec3f cc_b = cc::Vec3f(static_cast<float>(nrmB.x), static_cast<float>(nrmB.y), static_cast<float>(nrmB.z)).normalized();
+				const float theta = cc_a.dot(cc_b);
+				const float angle = cc::math::RAD_TO_DEG * acosf(theta);
+
+				if( angle >= 30.0f ) { // todo: expose this
 					edgeIt.setSmoothing(false);
 				} else {
-					// get connected faces (2)
-					MIntArray faceList;
-					edgeIt.getConnectedFaces(faceList);
-					// get normals of faces
-					MVector nrmA;
-					outMayaMesh.getPolygonNormal(faceList[0], nrmA);
-					MVector nrmB;
-					outMayaMesh.getPolygonNormal(faceList[1], nrmB);
-					const cc::Vec3f cc_a = cc::Vec3f(nrmA.x, nrmA.y, nrmA.z).normalized();
-					const cc::Vec3f cc_b = cc::Vec3f(nrmB.x, nrmB.y, nrmB.z).normalized();
-					const float theta = cc_a.dot(cc_b);
-					const float angle = cc::math::RAD_TO_DEG * acosf(theta);
-
-					if( angle >= 30.0f ) { // todo: expose this
-						edgeIt.setSmoothing(false);
-					} else {
-						edgeIt.setSmoothing(true);
-					}
+					edgeIt.setSmoothing(true);
 				}
-
-				edgeIt.next();
 			}
-			outMayaMesh.cleanupEdgeSmoothing();
-			outMayaMesh.updateSurface();
+
+			edgeIt.next();
 		}
+		outMayaMesh.cleanupEdgeSmoothing();
+		outMayaMesh.updateSurface();
 
 		return true;
 	}
