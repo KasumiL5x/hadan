@@ -8,7 +8,7 @@ public:
 	ClusterPointGen();
 	~ClusterPointGen();
 
-	virtual void generateSamplePoints( const Model& sourceModel, const PointGenInfo& info, std::vector<cc::Vec3f>& outPoints ) override;
+	virtual void generateSamplePoints( const BoundingBox& boundingBox, const PointGenInfo& info, std::vector<cc::Vec3f>& outPoints ) override;
 };
 
 #endif /* __cluster_point_gen__ */

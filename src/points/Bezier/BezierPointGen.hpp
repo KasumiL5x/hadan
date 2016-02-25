@@ -8,7 +8,7 @@ public:
 	BezierPointGen();
 	~BezierPointGen();
 
-	virtual void generateSamplePoints( const Model& sourceModel, const PointGenInfo& info, std::vector<cc::Vec3f>& outPoints ) override;
+	virtual void generateSamplePoints( const BoundingBox& boundingBox, const PointGenInfo& info, std::vector<cc::Vec3f>& outPoints ) override;
 };
 
 #endif /* __bezier_point_gen__ */

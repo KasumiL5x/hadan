@@ -90,7 +90,6 @@
     <ClInclude Include="..\src\points\PointGenInfo.hpp">
       <Filter>points</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\ProgressHelper.hpp" />
     <ClInclude Include="..\src\points\Bezier\BezierPath.hpp">
       <Filter>points\Bezier</Filter>
     </ClInclude>
