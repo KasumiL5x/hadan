@@ -16,6 +16,8 @@
 #include <maya/MBoundingBox.h>
 #include <maya/MFnTransform.h>
 #include <maya/MMatrix.h>
+#include <cc/TriMath.hpp>
+#include <maya/MItMeshFaceVertex.h>
 
 namespace MayaHelper {
 	static bool getObjectFromString( const std::string& path, MDagPath& outDagPath ) {
@@ -57,28 +59,6 @@ namespace MayaHelper {
 		return bbox;
 	}
 
-	static void convertMayaMeshToGeometry( MDagPath& dagPath ) {
-		MFnMesh mesh(dagPath);
-
-		// all unique points
-		MPointArray points;
-		mesh.getPoints(points, MSpace::kWorld);
-
-		// all normals
-		MFloatVectorArray normals;
-		mesh.getNormals(normals);
-
-		// get UVs
-		MFloatArray uArray;
-		MFloatArray vArray;
-		mesh.getUVs(uArray, vArray);
-
-		// triangles
-		MIntArray triangleCounts;
-		MIntArray triangleVertices;
-		mesh.getTriangles(triangleCounts, triangleVertices);
-	}
-
 	static void copyMFnMeshToModel( MDagPath& mayaMeshDagPath, Model& outModel ) {
 		MFnMesh mayaMesh(mayaMeshDagPath);
 		// does the mesh have uvs?
@@ -98,6 +78,11 @@ namespace MayaHelper {
 				MTLog::instance()->log("Failed to get pos.\n");
 			}
 			vtx.position = cc::Vec3f(static_cast<float>(pos.x), static_cast<float>(pos.y), static_cast<float>(pos.z));
+
+			// normal
+			MVector normal;
+			it.getNormal(normal);
+			vtx.normal = cc::Vec3f(static_cast<float>(normal.x), static_cast<float>(normal.y), static_cast<float>(normal.z));
 
 			// get the texcoord, if it has one
 			if( hasUvs ) {
@@ -158,7 +143,130 @@ namespace MayaHelper {
 		{
 			std::unique_lock<std::mutex> lock(CreateMeshMutex);
 			outMayaMesh.create(numVerts, numFaces, pointArray, faceCounts, faceConnects);
+
+			// custom polySoftEdge in C++
+			MItMeshEdge edgeIt(outMayaMesh.object()); // BUG: Does NOT work with DAG paths!
+			while( !edgeIt.isDone() ) {
+				// if not 2 edges, harden
+				int faceCount = 0;
+				edgeIt.numConnectedFaces(faceCount);
+				if( faceCount != 2 ) {
+					edgeIt.setSmoothing(false);
+				} else {
+					// get connected faces (2)
+					MIntArray faceList;
+					edgeIt.getConnectedFaces(faceList);
+					// get normals of faces
+					MVector nrmA;
+					outMayaMesh.getPolygonNormal(faceList[0], nrmA);
+					MVector nrmB;
+					outMayaMesh.getPolygonNormal(faceList[1], nrmB);
+					const cc::Vec3f cc_a = cc::Vec3f(nrmA.x, nrmA.y, nrmA.z).normalized();
+					const cc::Vec3f cc_b = cc::Vec3f(nrmB.x, nrmB.y, nrmB.z).normalized();
+					const float theta = cc_a.dot(cc_b);
+					const float angle = cc::math::RAD_TO_DEG * acosf(theta);
+
+					if( angle >= 30.0f ) { // todo: expose this
+						edgeIt.setSmoothing(false);
+					} else {
+						edgeIt.setSmoothing(true);
+					}
+				}
+
+				edgeIt.next();
+			}
+			outMayaMesh.cleanupEdgeSmoothing();
+			outMayaMesh.updateSurface();
+			
+
+			//for( int i = 0; i < outMayaMesh.numEdges(); ++i ) {
+			//	outMayaMesh.setEdgeSmoothing(i, false);
+			//}
+			//outMayaMesh.cleanupEdgeSmoothing();
+			//outMayaMesh.updateSurface();
+			//MItMeshFaceVertex it(outMayaMesh.dagPath());
+			//while( !it.isDone() ) {
+			//	const int faceId = it.faceId();
+			//	MVector faceNormal;
+			//	outMayaMesh.getPolygonNormal(faceId, faceNormal);
+
+			//	const int vertId = it.faceVertId();
+			//	outMayaMesh.setFaceVertexNormal(faceNormal, faceId, vertId);
+
+			//	it.next();
+			//}
+			//outMayaMesh.updateSurface();
+
+			//for( int i = 0; i < outMayaMesh.numEdges(); ++i ) {
+			//	outMayaMesh.setEdgeSmoothing(i, true);
+			//}
+			//outMayaMesh.cleanupEdgeSmoothing();
+			//outMayaMesh.updateSurface();
+
+			// build new per-face per-vertex normals for each vertex for each triangle
+			//MFloatVectorArray normals;
+			//for( unsigned int i = 0; i < numFaces; ++i ) {
+			//	const unsigned int offset = i * 3;
+			//	const cc::Vec3f p0 = vertices[offset + 0].position;
+			//	const cc::Vec3f p1 = vertices[offset + 1].position;
+			//	const cc::Vec3f p2 = vertices[offset + 2].position;
+			//	const cc::Vec3f normal = cc::math::computeTriangleNormal(p0, p1, p2).normalized();
+			//	MVector nrm(normal.x, normal.y, normal.z);
+
+			//	MIntArray ids;
+			//	outMayaMesh.getFaceNormalIds(i, ids);
+			//	for( unsigned int currId = 0; currId < ids.length(); ++currId ) {
+			//		const int theId = ids[currId];
+			//		outMayaMesh.setVertexNormal(nrm, theId);
+			//	}
+
+			//	//normals.append(MFloatVector(normal.x, normal.y, normal.z));
+			//}
+			////outMayaMesh.setNormals(normals);
+			//// unlock all normals
+			//MIntArray unlockTheseNormals;
+			//for( int i = 0; i < static_cast<int>(vertices.size()); ++i ) {
+			//	unlockTheseNormals.append(i);
+			//}
+
+			//for( unsigned int i = 0; i < static_cast<unsigned int>(vertices.size()); ++i ) {
+			//	MVector nrm;
+			//	nrm.x = vertices[i].normal.x;
+			//	nrm.y = vertices[i].normal.y;
+			//	nrm.z = vertices[i].normal.z;
+			//	outMayaMesh.setVertexNormal(nrm, i);
+			//}
+			//// set shared normals per vertex
+			//MFloatVectorArray normals;
+			//for( unsigned int i = 0; i < vertices.size(); ++i ) {
+			//	normals.append(MFloatVector());
+			//}
+			//MIntArray normalCounts;
+			//MIntArray normalIds;
+			//outMayaMesh.getNormalIds(normalCounts, normalIds);
+			//for( unsigned int i = 0; i < normalIds.length(); ++i ) {
+			//	const int id = normalIds[i];
+			//	normals[id] = MFloatVector(vertices[id].normal.x, vertices[id].normal.y, vertices[id].normal.z);
+			//}
+			//outMayaMesh.setNormals(normals);
 		}
+		
+		//for( unsigned int i = 0; i < vertices.size(); ++i ) {
+		//	MFloatVector mayaNormal;
+		//	mayaNormal.x = vertices[i].normal.x;
+		//	mayaNormal.y = vertices[i].normal.y;
+		//	mayaNormal.z = vertices[i].normal.z;
+		//	normals.append(mayaNormal);
+		//}
+		//outMayaMesh.setNormals(normals);
+
+		//for( unsigned int i = 0; i < vertices.size(); ++i ) {
+		//	MVector mayaNormal;
+		//	mayaNormal.x = static_cast<double>(vertices[i].normal.x);
+		//	mayaNormal.y = static_cast<double>(vertices[i].normal.y);
+		//	mayaNormal.z = static_cast<double>(vertices[i].normal.z);
+		//	outMayaMesh.setVertexNormal(mayaNormal, static_cast<int>(i));
+		//}
 
 		//// create a new uvset if there isn't one already
 		//MString uvSetName = ("uvset1");

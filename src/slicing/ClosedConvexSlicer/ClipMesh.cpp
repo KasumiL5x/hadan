@@ -40,6 +40,7 @@ ClipMesh::ClipMesh( Model& sourceModel ) {
 	_vertices.resize(srcVerts.size());
 	for( unsigned int i = 0; i < srcVerts.size(); ++i ) {
 		_vertices[i].point = srcVerts[i].position;
+		_vertices[i].normal = srcVerts[i].normal;
 		_vertices[i].uv = srcVerts[i].texcoord;
 	}
 	
@@ -85,6 +86,24 @@ ClipMesh::Result ClipMesh::clip( const Plane& clipPlane ) {
 }
 
 bool ClipMesh::convert( Model* outModel ) {
+
+	for( auto& vtx : _vertices ) {
+		vtx.normal = cc::Vec3f::zero();
+	}
+	for( const auto& face : _faces ) {
+		std::set<int> ids;
+		for( const auto& edge : face.edges ) {
+			ids.insert(_edges[edge].vertex[0]);
+			ids.insert(_edges[edge].vertex[1]);
+		}
+		for( const auto& id : ids ) {
+			_vertices[id].normal += face.normal;
+		}
+	}
+	for( auto& vtx : _vertices ) {
+		vtx.normal.normalize();
+	}
+
 	// get visible vertices
 	const unsigned int numVertices = static_cast<unsigned int>(_vertices.size());
 	std::vector<Vertex> points;
@@ -96,7 +115,8 @@ bool ClipMesh::convert( Model* outModel ) {
 			continue;
 		}
 		vMap[currVtx] = static_cast<unsigned int>(points.size());
-		points.push_back(Vertex(vtx.point, vtx.uv));
+
+		points.push_back(Vertex(vtx.point, vtx.normal, vtx.uv));
 	}
 
 	// check for all culled
@@ -246,10 +266,13 @@ void ClipMesh::processEdges() {
 		const cc::Vec3f p1 = _vertices[edge.vertex[1]].point;
 		vertexNew.point = p0 + (d0/(d0 - d1))*(p1 - p0);
 
+		const cc::Vec3f& n0 = _vertices[edge.vertex[0]].normal;
+		const cc::Vec3f& n1 = _vertices[edge.vertex[1]].normal;
+		vertexNew.normal = ((n0 + n1) * 0.5f).normalized();
+
 		const cc::Vec2f& t0 = _vertices[edge.vertex[0]].uv;
 		const cc::Vec2f& t1 = _vertices[edge.vertex[1]].uv;
 		vertexNew.uv = t0 + (d0/(d0 - d1))*(t1 - t0);
-		//MTLog::instance()->log("UV: " + std::to_string(vertexNew.uv.x) + ", " + std::to_string(vertexNew.uv.y) + "\n");
 
 		if( d0 > 0.0f ) {
 			edge.vertex[1] = vNew;

@@ -76,7 +76,7 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	MGlobal::clearSelectionList();
 
 	// soften all edges
-	softenAllEdges();
+	//softenAllEdges();
 
 	// apply default material to all generated cells
 	applyMaterials();

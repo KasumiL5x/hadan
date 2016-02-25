@@ -16,7 +16,7 @@ bool ClosedConvexSlicer::setSource( MFnMesh& source ) {
 }
 
 bool ClosedConvexSlicer::slice( const Cell& cell, MFnMesh& outMesh ) {
-		ClipMesh clipMesh(_inputModel);
+	ClipMesh clipMesh(_inputModel);
 
 	// cut the ClipMesh with all planes of the cell
 	bool anyResult = false;
