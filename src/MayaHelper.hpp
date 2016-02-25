@@ -14,6 +14,8 @@
 #include "MTLog.hpp"
 #include "BoundingBox.hpp"
 #include <maya/MBoundingBox.h>
+#include <maya/MFnTransform.h>
+#include <maya/MMatrix.h>
 
 namespace MayaHelper {
 	static bool getObjectFromString( const std::string& path, MDagPath& outDagPath ) {
@@ -34,18 +36,24 @@ namespace MayaHelper {
 		return mesh.getHoles(holeInfoArray, holeVertexArray) != 0;
 	}
 
-	static BoundingBox getBoundingBox( const MBoundingBox& mayaBox) {
+	static BoundingBox getBoundingBox( const MFnMesh& mayaObj ) {
 		BoundingBox bbox;
-		// compute the center (min and max are in world space)
-		const cc::Vec3f min = cc::Vec3f(static_cast<float>(mayaBox.min().x), static_cast<float>(mayaBox.min().y), static_cast<float>(mayaBox.min().z));
-		const cc::Vec3f max = cc::Vec3f(static_cast<float>(mayaBox.max().x), static_cast<float>(mayaBox.max().y), static_cast<float>(mayaBox.max().z));
-		const cc::Vec3f center = (min + max) * 0.5f;
-		bbox.setCenter(center);
+
+		// get parent transform node (all meshes definitely have one)
+		MFnTransform parent(mayaObj.parent(0));
+		// get the mesh's bounding box
+		MBoundingBox mayaBox = mayaObj.boundingBox();
+		// transform the bounding box by the parent's transformation matrix
+		mayaBox.transformUsing(parent.transformationMatrix());
+		// get the transformed center
+		const MPoint center = mayaBox.center();
+		bbox.setCenter(cc::Vec3f(static_cast<float>(center.x), static_cast<float>(center.y), static_cast<float>(center.z)));
 		// get the half dimensions
 		const float halfWidth = static_cast<float>(mayaBox.width()) * 0.5f;
 		const float halfHeight = static_cast<float>(mayaBox.height()) * 0.5f;
 		const float halfDepth = static_cast<float>(mayaBox.depth()) * 0.5f;
 		bbox.setHalfExtents(cc::Vec3f(halfWidth, halfHeight, halfDepth));
+
 		return bbox;
 	}
 

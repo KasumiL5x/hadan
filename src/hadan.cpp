@@ -49,7 +49,7 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	}
 
 	// get the bounding box from Maya
-	_boundingBox = MayaHelper::getBoundingBox(MFnMesh(_inputMesh).boundingBox());
+	_boundingBox = MayaHelper::getBoundingBox(MFnMesh(_inputMesh));
 
 	// copy maya mesh into local model
 	copyMeshFromMaya();
