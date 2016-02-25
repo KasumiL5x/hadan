@@ -13,7 +13,6 @@
 #include <maya/MFnSet.h>
 #include "MTLog.hpp"
 #include <thread>
-//#include "ProgressHelper.hpp"
 
 static std::mutex GeneratedMeshesMutex;
 
@@ -49,12 +48,11 @@ MStatus Hadan::doIt( const MArgList& args ) {
 		return MS::kFailure;
 	}
 
+	// get the bounding box from Maya
+	_boundingBox = MayaHelper::getBoundingBox(MFnMesh(_inputMesh).boundingBox());
+
 	// copy maya mesh into local model
 	copyMeshFromMaya();
-
-	// DEBUG: DUPLICATE THE MESH BACK TO MAYA
-	MFnMesh debugOutMayaMesh;
-	MayaHelper::copyModelToMFnMesh(_modelFromMaya, debugOutMayaMesh);
 
 	// generate sample points
 	if( !generateSamplePoints() ) {
@@ -225,13 +223,13 @@ void Hadan::copyMeshFromMaya() {
 
 bool Hadan::generateSamplePoints() {
 	std::unique_ptr<IPointGen> gen = PointGenFactory::create(_pointsGenType);
-	gen->generateSamplePoints(_modelFromMaya.computeBoundingBox(), _pointGenInfo, _samplePoints);
+	gen->generateSamplePoints(_boundingBox, _pointGenInfo, _samplePoints);
 	return !_samplePoints.empty();
 }
 
 bool Hadan::generateCuttingCells() {
 	std::unique_ptr<ICellGen> gen = CellGenFactory::create(CellGenFactory::Type::Voronoi);
-	gen->generate(_modelFromMaya.computeBoundingBox(), _samplePoints, _cuttingCells);
+	gen->generate(_boundingBox, _samplePoints, _cuttingCells);
 	return !_cuttingCells.empty();
 }
 

@@ -15,6 +15,14 @@ const cc::Vec3f& BoundingBox::getHalfExtents() const {
 	return _halfExtents;
 }
 
+void BoundingBox::setCenter( const cc::Vec3f& center ) {
+	_center = center;
+}
+
+void BoundingBox::setHalfExtents( const cc::Vec3f& halfExtents ) {
+	_halfExtents = halfExtents;
+}
+
 float BoundingBox::minX() const {
 	return _center.x - _halfExtents.x;
 }

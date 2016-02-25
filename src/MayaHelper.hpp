@@ -12,6 +12,8 @@
 #include <maya/MGlobal.h>
 #include "Model.hpp"
 #include "MTLog.hpp"
+#include "BoundingBox.hpp"
+#include <maya/MBoundingBox.h>
 
 namespace MayaHelper {
 	static bool getObjectFromString( const std::string& path, MDagPath& outDagPath ) {
@@ -30,6 +32,43 @@ namespace MayaHelper {
 		MIntArray holeInfoArray;
 		MIntArray holeVertexArray;
 		return mesh.getHoles(holeInfoArray, holeVertexArray) != 0;
+	}
+
+	static BoundingBox getBoundingBox( const MBoundingBox& mayaBox) {
+		BoundingBox bbox;
+		// compute the center (min and max are in world space)
+		const cc::Vec3f min = cc::Vec3f(static_cast<float>(mayaBox.min().x), static_cast<float>(mayaBox.min().y), static_cast<float>(mayaBox.min().z));
+		const cc::Vec3f max = cc::Vec3f(static_cast<float>(mayaBox.max().x), static_cast<float>(mayaBox.max().y), static_cast<float>(mayaBox.max().z));
+		const cc::Vec3f center = (min + max) * 0.5f;
+		bbox.setCenter(center);
+		// get the half dimensions
+		const float halfWidth = static_cast<float>(mayaBox.width()) * 0.5f;
+		const float halfHeight = static_cast<float>(mayaBox.height()) * 0.5f;
+		const float halfDepth = static_cast<float>(mayaBox.depth()) * 0.5f;
+		bbox.setHalfExtents(cc::Vec3f(halfWidth, halfHeight, halfDepth));
+		return bbox;
+	}
+
+	static void convertMayaMeshToGeometry( MDagPath& dagPath ) {
+		MFnMesh mesh(dagPath);
+
+		// all unique points
+		MPointArray points;
+		mesh.getPoints(points, MSpace::kWorld);
+
+		// all normals
+		MFloatVectorArray normals;
+		mesh.getNormals(normals);
+
+		// get UVs
+		MFloatArray uArray;
+		MFloatArray vArray;
+		mesh.getUVs(uArray, vArray);
+
+		// triangles
+		MIntArray triangleCounts;
+		MIntArray triangleVertices;
+		mesh.getTriangles(triangleCounts, triangleVertices);
 	}
 
 	static void copyMFnMeshToModel( MDagPath& mayaMeshDagPath, Model& outModel ) {

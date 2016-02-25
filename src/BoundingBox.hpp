@@ -22,6 +22,8 @@ public:
 
 	const cc::Vec3f& getCenter() const;
 	const cc::Vec3f& getHalfExtents() const;
+	void setCenter( const cc::Vec3f& center );
+	void setHalfExtents( const cc::Vec3f& halfExtents );
 
 	float minX() const;
 	float minY() const;

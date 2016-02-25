@@ -102,6 +102,7 @@ private:
 	std::vector<Cell> _cuttingCells;
 	std::vector<MObject> _generatedMeshes;
 	std::vector<Model> _generatedModels;
+	BoundingBox _boundingBox;
 };
 
 #endif /* __hadan__ */
