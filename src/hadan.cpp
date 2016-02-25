@@ -17,7 +17,7 @@
 static std::mutex GeneratedMeshesMutex;
 
 Hadan::Hadan()
-	: MPxCommand(), _inputMesh(), _pointsGenType(PointGenFactory::Type::Invalid), _separationDistance(0.0), _pointGenInfo() {
+	: MPxCommand(), _inputMesh(), _pointsGenType(PointGenFactory::Type::Invalid), _separationDistance(0.0), _pointGenInfo(), _useMultithreading(false) {
 }
 
 Hadan::~Hadan() {
@@ -123,24 +123,24 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	_pointGenInfo = PointGenInfo();
 
 	// parse and validate existance of mesh name
-	if( !db.isFlagSet(HadanArgs::MeshName) ) {
+	if( !db.isFlagSet(HadanArgs::HadanMeshName) ) {
 		MTLog::instance()->log("Error: Required argument -meshname (-mn) is missing.\n");
 		return false;
 	}
 	MString meshNameStr;
-	db.getFlagArgument(HadanArgs::MeshName, 0, meshNameStr);
+	db.getFlagArgument(HadanArgs::HadanMeshName, 0, meshNameStr);
 	if( !MayaHelper::getObjectFromString(meshNameStr.asChar(), _inputMesh) ) {
 		MTLog::instance()->log("Error: Given object not found.\n");
 		return false;
 	}
 
 	// parse fracture type
-	if( !db.isFlagSet(HadanArgs::FractureType) ) {
+	if( !db.isFlagSet(HadanArgs::HadanFractureType) ) {
 		MTLog::instance()->log("Error: Required argument -fracturetype (-ft) is missing.\n");
 		return false;
 	}
 	MString fractureTypeStr;
-	db.getFlagArgument(HadanArgs::FractureType, 0, fractureTypeStr);
+	db.getFlagArgument(HadanArgs::HadanFractureType, 0, fractureTypeStr);
 	if( strcmp(fractureTypeStr.asChar(), "uniform") == 0 ) {
 		_pointsGenType = PointGenFactory::Type::Uniform;
 	} else if( strcmp(fractureTypeStr.asChar(), "bezier") == 0 ) {
@@ -155,31 +155,36 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	}
 
 	// parse separation distance
-	db.getFlagArgument(HadanArgs::SeparateDistance, 0, _separationDistance);
+	db.getFlagArgument(HadanArgs::HadanSeparateDistance, 0, _separationDistance);
 
 	// parse uniform count
-	db.getFlagArgument(HadanArgs::UniformCount, 0, _pointGenInfo.uniformCount);
+	db.getFlagArgument(HadanArgs::HadanUniformCount, 0, _pointGenInfo.uniformCount);
 
 	// parse primary count
-	db.getFlagArgument(HadanArgs::PrimaryCount, 0, _pointGenInfo.primaryCount);
+	db.getFlagArgument(HadanArgs::HadanPrimaryCount, 0, _pointGenInfo.primaryCount);
 
 	// parse secondary count
-	db.getFlagArgument(HadanArgs::SecondaryCount, 0, _pointGenInfo.secondaryCount);
+	db.getFlagArgument(HadanArgs::HadanSecondaryCount, 0, _pointGenInfo.secondaryCount);
 
 	// parse sample count
-	db.getFlagArgument(HadanArgs::Samples, 0, _pointGenInfo.samples);
+	db.getFlagArgument(HadanArgs::HadanSamples, 0, _pointGenInfo.samples);
 
 	// parse flux
-	db.getFlagArgument(HadanArgs::FluxPercentage, 0, _pointGenInfo.flux);
+	db.getFlagArgument(HadanArgs::HadanFluxPercentage, 0, _pointGenInfo.flux);
 
 	// parse random seed
 	db.getFlagArgument(HadanArgs::HadanRandomSeed, 0, _pointGenInfo.seed);
 
+	// parse multi-threading
+	if( db.isFlagSet(HadanArgs::HadanMultiThreading) ) {
+		db.getFlagArgument(HadanArgs::HadanMultiThreading, 0, _useMultithreading);
+	}
+
 	// parse user's optional points list
-	const unsigned int pntUses = db.numberOfFlagUses(HadanArgs::Point);
+	const unsigned int pntUses = db.numberOfFlagUses(HadanArgs::HadanPoint);
 	for( unsigned int i = 0; i < pntUses; ++i ) {
 		MArgList pntArgsList;
-		db.getFlagArgumentList(HadanArgs::Point, i, pntArgsList);
+		db.getFlagArgumentList(HadanArgs::HadanPoint, i, pntArgsList);
 		if( pntArgsList.length() != 3 ) {
 			printf("Ignoring -pnt (-point) %d because it was formatted incorrectly.\n", i);
 			continue;
@@ -251,8 +256,7 @@ void Hadan::performCutting() {
 		return;
 	}
 
-	const bool USE_MULTITHREADING = true;
-	if( USE_MULTITHREADING ) {
+	if( _useMultithreading ) {
 		// multi threaded
 		std::vector<std::thread> cuttingThreads;
 		for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {

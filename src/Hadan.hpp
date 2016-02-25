@@ -103,6 +103,7 @@ private:
 	std::vector<MObject> _generatedMeshes;
 	std::vector<Model> _generatedModels;
 	BoundingBox _boundingBox;
+	bool _useMultithreading;
 };
 
 #endif /* __hadan__ */

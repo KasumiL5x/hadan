@@ -113,6 +113,9 @@ class HadanGui(QtGui.QMainWindow):
 		# seed value
 		self.__command += '-rs %d ' % (self.spin_seed.value())
 
+		# multi-threading
+		self.__command += '-mt %s' % ('true' if self.chk_multithreaded.isChecked() else 'false')
+
 		# add all user points
 		for curr in self.__positions:
 			if not cmds.objExists(curr):
@@ -501,16 +504,24 @@ class HadanGui(QtGui.QMainWindow):
 		self.ta_main.addTab(self.tp_advanced, "")
 		self.ta_main.setTabText(self.ta_main.indexOf(self.tp_advanced), QtGui.QApplication.translate("Advanced", "Advanced", None, QtGui.QApplication.UnicodeUTF8))
 
+		# multi-threaded checkbox
+		self.chk_multithreaded = QtGui.QCheckBox(self.tp_advanced)
+		self.chk_multithreaded.setGeometry(QtCore.QRect(10, 10, 150, 16))
+		self.chk_multithreaded.setFont(font_10)
+		self.chk_multithreaded.setObjectName("chk_multithreaded")
+		self.chk_multithreaded.setText(QtGui.QApplication.translate("Use multiple threads", "Use multiple threads", None, QtGui.QApplication.UnicodeUTF8))
+		self.chk_multithreaded.setChecked(True)
+
 		# generated command label
 		self.lbl_generatedCommand = QtGui.QLabel(self.tp_advanced)
-		self.lbl_generatedCommand.setGeometry(QtCore.QRect(10, 10, 126, 16))
+		self.lbl_generatedCommand.setGeometry(QtCore.QRect(10, 160, 126, 16))
 		self.lbl_generatedCommand.setFont(font_10)
 		self.lbl_generatedCommand.setObjectName("lbl_generatedCommand")
 		self.lbl_generatedCommand.setText(QtGui.QApplication.translate("Generated Command", "Generated Command", None, QtGui.QApplication.UnicodeUTF8))
 
 		# generated command textbox
 		self.txt_generatedCommand = QtGui.QLineEdit(self.tp_advanced)
-		self.txt_generatedCommand.setGeometry(QtCore.QRect(10, 30, 355, 20))
+		self.txt_generatedCommand.setGeometry(QtCore.QRect(10, 180, 355, 20))
 		self.txt_generatedCommand.setReadOnly(True)
 		self.txt_generatedCommand.setPlaceholderText("")
 		self.txt_generatedCommand.setObjectName("txt_generatedCommand")
