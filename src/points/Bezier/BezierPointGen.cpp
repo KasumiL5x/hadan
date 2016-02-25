@@ -14,7 +14,8 @@ void BezierPointGen::generateSamplePoints( const BoundingBox& boundingBox, const
 	printf("Generating bezier:\n");
 
 	if( 0 == info.samples ) {
-		MTLog::instance()->log("Warning: Curve will be ignored as Samples were zero.\n");
+		MTLog::instance()->log("Warning: Curve will be ignored as Samples were zero.  Fracturing will not occur.\n");
+		return;
 	}
 
 	// create seeded random

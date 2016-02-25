@@ -1,5 +1,6 @@
 #include "ClosedConvexSlicer.hpp"
 #include "ClipMesh.hpp"
+#include "../../MayaHelper.hpp"
 
 ClosedConvexSlicer::ClosedConvexSlicer()
 	: IMeshSlicer() {
@@ -8,9 +9,15 @@ ClosedConvexSlicer::ClosedConvexSlicer()
 ClosedConvexSlicer::~ClosedConvexSlicer() {
 }
 
-bool ClosedConvexSlicer::slice( Model& sourceModel, const Cell& cell, Model& outModel ) const {
-	// convert the source mesh into a ClipMesh
-	ClipMesh clipMesh(sourceModel);
+bool ClosedConvexSlicer::setSource( MFnMesh& source ) {
+	MayaHelper::copyMFnMeshToModel(source.dagPath(), _inputModel);
+	_inputModel.buildExtendedData();
+	return (_inputModel.getVertices().size() != 0 && _inputModel.getIndices().size() != 0);
+}
+
+bool ClosedConvexSlicer::slice( const Cell& cell, MFnMesh& outMesh ) {
+		ClipMesh clipMesh(_inputModel);
+
 	// cut the ClipMesh with all planes of the cell
 	bool anyResult = false;
 	for( unsigned int i = 0; i < cell.getPlaneCount(); ++i ) {
@@ -21,7 +28,12 @@ bool ClosedConvexSlicer::slice( Model& sourceModel, const Cell& cell, Model& out
 	}
 	// if any cuts were successful, return converted model
 	if( anyResult ) {
-		return clipMesh.convert(&outModel);
+		Model outModel;
+		if( !clipMesh.convert(&outModel) ) {
+			return false;
+		}
+		MayaHelper::copyModelToMFnMesh(outModel, outMesh);
+		return true;
 	} else {
 		return false;
 	}

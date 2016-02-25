@@ -234,21 +234,24 @@ bool Hadan::generateCuttingCells() {
 }
 
 void Hadan::doSingleCut( const Cell& cell, int id, std::shared_ptr<IMeshSlicer> slicer ) {
-	Model outModel;
-	if( !slicer->slice(_modelFromMaya, cell, outModel) ) {
+	MFnMesh outMesh;
+	if( !slicer->slice(cell, outMesh) ) {
 		MTLog::instance()->log("Warning: Failed to slice using cell " + std::to_string(id) + ".  This is sometimes expected.\n");
 		return;
 	}
 
 	std::lock_guard<std::mutex> lk(GeneratedMeshesMutex);
-	_generatedModels.push_back(outModel);
+	_generatedMeshes.push_back(outMesh.object());
 }
 
 void Hadan::performCutting() {
 	std::shared_ptr<IMeshSlicer> slicer = std::make_shared<ClosedConvexSlicer>();
+	if( !slicer->setSource(MFnMesh(_inputMesh)) ) {
+		MTLog::instance()->log("Warning: Failed to set slicer mesh source.  Cutting will not take place.\n");
+		return;
+	}
 
 	const bool USE_MULTITHREADING = true;
-
 	if( USE_MULTITHREADING ) {
 		// multi threaded
 		std::vector<std::thread> cuttingThreads;
@@ -263,12 +266,6 @@ void Hadan::performCutting() {
 		for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
 			doSingleCut(_cuttingCells[i], i, slicer);
 		}
-	}
-
-	for( auto& mdl : _generatedModels ) {
-		MFnMesh outMesh;
-		MayaHelper::copyModelToMFnMesh(mdl, outMesh);
-		_generatedMeshes.push_back(outMesh.object());
 	}
 }
 

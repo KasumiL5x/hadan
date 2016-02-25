@@ -86,6 +86,7 @@ private:
 	};
 
 public:
+	ClipMesh()=default;
 	/**
 	 * Constructs by copying all required data from a source Model.
 	 * @param sourceModel Original Model to parse.

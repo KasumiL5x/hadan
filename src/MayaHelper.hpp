@@ -153,54 +153,58 @@ namespace MayaHelper {
 			faceCounts.append(3);
 		}
 
-		// create the actual mesh
-		outMayaMesh.create(numVerts, numFaces, pointArray, faceCounts, faceConnects);
-
-		// create a new uvset if there isn't one already
-		MString uvSetName = ("uvset1");
-		if( outMayaMesh.getCurrentUVSetName(uvSetName) != MS::kSuccess ) {
-			uvSetName = "uvset1";
-			outMayaMesh.createUVSet(uvSetName);
-			outMayaMesh.setCurrentUVSetName(uvSetName);
+		// create the actual mesh (lock w/ mutex because create function is not thread safe)
+		static std::mutex CreateMeshMutex;
+		{
+			std::unique_lock<std::mutex> lock(CreateMeshMutex);
+			outMayaMesh.create(numVerts, numFaces, pointArray, faceCounts, faceConnects);
 		}
 
-		// clear all existing uvs
-		outMayaMesh.clearUVs();
-
-		// set all uvs in order such that they map 1-to-1
-		MFloatArray UArray;
-		MFloatArray VArray;
-		for( unsigned int i = 0; i < static_cast<unsigned int>(indices.size()); i += 3 ) {
-			UArray.append(vertices[indices[i+0]].texcoord.x); VArray.append(vertices[indices[i+0]].texcoord.y);
-			UArray.append(vertices[indices[i+1]].texcoord.x); VArray.append(vertices[indices[i+1]].texcoord.y);
-			UArray.append(vertices[indices[i+2]].texcoord.x); VArray.append(vertices[indices[i+2]].texcoord.y);
-
-		}
-		//for( const auto& vtx : model.getVertices() ) {
-		//	UArray.append(vtx.texcoord.x);
-		//	VArray.append(vtx.texcoord.y);
+		//// create a new uvset if there isn't one already
+		//MString uvSetName = ("uvset1");
+		//if( outMayaMesh.getCurrentUVSetName(uvSetName) != MS::kSuccess ) {
+		//	uvSetName = "uvset1";
+		//	outMayaMesh.createUVSet(uvSetName);
+		//	outMayaMesh.setCurrentUVSetName(uvSetName);
 		//}
-		const MStatus setUvStatus = outMayaMesh.setUVs(UArray, VArray, &uvSetName);
-		if( setUvStatus.error() || setUvStatus != MS::kSuccess ) {
-			MTLog::instance()->log("Failed to set UVs.\n");
-			MTLog::instance()->log(std::string(setUvStatus.errorString().asChar()) + "\n");
-		}
 
-		MTLog::instance()->log("Number of UVs: " + std::to_string(outMayaMesh.numUVs(uvSetName)) + "\n");
+		//// clear all existing uvs
+		//outMayaMesh.clearUVs();
 
-		MIntArray uvCounts; // number of uvs per polygon; we assume triangles
-		MIntArray uvIds; // index of uv per vertex
-		for( int i = 0; i < numFaces; ++i ) {
-			uvCounts.append(3);
-		}
-		for( unsigned int i = 0; i < static_cast<unsigned int>(indices.size()); ++i ) {
-			uvIds.append(indices[i]);
-		}
-		const MStatus uvStatus = outMayaMesh.assignUVs(uvCounts, uvIds, &uvSetName);
-		if( uvStatus.error() || uvStatus != MS::kSuccess ) {
-			MTLog::instance()->log("Failed to assign UVs.\n");
-			MTLog::instance()->log(std::string(uvStatus.errorString().asChar()) + "\n");
-		}
+		//// set all uvs in order such that they map 1-to-1
+		//MFloatArray UArray;
+		//MFloatArray VArray;
+		//for( unsigned int i = 0; i < static_cast<unsigned int>(indices.size()); i += 3 ) {
+		//	UArray.append(vertices[indices[i+0]].texcoord.x); VArray.append(vertices[indices[i+0]].texcoord.y);
+		//	UArray.append(vertices[indices[i+1]].texcoord.x); VArray.append(vertices[indices[i+1]].texcoord.y);
+		//	UArray.append(vertices[indices[i+2]].texcoord.x); VArray.append(vertices[indices[i+2]].texcoord.y);
+
+		//}
+		////for( const auto& vtx : model.getVertices() ) {
+		////	UArray.append(vtx.texcoord.x);
+		////	VArray.append(vtx.texcoord.y);
+		////}
+		//const MStatus setUvStatus = outMayaMesh.setUVs(UArray, VArray, &uvSetName);
+		//if( setUvStatus.error() || setUvStatus != MS::kSuccess ) {
+		//	MTLog::instance()->log("Failed to set UVs.\n");
+		//	MTLog::instance()->log(std::string(setUvStatus.errorString().asChar()) + "\n");
+		//}
+
+		//MTLog::instance()->log("Number of UVs: " + std::to_string(outMayaMesh.numUVs(uvSetName)) + "\n");
+
+		//MIntArray uvCounts; // number of uvs per polygon; we assume triangles
+		//MIntArray uvIds; // index of uv per vertex
+		//for( int i = 0; i < numFaces; ++i ) {
+		//	uvCounts.append(3);
+		//}
+		//for( unsigned int i = 0; i < static_cast<unsigned int>(indices.size()); ++i ) {
+		//	uvIds.append(indices[i]);
+		//}
+		//const MStatus uvStatus = outMayaMesh.assignUVs(uvCounts, uvIds, &uvSetName);
+		//if( uvStatus.error() || uvStatus != MS::kSuccess ) {
+		//	MTLog::instance()->log("Failed to assign UVs.\n");
+		//	MTLog::instance()->log(std::string(uvStatus.errorString().asChar()) + "\n");
+		//}
 
 		//// assign UVs to vertices
 		//MIntArray uvCounts; // number of uvs per polygon; we assume triangles

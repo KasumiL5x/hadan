@@ -12,7 +12,8 @@ ClusterPointGen::~ClusterPointGen() {
 
 void ClusterPointGen::generateSamplePoints( const BoundingBox& boundingBox, const PointGenInfo& info, std::vector<cc::Vec3f>& outPoints ) {
 	if( cc::math::equal<double>(info.flux, 0.0) ) {
-		MTLog::instance()->log("Warning: Fluctuation percentate for cluster fracture must be nonzero.  Fracturing may not occur.\n");
+		MTLog::instance()->log("Warning: Fluctuation percentate for cluster fracture must be nonzero.  Fracturing will not occur.\n");
+		return;
 	}
 
 	// seeded random
