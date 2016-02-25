@@ -69,11 +69,11 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// cut out all cells, creating a new piece of geometry for each
 	performCutting();
 
-	// center all selected objects' pivots
-	centerAllPivots();
-
 	// clear selection
 	MGlobal::clearSelectionList();
+
+	// center all selected objects' pivots
+	centerAllPivots();
 
 	// soften all edges (this has moved into native C++, which is faster than using MEL from C++)
 	//softenAllEdges();

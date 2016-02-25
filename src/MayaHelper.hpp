@@ -61,10 +61,6 @@ namespace MayaHelper {
 
 	static void copyMFnMeshToModel( MDagPath& mayaMeshDagPath, Model& outModel ) {
 		MFnMesh mayaMesh(mayaMeshDagPath);
-		// does the mesh have uvs?
-		MStringArray uvSetNames;
-		mayaMesh.getUVSetNames(uvSetNames);
-		const bool hasUvs = (uvSetNames.length() > 0) && (mayaMesh.numUVs(uvSetNames[0]) > 0);
 
 		MItMeshVertex it(mayaMeshDagPath);
 		while( !it.isDone() ) {
@@ -78,22 +74,6 @@ namespace MayaHelper {
 				MTLog::instance()->log("Failed to get pos.\n");
 			}
 			vtx.position = cc::Vec3f(static_cast<float>(pos.x), static_cast<float>(pos.y), static_cast<float>(pos.z));
-
-			// normal
-			MVector normal;
-			it.getNormal(normal);
-			vtx.normal = cc::Vec3f(static_cast<float>(normal.x), static_cast<float>(normal.y), static_cast<float>(normal.z));
-
-			// get the texcoord, if it has one
-			if( hasUvs ) {
-				int uvCount = 0;
-				it.numUVs(uvCount, &uvSetNames[0]);
-				if( uvCount > 0 ) {
-					float2 uvs;
-					it.getUV(uvs, &uvSetNames[0]);
-					vtx.texcoord = cc::Vec2f(uvs[0], uvs[1]);
-				}
-			}
 
 			// append vertex to our mesh
 			outModel.addVertex(vtx);

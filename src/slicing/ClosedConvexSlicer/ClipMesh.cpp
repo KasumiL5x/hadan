@@ -96,7 +96,7 @@ bool ClipMesh::convert( Model* outModel ) {
 		}
 		vMap[currVtx] = static_cast<unsigned int>(points.size());
 
-		points.push_back(Vertex(vtx.point, cc::Vec3f::zero(), cc::Vec2f::zero()));
+		points.push_back(Vertex(vtx.point));
 	}
 
 	// check for all culled
