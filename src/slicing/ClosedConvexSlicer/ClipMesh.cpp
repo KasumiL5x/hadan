@@ -40,8 +40,6 @@ ClipMesh::ClipMesh( Model& sourceModel ) {
 	_vertices.resize(srcVerts.size());
 	for( unsigned int i = 0; i < srcVerts.size(); ++i ) {
 		_vertices[i].point = srcVerts[i].position;
-		_vertices[i].normal = srcVerts[i].normal;
-		_vertices[i].uv = srcVerts[i].texcoord;
 	}
 	
 	// copy edges over
@@ -86,24 +84,6 @@ ClipMesh::Result ClipMesh::clip( const Plane& clipPlane ) {
 }
 
 bool ClipMesh::convert( Model* outModel ) {
-
-	for( auto& vtx : _vertices ) {
-		vtx.normal = cc::Vec3f::zero();
-	}
-	for( const auto& face : _faces ) {
-		std::set<int> ids;
-		for( const auto& edge : face.edges ) {
-			ids.insert(_edges[edge].vertex[0]);
-			ids.insert(_edges[edge].vertex[1]);
-		}
-		for( const auto& id : ids ) {
-			_vertices[id].normal += face.normal;
-		}
-	}
-	for( auto& vtx : _vertices ) {
-		vtx.normal.normalize();
-	}
-
 	// get visible vertices
 	const unsigned int numVertices = static_cast<unsigned int>(_vertices.size());
 	std::vector<Vertex> points;
@@ -116,7 +96,7 @@ bool ClipMesh::convert( Model* outModel ) {
 		}
 		vMap[currVtx] = static_cast<unsigned int>(points.size());
 
-		points.push_back(Vertex(vtx.point, vtx.normal, vtx.uv));
+		points.push_back(Vertex(vtx.point, cc::Vec3f::zero(), cc::Vec2f::zero()));
 	}
 
 	// check for all culled
@@ -153,7 +133,7 @@ void ClipMesh::printDebug( bool verbose ) {
 	printf("CVertex(%zd, %d visible)\n", _vertices.size(), visibleVertices);
 	if( verbose ) {
 		for( unsigned int i = 0; i < _vertices.size(); ++i ) {
-			printf("\t[%d] ([%f, %f, %f]/[%f, %f]); visible: %d\n", i, _vertices[i].point.x, _vertices[i].point.y, _vertices[i].point.z, _vertices[i].uv.x, _vertices[i].uv.y, _vertices[i].visible);
+			printf("\t[%d] ([%f, %f, %f]); visible: %d\n", i, _vertices[i].point.x, _vertices[i].point.y, _vertices[i].point.z, _vertices[i].visible);
 		}
 	}
 
@@ -265,14 +245,6 @@ void ClipMesh::processEdges() {
 		const cc::Vec3f p0 = _vertices[edge.vertex[0]].point;
 		const cc::Vec3f p1 = _vertices[edge.vertex[1]].point;
 		vertexNew.point = p0 + (d0/(d0 - d1))*(p1 - p0);
-
-		const cc::Vec3f& n0 = _vertices[edge.vertex[0]].normal;
-		const cc::Vec3f& n1 = _vertices[edge.vertex[1]].normal;
-		vertexNew.normal = ((n0 + n1) * 0.5f).normalized();
-
-		const cc::Vec2f& t0 = _vertices[edge.vertex[0]].uv;
-		const cc::Vec2f& t1 = _vertices[edge.vertex[1]].uv;
-		vertexNew.uv = t0 + (d0/(d0 - d1))*(t1 - t0);
 
 		if( d0 > 0.0f ) {
 			edge.vertex[1] = vNew;

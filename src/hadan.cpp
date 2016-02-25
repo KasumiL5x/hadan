@@ -75,7 +75,7 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// clear selection
 	MGlobal::clearSelectionList();
 
-	// soften all edges
+	// soften all edges (this has moved into native C++, which is faster than using MEL from C++)
 	//softenAllEdges();
 
 	// apply default material to all generated cells

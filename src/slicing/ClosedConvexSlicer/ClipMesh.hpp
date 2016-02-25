@@ -30,8 +30,6 @@ public:
 private:
 	struct CVertex {
 		cc::Vec3f point;  /**< Position in 3d space. */
-		cc::Vec3f normal; /**< Normal. */
-		cc::Vec2f uv;     /**< Texture coordinate. */
 		float distance;   /**< Signed distance from cutting plane. */
 		int occurs;       /**< Number of times vertex occurs (used in computing convex polygon resulting from clipping). */
 		bool visible;     /**< True if vertex is on positive side of plane; false otherwise. */
