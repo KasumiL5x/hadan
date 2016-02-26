@@ -38,7 +38,7 @@ void BezierPointGen::generateSamplePoints( const BoundingBox& boundingBox, const
 		MTLog::instance()->log("\tno points provided; generating all points\n");
 		// get distance from one corner of the bbox to the other
 		const cc::Vec3f cornerDiff = boundingBox.getCorner(BoundingBox::Corner::BottomLeftBack) - boundingBox.getCorner(BoundingBox::Corner::TopRightFront);
-		const float minDistance = cc::math::percent<float>(cornerDiff.magnitude(), 75.0f);
+		const float minDistance = cc::math::percent<float>(cornerDiff.magnitude(), 75.0f); // TODO: Expose this as a variable
 		MTLog::instance()->log("\tsize: " + std::to_string(cornerDiff.magnitude()) + "; minDistance: " + std::to_string(minDistance) + "\n");
 
 		// first point (on surface of bounding box)

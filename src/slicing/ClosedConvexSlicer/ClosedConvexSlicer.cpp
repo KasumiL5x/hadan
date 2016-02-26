@@ -32,7 +32,7 @@ bool ClosedConvexSlicer::slice( const Cell& cell, const MeshSlicerInfo& info, MF
 		if( !clipMesh.convert(&outModel) ) {
 			return false;
 		}
-		MayaHelper::copyModelToMFnMesh(outModel, outMesh, info.smoothingAngle);
+		MayaHelper::copyModelToMFnMesh(outModel, outMesh, static_cast<float>(info.smoothingAngle));
 		return true;
 	} else {
 		return false;
