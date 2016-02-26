@@ -11,7 +11,7 @@ BezierPointGen::~BezierPointGen() {
 }
 
 void BezierPointGen::generateSamplePoints( const BoundingBox& boundingBox, const PointGenInfo& info, std::vector<cc::Vec3f>& outPoints ) {
-	printf("Generating bezier:\n");
+	MTLog::instance()->log("Generating bezier:\n");
 
 	if( 0 == info.samples ) {
 		MTLog::instance()->log("Warning: Curve will be ignored as Samples were zero.  Fracturing will not occur.\n");
@@ -26,32 +26,32 @@ void BezierPointGen::generateSamplePoints( const BoundingBox& boundingBox, const
 
 	std::vector<cc::Vec3f> bezierPoints;
 	if( 4 == controlPoints.size() ) { // all control points are provided
-		printf("\tall points provided; building curve from points\n");
+		MTLog::instance()->log("\tall points provided; building curve from points\n");
 		bezierPoints = controlPoints;
 	} else if( 2 == controlPoints.size() ) { // start and end points are provided; generate random midpoints
-		printf("\tstart and end points provided; generating intermediate points\n");
+		MTLog::instance()->log("\tstart and end points provided; generating intermediate points\n");
 		bezierPoints.push_back(controlPoints[0]);
 		bezierPoints.push_back(rnd.pointInBBox(boundingBox));
 		bezierPoints.push_back(rnd.pointInBBox(boundingBox));
 		bezierPoints.push_back(controlPoints[1]);
 	} else { // no control points provided (or too many); randomly generate all (p0 and p3 on faces, p1 and p2 randomly inside)
-		printf("\tno points provided; generating all points\n");
+		MTLog::instance()->log("\tno points provided; generating all points\n");
 		// get distance from one corner of the bbox to the other
 		const cc::Vec3f cornerDiff = boundingBox.getCorner(BoundingBox::Corner::BottomLeftBack) - boundingBox.getCorner(BoundingBox::Corner::TopRightFront);
 		const float minDistance = cc::math::percent<float>(cornerDiff.magnitude(), 75.0f);
-		printf("\tsize: %f; minDistance: %f\n", cornerDiff.magnitude(), minDistance);
+		MTLog::instance()->log("\tsize: " + std::to_string(cornerDiff.magnitude()) + "; minDistance: " + std::to_string(minDistance) + "\n");
 
 		// first point (on surface of bounding box)
 		int p0Side = -1;
 		const cc::Vec3f p0 = rnd.pointOnBbox(boundingBox, p0Side, -1);
 		bezierPoints.push_back(p0);
-		printf("\tp0: face %d at (%f, %f, %f)\n", p0Side, p0.x, p0.y, p0.z);
+		MTLog::instance()->log("\tp0: face " + std::to_string(p0Side) + " at (" + std::to_string(p0.x) + ", " + std::to_string(p0.y) + ", " + std::to_string(p0.z) + ")\n");
 
 		// second and third are randomly generated
 		bezierPoints.push_back(rnd.pointInBBox(boundingBox));
-		printf("\tp1: (%f, %f, %f)\n", bezierPoints.back().x, bezierPoints.back().y, bezierPoints.back().z);
+		MTLog::instance()->log("\tp1: (" + std::to_string(bezierPoints.back().x) + ", " + std::to_string(bezierPoints.back().y) + ", " + std::to_string(bezierPoints.back().z) + ")\n");
 		bezierPoints.push_back(rnd.pointInBBox(boundingBox));
-		printf("\tp2: (%f, %f, %f)\n", bezierPoints.back().x, bezierPoints.back().y, bezierPoints.back().z);
+		MTLog::instance()->log("\tp2: (" + std::to_string(bezierPoints.back().x) + ", " + std::to_string(bezierPoints.back().y) + ", " + std::to_string(bezierPoints.back().z) + ")\n");
 
 		// fourth is on another side and must be a certain percentage of the size of the bounding box away from the first point
 		const unsigned int MAX_ITERATIONS = 10;
@@ -60,15 +60,15 @@ void BezierPointGen::generateSamplePoints( const BoundingBox& boundingBox, const
 		cc::Vec3f p3;
 		do {
 			p3 = rnd.pointOnBbox(boundingBox, p3Side, p0Side);
-			printf("\t%s with distance %f\n", p3.distance(p0) < minDistance ? "FAILED" : "SUCCEEDED", p3.distance(p0));
+			MTLog::instance()->log("\t" + std::string(p3.distance(p0) < minDistance ? "FAILED" : "SUCCEEDED") + " with distance " + std::to_string(p3.distance(p0)) + "\n");
 			if( iteration++ >= MAX_ITERATIONS ) { // increment and check
-				printf("\tMaximum iterations reached (%d), accepting last value.\n", MAX_ITERATIONS);
+				MTLog::instance()->log("\tMaximum iterations reached (" + std::to_string(MAX_ITERATIONS) + "), accepting last value.\n");
 				break;
 			}
 			
 		} while(p3.distance(p0) < minDistance);
 		bezierPoints.push_back(p3);
-		printf("\tp3: face %d at (%f, %f, %f)\n", p3Side, p3.x, p3.y, p3.z);	
+		MTLog::instance()->log("\tp3: face " + std::to_string(p3Side) + " at (" + std::to_string(p3.x) + ", " + std::to_string(p3.y) + ", " + std::to_string(p3.z) + "\n");
 	}
 
 	// extract points along bezier curve

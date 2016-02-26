@@ -204,7 +204,7 @@ bool Hadan::parseArgs( const MArgList& args ) {
 		MArgList pntArgsList;
 		db.getFlagArgumentList(HadanArgs::HadanPoint, i, pntArgsList);
 		if( pntArgsList.length() != 3 ) {
-			printf("Ignoring -pnt (-point) %d because it was formatted incorrectly.\n", i);
+			MTLog::instance()->log("Ignoring -pnt (-point) " + std::to_string(i) + " because it was formatted incorrectly.\n");
 			continue;
 		}
 		unsigned int dummyIndex = 0;

@@ -106,7 +106,7 @@ namespace PlaneHelper {
 		outModel.addVertex(Vertex(position + (plane.normal * plane.constant) + p2));
 		outModel.addVertex(Vertex(position + (plane.normal * plane.constant) + p3));
 
-		printf("position: %f, %f, %f\n", position.x, position.y, position.z);
+		//printf("position: %f, %f, %f\n", position.x, position.y, position.z);
 
 		//outModel.addVertex(Vertex(position + plane.normal * -plane.constant + p0));
 		//outModel.addVertex(Vertex(position + plane.normal * -plane.constant + p1));
