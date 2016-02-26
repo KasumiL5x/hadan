@@ -59,6 +59,11 @@ namespace HadanArgs {
 	static const char* HadanSmoothingAngleLong = "-smoothingangle";
 	static const MSyntax::MArgType HadanSmoothingAngleType = MSyntax::kDouble;
 
+	// minimum bezier distance
+	static const char* HadanBezierMinDist = "-mbd";
+	static const char* HadanBezierMinDistLong = "-minbezierdist";
+	static const MSyntax::MArgType HadanBezierMinDistType = MSyntax::kDouble;
+
 	// multi-threading
 	static const char* HadanMultiThreading = "-mt";
 	static const char* HadanMultiThreadingLong = "-multithreaded";
@@ -77,6 +82,7 @@ namespace HadanArgs {
 		syntax.addFlag(HadanRandomSeed, HadanRandomSeedLong, HadanRandomSeedType);
 		syntax.addFlag(HadanPoint, HadanPointLong, HadanPointType, HadanPointType, HadanPointType);
 		syntax.addFlag(HadanSmoothingAngle, HadanSmoothingAngleLong, HadanSmoothingAngleType);
+		syntax.addFlag(HadanBezierMinDist, HadanBezierMinDistLong, HadanBezierMinDistType);
 		syntax.addFlag(HadanMultiThreading, HadanMultiThreadingLong, HadanMultiThreadingType);
 		syntax.makeFlagMultiUse(HadanPoint);
 		return syntax;

@@ -187,6 +187,12 @@ bool Hadan::parseArgs( const MArgList& args ) {
 		db.getFlagArgument(HadanArgs::HadanSmoothingAngle, 0, _meshSlicerInfo.smoothingAngle);
 	}
 
+	// parse bezier min distance
+	if( db.isFlagSet(HadanArgs::HadanBezierMinDist) ) {
+		db.getFlagArgument(HadanArgs::HadanBezierMinDist, 0, _pointGenInfo.minBezierDistance);
+		_pointGenInfo.minBezierDistance = cc::math::clamp<double>(_pointGenInfo.minBezierDistance, 0.0, 100.0);
+	}
+
 	// parse multi-threading
 	if( db.isFlagSet(HadanArgs::HadanMultiThreading) ) {
 		db.getFlagArgument(HadanArgs::HadanMultiThreading, 0, _useMultithreading);

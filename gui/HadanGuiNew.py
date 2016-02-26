@@ -49,7 +49,7 @@ class HadanHowTo(QtGui.QWidget):
 			'Simulates a propagating crack using a bezier curve and uniform points.<br/>' +
 			'The process differs based on the number of <i>Positions</i>.  If none are provided, all four points of the curve ' +
 			'are randomly generated; the first and last are on the surface of the object, and will attempt to be placed at least ' +
-			'<b><i>[CHANGEME]</i></b> percent of the bounding box\'s size apart (although if a maximum iteration count is hit, the last attempt ' +
+			'<i>Min Bezier Dist</i> percent of the bounding box\'s size apart (although if a maximum iteration count is hit, the last attempt ' +
 			' will be taken regardless of the distance), and the two intermediate points are randomly generated within the object\'s ' +
 			'bounding box.  If two are provided, they are assumed to be the beginning and end points, respectively; the two intermediate ' +
 			'points will be generated randomly.  If all four are given, the curve is assumed to follow those points\' path.  ' +
@@ -115,6 +115,9 @@ class HadanGui(QtGui.QMainWindow):
 
 		# smoothing angle
 		self.__command += '-sa %f ' % (self.spin_smoothing.value())
+
+		# min bezier distance
+		self.__command += '-mbd %f ' % (self.spin_min_bezier_dist.value())
 
 		# multi-threading
 		self.__command += '-mt %s' % ('true' if self.chk_multithreaded.isChecked() else 'false')
@@ -531,12 +534,28 @@ class HadanGui(QtGui.QMainWindow):
 		self.spin_smoothing.setMinimum(-360.0)
 		self.spin_smoothing.setValue(30.0)
 
+		# min bezier distance label
+		self.lbl_min_bezier_dist = QtGui.QLabel(self.tp_advanced);
+		self.lbl_min_bezier_dist.setGeometry(QtCore.QRect(10, 67, 150, 16))
+		self.lbl_min_bezier_dist.setFont(font_10)
+		self.lbl_min_bezier_dist.setObjectName("lbl_min_bezier_dist")
+		self.lbl_min_bezier_dist.setText(QtGui.QApplication.translate("Min Bezier Distance", "Min Bezier Distance", None, QtGui.QApplication.UnicodeUTF8))
+
+		# min bezier distance spin
+		self.spin_min_bezier_dist = QtGui.QDoubleSpinBox(self.tp_advanced)
+		self.spin_min_bezier_dist.setGeometry(QtCore.QRect(130, 65, 81, 22))
+		self.spin_min_bezier_dist.setObjectName("spin_min_bezier_dist")
+		self.spin_min_bezier_dist.setSingleStep(0.1)
+		self.spin_min_bezier_dist.setMinimum(0.0)
+		self.spin_min_bezier_dist.setMaximum(100.0)
+		self.spin_min_bezier_dist.setValue(50.0)
+
 		# generated command label
 		self.lbl_generatedCommand = QtGui.QLabel(self.tp_advanced)
-		self.lbl_generatedCommand.setGeometry(QtCore.QRect(10, 160, 126, 16))
+		self.lbl_generatedCommand.setGeometry(QtCore.QRect(10, 160, 326, 16))
 		self.lbl_generatedCommand.setFont(font_10)
 		self.lbl_generatedCommand.setObjectName("lbl_generatedCommand")
-		self.lbl_generatedCommand.setText(QtGui.QApplication.translate("Generated Command", "Generated Command", None, QtGui.QApplication.UnicodeUTF8))
+		self.lbl_generatedCommand.setText(QtGui.QApplication.translate("Generated Command (updated on fracture)", "Generated Command (updated on fracture)", None, QtGui.QApplication.UnicodeUTF8))
 
 		# generated command textbox
 		self.txt_generatedCommand = QtGui.QLineEdit(self.tp_advanced)

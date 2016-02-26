@@ -19,6 +19,8 @@ struct PointGenInfo {
 	double flux;
 	// user-provided source points
 	std::vector<cc::Vec3f> userPoints;
+	// minimum distance for auto generated points in bezier mode as a percentage (0..100)
+	double minBezierDistance;
 
 	PointGenInfo() {
 		seed = 0;
@@ -28,6 +30,7 @@ struct PointGenInfo {
 		samples = 0;
 		flux = 0.0;
 		userPoints = std::vector<cc::Vec3f>();
+		minBezierDistance = 50.0;
 	}
 };
 
