@@ -81,6 +81,16 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// apply default material to all generated cells
 	applyMaterials();
 
+	// create parent group for the shards
+	MFnTransform parentXform;
+	parentXform.create();
+	parentXform.setName(MFnDagNode(_inputMesh).name() + "_chunks");
+
+	// parent all chunks to the parent xform (this will make a new one if it already exists like maya does)
+	for( auto& curr : _generatedMeshes ) {
+		parentXform.addChild(MFnDagNode(curr).parent(0));
+	}
+
 	// shrink vertices of chunks along normals
 	//separateCells();
 
