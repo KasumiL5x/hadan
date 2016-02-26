@@ -90,7 +90,7 @@ namespace MayaHelper {
 		}
 	}
 
-	static bool copyModelToMFnMesh( Model& model, MFnMesh& outMayaMesh ) {
+	static bool copyModelToMFnMesh( Model& model, MFnMesh& outMayaMesh, float smoothingAngle ) {
 		if( 0 == model.getVertices().size() || 0 == model.getIndices().size() ) {
 			return false;
 		}
@@ -147,7 +147,7 @@ namespace MayaHelper {
 				const float theta = cc_a.dot(cc_b);
 				const float angle = cc::math::RAD_TO_DEG * acosf(theta);
 
-				if( angle >= 30.0f ) { // todo: expose this
+				if( angle >= smoothingAngle ) {
 					edgeIt.setSmoothing(false);
 				} else {
 					edgeIt.setSmoothing(true);

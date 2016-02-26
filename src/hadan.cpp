@@ -178,6 +178,11 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	// parse random seed
 	db.getFlagArgument(HadanArgs::HadanRandomSeed, 0, _pointGenInfo.seed);
 
+	// parse smoothing angle
+	if( db.isFlagSet(HadanArgs::HadanSmoothingAngle) ) {
+		db.getFlagArgument(HadanArgs::HadanSmoothingAngle, 0, _meshSlicerInfo.smoothingAngle);
+	}
+
 	// parse multi-threading
 	if( db.isFlagSet(HadanArgs::HadanMultiThreading) ) {
 		db.getFlagArgument(HadanArgs::HadanMultiThreading, 0, _useMultithreading);
@@ -243,7 +248,7 @@ bool Hadan::generateCuttingCells() {
 
 void Hadan::doSingleCut( const Cell& cell, int id, std::shared_ptr<IMeshSlicer> slicer ) {
 	MFnMesh outMesh;
-	if( !slicer->slice(cell, outMesh) ) {
+	if( !slicer->slice(cell, _meshSlicerInfo, outMesh) ) {
 		MTLog::instance()->log("Warning: Failed to slice using cell " + std::to_string(id) + ".  This is sometimes expected.\n");
 		return;
 	}

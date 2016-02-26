@@ -10,7 +10,7 @@ public:
 	virtual ~ClosedConvexSlicer();
 
 	virtual bool setSource( MFnMesh& source ) override;
-	virtual bool slice( const Cell& cell, MFnMesh& outMesh ) override;
+	virtual bool slice( const Cell& cell, const MeshSlicerInfo& info, MFnMesh& outMesh ) override;
 
 private:
 	Model _inputModel;

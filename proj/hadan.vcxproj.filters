@@ -94,6 +94,9 @@
       <Filter>points\Bezier</Filter>
     </ClInclude>
     <ClInclude Include="..\src\MTLog.hpp" />
+    <ClInclude Include="..\src\slicing\MeshSlicerInfo.hpp">
+      <Filter>slicing</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="slicing">

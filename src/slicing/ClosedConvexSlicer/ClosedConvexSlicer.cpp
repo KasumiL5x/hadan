@@ -15,7 +15,7 @@ bool ClosedConvexSlicer::setSource( MFnMesh& source ) {
 	return (_inputModel.getVertices().size() != 0 && _inputModel.getIndices().size() != 0);
 }
 
-bool ClosedConvexSlicer::slice( const Cell& cell, MFnMesh& outMesh ) {
+bool ClosedConvexSlicer::slice( const Cell& cell, const MeshSlicerInfo& info, MFnMesh& outMesh ) {
 	ClipMesh clipMesh(_inputModel);
 
 	// cut the ClipMesh with all planes of the cell
@@ -32,7 +32,7 @@ bool ClosedConvexSlicer::slice( const Cell& cell, MFnMesh& outMesh ) {
 		if( !clipMesh.convert(&outModel) ) {
 			return false;
 		}
-		MayaHelper::copyModelToMFnMesh(outModel, outMesh);
+		MayaHelper::copyModelToMFnMesh(outModel, outMesh, info.smoothingAngle);
 		return true;
 	} else {
 		return false;

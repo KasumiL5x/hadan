@@ -36,6 +36,7 @@
     <ClInclude Include="..\src\points\Bezier\BezierPath.hpp" />
     <ClInclude Include="..\src\points\Cluster\ClusterPointGen.hpp" />
     <ClInclude Include="..\src\points\PointGenInfo.hpp" />
+    <ClInclude Include="..\src\slicing\MeshSlicerInfo.hpp" />
     <ClInclude Include="..\src\Syntax.hpp" />
     <ClInclude Include="..\src\BoundingBox.hpp" />
     <ClInclude Include="..\src\cells\Cell.hpp" />

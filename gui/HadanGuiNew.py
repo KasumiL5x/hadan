@@ -113,6 +113,9 @@ class HadanGui(QtGui.QMainWindow):
 		# seed value
 		self.__command += '-rs %d ' % (self.spin_seed.value())
 
+		# smoothing angle
+		self.__command += '-sa %f ' % (self.spin_smoothing.value())
+
 		# multi-threading
 		self.__command += '-mt %s' % ('true' if self.chk_multithreaded.isChecked() else 'false')
 
@@ -511,6 +514,22 @@ class HadanGui(QtGui.QMainWindow):
 		self.chk_multithreaded.setObjectName("chk_multithreaded")
 		self.chk_multithreaded.setText(QtGui.QApplication.translate("Use multiple threads", "Use multiple threads", None, QtGui.QApplication.UnicodeUTF8))
 		self.chk_multithreaded.setChecked(True)
+
+		# smoothing angle label
+		self.lbl_smoothing = QtGui.QLabel(self.tp_advanced)
+		self.lbl_smoothing.setGeometry(QtCore.QRect(10, 37, 100, 16))
+		self.lbl_smoothing.setFont(font_10)
+		self.lbl_smoothing.setObjectName("lbl_smoothing")
+		self.lbl_smoothing.setText(QtGui.QApplication.translate("Smoothing Angle", "Smoothing Angle", None, QtGui.QApplication.UnicodeUTF8))
+
+		# smoothing angle spin
+		self.spin_smoothing = QtGui.QDoubleSpinBox(self.tp_advanced)
+		self.spin_smoothing.setGeometry(QtCore.QRect(115, 35, 81, 22))
+		self.spin_smoothing.setObjectName("spin_smoothing")
+		self.spin_smoothing.setSingleStep(0.1)
+		self.spin_smoothing.setMaximum(360.0)
+		self.spin_smoothing.setMinimum(-360.0)
+		self.spin_smoothing.setValue(30.0)
 
 		# generated command label
 		self.lbl_generatedCommand = QtGui.QLabel(self.tp_advanced)
