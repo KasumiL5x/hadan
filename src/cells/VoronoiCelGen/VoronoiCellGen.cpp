@@ -88,8 +88,8 @@ bool VoronoiCellGen::generate( const BoundingBox& bbox, const std::vector<cc::Ve
 		} while(cla.inc());
 	}
 
-	container.draw_cells_gnuplot("C:/Users/daniel/Desktop/cells.gnu");
-	container.draw_particles("C:/Users/daniel/Desktop/particles.gnu");
+	//container.draw_cells_gnuplot("C:/Users/daniel/Desktop/cells.gnu");
+	//container.draw_particles("C:/Users/daniel/Desktop/particles.gnu");
 
 	return !outCells.empty();
 }
