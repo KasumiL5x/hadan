@@ -51,9 +51,6 @@ MStatus Hadan::doIt( const MArgList& args ) {
 	// get the bounding box from Maya
 	_boundingBox = MayaHelper::getBoundingBox(MFnMesh(_inputMesh));
 
-	// copy maya mesh into local model
-	copyMeshFromMaya();
-
 	// generate sample points
 	if( !generateSamplePoints() ) {
 		MTLog::instance()->log("Error: Not enough sample points were generated.\n");
@@ -74,9 +71,6 @@ MStatus Hadan::doIt( const MArgList& args ) {
 
 	// center all selected objects' pivots
 	centerAllPivots();
-
-	// soften all edges (this has moved into native C++, which is faster than using MEL from C++)
-	//softenAllEdges();
 
 	// apply default material to all generated cells
 	applyMaterials();
@@ -239,11 +233,6 @@ bool Hadan::validateInputMesh() const {
 	return true;
 }
 
-void Hadan::copyMeshFromMaya() {
-	MayaHelper::copyMFnMeshToModel(_inputMesh, _modelFromMaya);
-	_modelFromMaya.buildExtendedData();
-}
-
 bool Hadan::generateSamplePoints() {
 	std::unique_ptr<IPointGen> gen = PointGenFactory::create(_pointsGenType);
 	gen->generateSamplePoints(_boundingBox, _pointGenInfo, _samplePoints);
@@ -295,13 +284,6 @@ void Hadan::centerAllPivots() {
 	for( const auto& mesh : _generatedMeshes ) {
 		const std::string meshName = std::string(MFnMesh(mesh).fullPathName().asChar());
 		MayaHelper::centerPivot(meshName);
-	}
-}
-
-void Hadan::softenAllEdges() {
-	for( const auto& mesh : _generatedMeshes ) {
-		const std::string meshName = std::string(MFnMesh(mesh).fullPathName().asChar());
-		MayaHelper::softenMeshEdge(meshName);
 	}
 }
 

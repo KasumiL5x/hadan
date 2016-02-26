@@ -88,7 +88,6 @@ private:
 	void doSingleCut( const Cell& cell, int id, std::shared_ptr<IMeshSlicer> slicer );
 	void performCutting();
 	void centerAllPivots();
-	void softenAllEdges();
 	void applyMaterials();
 	void separateCells();
 	void restoreInitialSelection();
@@ -98,11 +97,9 @@ private:
 	PointGenFactory::Type _pointsGenType;
 	double _separationDistance;
 	PointGenInfo _pointGenInfo;
-	Model _modelFromMaya;
 	std::vector<cc::Vec3f> _samplePoints;
 	std::vector<Cell> _cuttingCells;
 	std::vector<MObject> _generatedMeshes;
-	std::vector<Model> _generatedModels;
 	BoundingBox _boundingBox;
 	bool _useMultithreading;
 	MeshSlicerInfo _meshSlicerInfo;
