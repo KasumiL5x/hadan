@@ -129,8 +129,9 @@ private:
 	/**
 	 * Fixes the faces with new edges and caps the newly created hole generated from the cutting process.
 	 * @param clippingPlane Plane used to give the filled hole a normal.
+	 * @returns Success.
 	 */
-	void processFaces( const Plane& clippingPlane );
+	bool processFaces( const Plane& clippingPlane );
 	
 	/**
 	 * Detects an open polyline's start and end points from a face.
@@ -144,20 +145,20 @@ private:
 	/**
 	 * TODO
 	 */
-	void postProcess( int fNew, CFace& faceNew );
+	bool postProcess( int fNew, CFace& faceNew );
 
 	/**
 	 * Return generated triangle indices.
 	 * @param indices Output vector of indices.
 	 */
-	void getTriangles( std::vector<int>& indices );
+	bool getTriangles( std::vector<int>& indices );
 
 	/**
 	 * Order the vertices' indices into a new vector.
 	 * @param face     Face to order vertices of.
 	 * @param vOrdered Output vector of ordered vertex indices.
 	 */
-	void orderVertices( CFace& face, std::vector<int>& vOrdered );
+	bool orderVertices( CFace& face, std::vector<int>& vOrdered );
 	
 	/**
 	 * Swaps edges e0 and e1 in list.

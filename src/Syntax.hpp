@@ -46,7 +46,7 @@ namespace HadanArgs {
 
 	// random seed for reproducible results
 	static const char* HadanRandomSeed = "-rs";
-	static const char* HadanRandomSeedLong = "-randomseed";
+	static const char* HadanRandomSeedLong = "-randomSeed";
 	static const MSyntax::MArgType HadanRandomSeedType = MSyntax::kUnsigned;
 
 	// user-provided point
@@ -56,12 +56,12 @@ namespace HadanArgs {
 
 	// smoothing angle
 	static const char* HadanSmoothingAngle = "-sa";
-	static const char* HadanSmoothingAngleLong = "-smoothingangle";
+	static const char* HadanSmoothingAngleLong = "-smoothingAngle";
 	static const MSyntax::MArgType HadanSmoothingAngleType = MSyntax::kDouble;
 
 	// minimum bezier distance
 	static const char* HadanBezierMinDist = "-mbd";
-	static const char* HadanBezierMinDistLong = "-minbezierdist";
+	static const char* HadanBezierMinDistLong = "-minBezierDist";
 	static const MSyntax::MArgType HadanBezierMinDistType = MSyntax::kDouble;
 
 	// multi-threading

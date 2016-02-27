@@ -78,7 +78,10 @@ ClipMesh::Result ClipMesh::clip( const Plane& clipPlane ) {
 	}
 
 	processEdges();
-	processFaces(clipPlane);
+	if( !processFaces(clipPlane) ) {
+		//printf("Error: Failed to process faces.\n");
+		return Result::Visible;
+	}
 
 	return Result::Dissected;
 }
@@ -106,14 +109,28 @@ bool ClipMesh::convert( Model* outModel ) {
 
 	// get the triangles
 	std::vector<int> indices;
-	getTriangles(indices);
+	if( !getTriangles(indices) ) {
+		//printf("Failed to get triangles.\n");
+		return false;
+	}
 
 	// reorder the indices
+	bool hadError = false;
 	for( unsigned int currIdx = 0; currIdx < indices.size(); ++currIdx ) {
 		const int oldIdx = indices[currIdx];
-		assert(0 <= oldIdx && oldIdx < static_cast<int>(numVertices)); // index out of range
+		//assert(0 <= oldIdx && oldIdx < static_cast<int>(numVertices)); // index out of range
+		if( oldIdx < 0 || oldIdx >= static_cast<int>(numVertices) ) {
+			printf("Index out of range: oldIdx:numVertices (%d:%d)\n", oldIdx, numVertices);
+			delete[] vMap;
+			return false;
+		}
 		const int newIdx = vMap[oldIdx];
-		assert(0 <= newIdx && newIdx < points.size()); // index out of range
+		//assert(0 <= newIdx && newIdx < points.size()); // index out of range
+		if( newIdx < 0 || newIdx >= points.size() ) {
+			printf("Index out of range: newIdx:points.size (%d:%zd)\n", newIdx, points.size());
+			delete[] vMap;
+			return false;
+		}
 		indices[currIdx] = newIdx;
 	}
 	delete[] vMap;
@@ -254,7 +271,7 @@ void ClipMesh::processEdges() {
 	}
 }
 
-void ClipMesh::processFaces( const Plane& clippingPlane ) {
+bool ClipMesh::processFaces( const Plane& clippingPlane ) {
 	// the mesh straddles the plane.  a new convex polygon face will be
 	// generated.  add it now and insert edges when they are visited.
 	const unsigned int fNew = static_cast<unsigned int>(_faces.size());
@@ -273,13 +290,20 @@ void ClipMesh::processFaces( const Plane& clippingPlane ) {
 		// or split by the clipping plane.  the occurs members are set to zero
 		// to help find the end points of the polyline that results from clipping
 		// a face.
-		assert(face.edges.size() >= 2 ); // unexpected condition
+		//assert(face.edges.size() >= 2 ); // unexpected condition
+		if( face.edges.size() < 2 ) {
+			return false;
+		}
+		
 		std::set<int>::const_iterator iter = face.edges.begin();
 		const std::set<int>::const_iterator end = face.edges.end();
 		while( iter != end ) {
 			const int e = *iter++;
 			CEdge& edge = _edges[e];
-			assert(edge.visible); // unexpected condition
+			//assert(edge.visible); // unexpected condition
+			if( !edge.visible ) {
+				return false;
+			}
 			_vertices[edge.vertex[0]].occurs = 0;
 			_vertices[edge.vertex[1]].occurs = 0;
 		}
@@ -307,11 +331,15 @@ void ClipMesh::processFaces( const Plane& clippingPlane ) {
 	// round-off errors can cause the new face from the last loop to be
 	// needle-like with a collapse of two edges into a single edge.  this
 	// block guarantees the invariant face is always a simple polygon.
-	postProcess(fNew, faceNew);
+	if( !postProcess(fNew, faceNew) ) {
+		return false;
+	}
 	if( faceNew.edges.size() < 3 ) {
 		// face is completely degenerate, remote it from mesh
 		_faces.pop_back();
 	}
+
+	return true;
 }
 
 bool ClipMesh::getOpenPolyline( CFace& face, int& vStart, int& vFinal ) {
@@ -342,7 +370,7 @@ bool ClipMesh::getOpenPolyline( CFace& face, int& vStart, int& vFinal ) {
 		// theoretically a narrow V-shaped portion (a vertex shared by two edges
 		// forming a small angle) has collapsed into a single line segment.
 		// note that after adding post-processing, this hasn't happened.
-		assert(false);
+		//assert(false);
 		// todo: print out error data for analysis
 		return false;
 	}
@@ -364,7 +392,8 @@ bool ClipMesh::getOpenPolyline( CFace& face, int& vStart, int& vFinal ) {
 			} else {
 				// if you reach this assert,  there is a good chance that the polyhedron
 				// is not convex.
-				assert(false); // polyhedron might not be convex
+				//assert(false); // polyhedron might not be convex
+				return false;
 			}
 		}
 
@@ -377,16 +406,18 @@ bool ClipMesh::getOpenPolyline( CFace& face, int& vStart, int& vFinal ) {
 			} else {
 				// if you reach this assert, there is a good chance that the polyhedron
 				// is not convex.
-				assert(false); // polyhedron might not be convex
+				//assert(false); // polyhedron might not be convex
+				return false;
 			}
 		}
 	}
-
-	assert((-1==vStart && -1==vFinal) || (-1 != vStart && -1 != vFinal)); // unexpected condition
+	//assert((-1==vStart && -1==vFinal) || (-1 != vStart && -1 != vFinal)); // unexpected condition
+	// don't know how to invert this assert!
+	// TODO: Add this check back and return false if it fails.
 	return vStart != -1;
 }
 
-void ClipMesh::postProcess( int fNew, CFace& faceNew ) {
+bool ClipMesh::postProcess( int fNew, CFace& faceNew ) {
 	const int numEdges = static_cast<int>(faceNew.edges.size());
 	std::vector<CEdgePlus> edges(numEdges);
 	std::set<int>::const_iterator iter = faceNew.edges.begin();
@@ -407,10 +438,13 @@ void ClipMesh::postProcess( int fNew, CFace& faceNew ) {
 			if( i2 < numEdges ) {
 				// make sure an edge occurs at most twice.  if not, then
 				// the algorithm needs to be modified to handle it.
-				assert(edges[i1] != edges[i2]); // unexpected condition
+				//assert(edges[i1] != edges[i2]); // unexpected condition
+				if( edges[i1] == edges[i2] ) {
+					return false;
+				}
 			}
 
-			// edge e0 hsa vertices v0, v1 and faces f0, nf.  edge 1 has
+			// edge e0 has vertices v0, v1 and faces f0, nf.  edge 1 has
 			// vertices v0, v1 and faces f1, nf.
 			const int e0 = edges[i0].E;
 			const int e1 = edges[i1].E;
@@ -425,7 +459,11 @@ void ClipMesh::postProcess( int fNew, CFace& faceNew ) {
 			if( edge0.faces[0] == fNew ) {
 				edge0.faces[0] = edge0.faces[1];
 			} else {
-				assert(edge0.faces[1] == fNew); // unexpected condition
+				//assert(edge0.faces[1] == fNew); // unexpected condition
+				if( edge0.faces[1] != fNew ) {
+					return false;
+				}
+				
 			}
 			edge0.faces[1] = -1;
 
@@ -433,7 +471,10 @@ void ClipMesh::postProcess( int fNew, CFace& faceNew ) {
 			if( edge1.faces[0] == fNew ) {
 				edge1.faces[0] = edge1.faces[1];
 			} else {
-				assert(edge1.faces[1] == fNew); // unexpected condition
+				//assert(edge1.faces[1] == fNew); // unexpected condition
+				if( edge1.faces[1] != fNew ) {
+					return false;
+				}
 			}
 			edge1.faces[1] = -1;
 
@@ -447,9 +488,11 @@ void ClipMesh::postProcess( int fNew, CFace& faceNew ) {
 			edge1.visible = false;
 		}
 	}
+
+	return true;
 }
 
-void ClipMesh::getTriangles( std::vector<int>& indices ) {
+bool ClipMesh::getTriangles( std::vector<int>& indices ) {
 	const unsigned int numFaces = static_cast<unsigned int>(_faces.size());
 	for( unsigned int currFace = 0; currFace < numFaces; ++currFace ) {
 		CFace& face = _faces[currFace];
@@ -458,9 +501,14 @@ void ClipMesh::getTriangles( std::vector<int>& indices ) {
 		}
 
 		const unsigned int numEdges = static_cast<unsigned int>(face.edges.size());
-		assert(numEdges >= 3); // unexpected condition
+		//assert(numEdges >= 3); // unexpected condition
+		if( numEdges < 3 ) {
+			return false;
+		}
 		std::vector<int> vOrdered(numEdges+1);
-		orderVertices(face, vOrdered);
+		if( !orderVertices(face, vOrdered) ) {
+			return false;
+		}
 
 		const int v0 = vOrdered[0];
 		const int v2 = vOrdered[numEdges - 1];
@@ -484,9 +532,11 @@ void ClipMesh::getTriangles( std::vector<int>& indices ) {
 			}
 		}
 	}
+
+	return true;
 }
 
-void ClipMesh::orderVertices( CFace& face, std::vector<int>& vOrdered ) {
+bool ClipMesh::orderVertices( CFace& face, std::vector<int>& vOrdered ) {
 	// copy edge indices into contiguous memory
 	const int numEdges = static_cast<int>(face.edges.size());
 	std::vector<int> eOrdered(numEdges);
@@ -521,7 +571,10 @@ void ClipMesh::orderVertices( CFace& face, std::vector<int>& vOrdered ) {
 				break;
 			}
 		}
-		assert(j < numEdges); // unexpected condition
+		//assert(j < numEdges); // unexpected condition
+		if( j >= numEdges ) {
+			return false;
+		}
 	}
 
 	vOrdered[0] = _edges[eOrdered[0]].vertex[0];
@@ -534,6 +587,8 @@ void ClipMesh::orderVertices( CFace& face, std::vector<int>& vOrdered ) {
 			vOrdered[i + 1] = edge.vertex[0];
 		}
 	}
+
+	return true;
 }
 
 void ClipMesh::swapEdges( std::vector<int>& list, int e0, int e1 ) {
