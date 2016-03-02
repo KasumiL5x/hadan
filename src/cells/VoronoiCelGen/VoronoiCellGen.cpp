@@ -54,7 +54,6 @@ bool VoronoiCellGen::generate( const BoundingBox& bbox, const std::vector<cc::Ve
 				}
 
 				// extract planes from points
-				cc::Vec3f centroid;
 				std::vector<int> faceVertices;
 				cell.face_vertices(faceVertices);
 				int faceCounter = 0;
@@ -67,9 +66,12 @@ bool VoronoiCellGen::generate( const BoundingBox& bbox, const std::vector<cc::Ve
 						const int vtxIdx = faceVertices[j];
 						facePoints.push_back(cellPoints[vtxIdx]);
 						faceCenter += cellPoints[vtxIdx];
+						newCell.addPoint(cellPoints[vtxIdx]);
+						newCell.addIndex(vtxIdx);
 					}
+					newCell.addPlanePoints(facePoints);
 					faceCenter /= static_cast<float>(facePoints.size());
-					centroid += faceCenter;
+					newCell.addCount(facePoints.size());
 
 					Plane plane;
 					if( PlaneHelper::planeFromPoints(facePoints, plane) ) {
@@ -81,8 +83,6 @@ bool VoronoiCellGen::generate( const BoundingBox& bbox, const std::vector<cc::Ve
 					faceCounter += 1;
 				}
 
-				centroid /= static_cast<float>(faceCounter);
-				newCell.setCenter(centroid);
 				outCells.push_back(newCell);
 			}
 		} while(cla.inc());

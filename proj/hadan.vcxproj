@@ -30,12 +30,16 @@
     <ClCompile Include="..\src\points\Uniform\UniformPointGen.cpp" />
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClipMesh.cpp" />
     <ClCompile Include="..\src\slicing\ClosedConvexSlicer\ClosedConvexSlicer.cpp" />
+    <ClCompile Include="..\src\slicing\CSGSlicer\csgjs.cpp" />
+    <ClCompile Include="..\src\slicing\CSGSlicer\CSGSlicer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\src\ConvexTriangulator.hpp" />
     <ClInclude Include="..\src\MTLog.hpp" />
     <ClInclude Include="..\src\points\Bezier\BezierPath.hpp" />
     <ClInclude Include="..\src\points\Cluster\ClusterPointGen.hpp" />
     <ClInclude Include="..\src\points\PointGenInfo.hpp" />
+    <ClInclude Include="..\src\slicing\CSGSlicer\CSGSlicer.hpp" />
     <ClInclude Include="..\src\slicing\MeshSlicerInfo.hpp" />
     <ClInclude Include="..\src\Syntax.hpp" />
     <ClInclude Include="..\src\BoundingBox.hpp" />

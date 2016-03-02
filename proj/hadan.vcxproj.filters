@@ -34,6 +34,12 @@
       <Filter>points\Bezier</Filter>
     </ClCompile>
     <ClCompile Include="..\src\MTLog.cpp" />
+    <ClCompile Include="..\src\slicing\CSGSlicer\csgjs.cpp">
+      <Filter>slicing\CSGSlicer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\slicing\CSGSlicer\CSGSlicer.cpp">
+      <Filter>slicing\CSGSlicer</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\BoundingBox.hpp" />
@@ -97,6 +103,10 @@
     <ClInclude Include="..\src\slicing\MeshSlicerInfo.hpp">
       <Filter>slicing</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\slicing\CSGSlicer\CSGSlicer.hpp">
+      <Filter>slicing\CSGSlicer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\ConvexTriangulator.hpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="slicing">
@@ -125,6 +135,9 @@
     </Filter>
     <Filter Include="points\Cluster">
       <UniqueIdentifier>{d7e17da3-028b-4e21-b0ce-acef4bb8644d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="slicing\CSGSlicer">
+      <UniqueIdentifier>{ecee4f74-08f4-4a9f-bec5-6f16d57fb721}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>
