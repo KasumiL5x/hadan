@@ -264,8 +264,8 @@ void Hadan::doSingleCut( const Cell& cell, int id, std::shared_ptr<IMeshSlicer> 
 }
 
 void Hadan::performCutting() {
-	std::shared_ptr<IMeshSlicer> slicer = std::make_shared<ClosedConvexSlicer>();
-	//std::shared_ptr<IMeshSlicer> slicer = std::make_shared<CSGSlicer>();
+	//std::shared_ptr<IMeshSlicer> slicer = std::make_shared<ClosedConvexSlicer>();
+	std::shared_ptr<IMeshSlicer> slicer = std::make_shared<CSGSlicer>();
 	if( !slicer->setSource(MFnMesh(_inputMesh)) ) {
 		MTLog::instance()->log("Warning: Failed to set slicer mesh source.  Cutting will not take place.\n");
 		return;

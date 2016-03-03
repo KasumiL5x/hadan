@@ -3,9 +3,13 @@
 #include <maya/MIntArray.h>
 #include <maya/MPointArray.h>
 #include "../../ConvexTriangulator.hpp"
+#include "../../MayaHelper.hpp"
+#include <mutex>
 
 #define CSGJS_HEADER_ONLY
-#include "csgjs.cpp"
+#include "slicing/CSGSlicer/csgjs.cpp"
+
+static std::mutex CSGJS_CREATEMESH_MUTEX;
 
 CSGSlicer::CSGSlicer()
 	: IMeshSlicer() {
@@ -38,53 +42,18 @@ bool CSGSlicer::slice( const Cell& cell, const MeshSlicerInfo& info, MFnMesh& ou
 	for( unsigned int i = 0; i < triangleVertices.length(); ++i ) {
 		jsModel.indices.push_back(triangleVertices[i]);
 	}
-	//for( unsigned int i = 0; i < triangleVertices.length()/3; ++i ) {
-	//	jsModel.counts.push_back(3); // getting triangles so always 3s
-	//}
 
 	// convert cell into csgjs_model
 	csgjs_model cellModel;
-	//cellModel.vertices.push_back(csgjs_vertex(csgjs_vector(-0.5f, -0.5f,  0.5f)));
-	//cellModel.vertices.push_back(csgjs_vertex(csgjs_vector( 0.5f, -0.5f,  0.5f)));
-	//cellModel.vertices.push_back(csgjs_vertex(csgjs_vector( 0.5f,  0.5f,  0.5f)));
-	//cellModel.vertices.push_back(csgjs_vertex(csgjs_vector(-0.5f,  0.5f,  0.5f)));
-	//cellModel.vertices.push_back(csgjs_vertex(csgjs_vector(-0.5f, -0.5f, -0.5f)));
-	//cellModel.vertices.push_back(csgjs_vertex(csgjs_vector( 0.5f, -0.5f, -0.5f)));
-	//cellModel.vertices.push_back(csgjs_vertex(csgjs_vector( 0.5f,  0.5f, -0.5f)));
-	//cellModel.vertices.push_back(csgjs_vertex(csgjs_vector(-0.5f,  0.5f, -0.5f)));
-	//cellModel.indices.push_back(0); cellModel.indices.push_back(1); cellModel.indices.push_back(2); // front
-	//cellModel.indices.push_back(2); cellModel.indices.push_back(3); cellModel.indices.push_back(0);
-	//cellModel.indices.push_back(1); cellModel.indices.push_back(5); cellModel.indices.push_back(6); // top
-	//cellModel.indices.push_back(6); cellModel.indices.push_back(2); cellModel.indices.push_back(1);
-	//cellModel.indices.push_back(7); cellModel.indices.push_back(6); cellModel.indices.push_back(5); // back
-	//cellModel.indices.push_back(5); cellModel.indices.push_back(4); cellModel.indices.push_back(7);
-	//cellModel.indices.push_back(4); cellModel.indices.push_back(0); cellModel.indices.push_back(3); // bottom
-	//cellModel.indices.push_back(3); cellModel.indices.push_back(7); cellModel.indices.push_back(4);
-	//cellModel.indices.push_back(4); cellModel.indices.push_back(5); cellModel.indices.push_back(1); // left
-	//cellModel.indices.push_back(1); cellModel.indices.push_back(0); cellModel.indices.push_back(4);
-	//cellModel.indices.push_back(3); cellModel.indices.push_back(2); cellModel.indices.push_back(6); // right
-	//cellModel.indices.push_back(6); cellModel.indices.push_back(7); cellModel.indices.push_back(3);
-	//for( int i = 0; i < 12; ++i ) {
-	//	cellModel.counts.push_back(3);
-	//}
 
-	// TODO: I need to triangulate the cell's points somehow (or find a another library that triangulates the cells
-	//       automatically).  I also need to revert my changes to csg.js, as it is only suitable for triangle meshes,
-	//       and my changes assume that is not the case (a.k.a remove extended stuff).  Look online for the above.
-	//       As a test, I created a triangulated cube above and it worked fine (although it was VERY slow).
-	//gdjoigrjoipgrjoigjiorijogr
-	//unsigned int offset = 0;
-	//for( const auto& pnt : cell.getPoints() ) {
-	//	csgjs_vertex vtx;
-	//	vtx.pos = csgjs_vector(pnt.x, pnt.y, pnt.z);
-	//	cellModel.vertices.push_back(vtx);
-	//}
-	//for( const auto& count : cell.getCounts() ) {
-	//	cellModel.counts.push_back(count);
-	//}
-	//for( const auto& idx : cell.getIndices() ) {
-	//	cellModel.indices.push_back(idx);
-	//}
+	// NOTE: The code below will create separate faces for each plane in the cell.
+	//       They will NOT be welded and therefore the algorithm may fail.  They need
+	//       to be welded (both vertex positions and indices), but this again looses
+	//       vertex data as before (but may work on more complex meshes).
+	//ugifuifnnuf
+	// https://github.com/gilbo/cork/blob/master/src/cork.h
+	// http://www.opencsg.org/#introduction
+	// 
 
 	int indexOffset = 0;
 	const auto& planePoints = cell.getPlanePoints();
@@ -121,10 +90,10 @@ bool CSGSlicer::slice( const Cell& cell, const MeshSlicerInfo& info, MFnMesh& ou
 	for( size_t i = 0; i < result.indices.size() / 3; ++i ) {
 		faceCounts.append(3);
 	}
-	//for( const auto& cnt : result.counts ) {
-	//	faceCounts.append(cnt);
-	//}
-	outMesh.create(pointArray.length(), faceCounts.length(), pointArray, faceCounts, faceConnects);
+	{
+		std::unique_lock<std::mutex> lock(CSGJS_CREATEMESH_MUTEX);
+		outMesh.create(pointArray.length(), faceCounts.length(), pointArray, faceCounts, faceConnects);
+	}
 
 	return true;
 }
