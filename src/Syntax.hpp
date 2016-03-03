@@ -14,6 +14,11 @@ namespace HadanArgs {
 	static const char* HadanFractureTypeLong = "-fractureType";
 	static const MSyntax::MArgType HadanFractureTypeType = MSyntax::kString;
 
+	// slicer type
+	static const char* HadanSlicerType = "-st";
+	static const char* HadanSlicerTypeLong = "-slicerType";
+	static const MSyntax::MArgType HadanSlicerTypeType = MSyntax::kString;
+
 	// uniform count
 	static const char* HadanUniformCount = "-uc";
 	static const char* HadanUniformCountLong = "-uniformCount";
@@ -73,6 +78,7 @@ namespace HadanArgs {
 		MSyntax syntax;
 		syntax.addFlag(HadanMeshName, HadanMeshNameLong, HadanMeshNameType);
 		syntax.addFlag(HadanFractureType, HadanFractureTypeLong, HadanFractureTypeType);
+		syntax.addFlag(HadanSlicerType, HadanSlicerTypeLong, HadanSlicerTypeType);
 		syntax.addFlag(HadanUniformCount, HadanUniformCountLong, HadanUniformCountType);
 		syntax.addFlag(HadanPrimaryCount, HadanPrimaryCountLong, HadanPrimaryCountType);
 		syntax.addFlag(HadanSecondaryCount, HadanSecondaryCountLong, HadanSecondaryCountType);

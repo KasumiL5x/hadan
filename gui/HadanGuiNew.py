@@ -110,6 +110,13 @@ class HadanGui(QtGui.QMainWindow):
 			self.__command += '-flp %f ' % (self.spin_flux.value())
 			self.__command += ('-sd %f ' % (self.spin_gap.value())) if self.spin_gap.value() != 0.0 else ''
 
+		# build based on slicer type
+		st = self.__get_slicer_type()
+		if 'gte' == st:
+			self.__command += '-st GTE '
+		elif 'csgjs' == st:
+			self.__command += '-st CSGJS '
+
 		# seed value
 		self.__command += '-rs %d ' % (self.spin_seed.value())
 
@@ -211,6 +218,10 @@ class HadanGui(QtGui.QMainWindow):
 
 	def __get_fracture_type(self):
 		return self.cb_fractureType.currentText().lower()
+	#end
+
+	def __get_slicer_type(self):
+		return self.cb_slicer.currentText().lower()
 	#end
 
 	def __get_hadan_filename(self):
@@ -533,6 +544,22 @@ class HadanGui(QtGui.QMainWindow):
 		self.spin_smoothing.setMaximum(360.0)
 		self.spin_smoothing.setMinimum(-360.0)
 		self.spin_smoothing.setValue(30.0)
+
+		# slicer label
+		self.lbl_slicer = QtGui.QLabel(self.tp_advanced)
+		self.lbl_slicer.setGeometry(QtCore.QRect(10, 100, 100, 16))
+		self.lbl_slicer.setFont(font_10)
+		self.lbl_slicer.setObjectName("lbl_slicer")
+		self.lbl_slicer.setText(QtGui.QApplication.translate("Slicer", "Slicer", None, QtGui.QApplication.UnicodeUTF8))
+
+		# slicer cb
+		self.cb_slicer = QtGui.QComboBox(self.tp_advanced)
+		self.cb_slicer.setGeometry(QtCore.QRect(45, 98, 74, 22))
+		self.cb_slicer.setObjectName("cb_slicer")
+		self.cb_slicer.addItem("")
+		self.cb_slicer.addItem("")
+		self.cb_slicer.setItemText(0, QtGui.QApplication.translate("GTE", "GTE", None, QtGui.QApplication.UnicodeUTF8))
+		self.cb_slicer.setItemText(1, QtGui.QApplication.translate("CSGJS", "CSGJS", None, QtGui.QApplication.UnicodeUTF8))
 
 		# min bezier distance label
 		self.lbl_min_bezier_dist = QtGui.QLabel(self.tp_advanced);

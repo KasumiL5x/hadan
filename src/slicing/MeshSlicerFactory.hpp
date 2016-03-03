@@ -4,17 +4,23 @@
 #include <memory>
 #include "IMeshSlicer.hpp"
 #include "ClosedConvexSlicer/ClosedConvexSlicer.hpp"
+#include "CSGSlicer/CSGSlicer.hpp"
 
 class MeshSlicerFactory {
 public:
 	enum class Type {
-		ClosedConvex
+		GTE,  /**< Geometry Tools Engine's ClipMesh */
+		CSGJS /**< csg.js boolean slicer */
 	};
 
 	static std::unique_ptr<IMeshSlicer> create( Type type ) {
 		switch( type ) {
-			case Type::ClosedConvex: {
+			case Type::GTE: {
 				return std::make_unique<ClosedConvexSlicer>();
+			}
+
+			case Type::CSGJS: {
+				return std::make_unique<CSGSlicer>();
 			}
 		}
 		return nullptr;

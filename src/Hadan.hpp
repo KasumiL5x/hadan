@@ -66,6 +66,7 @@
 #include "cells/Cell.hpp"
 #include "slicing/IMeshSlicer.hpp"
 #include <mutex>
+#include "slicing/MeshSlicerFactory.hpp"
 #include "slicing/MeshSlicerInfo.hpp"
 
 class Hadan : public MPxCommand {
@@ -103,6 +104,7 @@ private:
 	BoundingBox _boundingBox;
 	bool _useMultithreading;
 	MeshSlicerInfo _meshSlicerInfo;
+	MeshSlicerFactory::Type _slicerType;
 };
 
 #endif /* __hadan__ */

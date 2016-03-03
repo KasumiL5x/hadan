@@ -132,7 +132,7 @@ bool Hadan::parseArgs( const MArgList& args ) {
 
 	// parse and validate existance of mesh name
 	if( !db.isFlagSet(HadanArgs::HadanMeshName) ) {
-		MTLog::instance()->log("Error: Required argument -meshname (-mn) is missing.\n");
+		MTLog::instance()->log("Error: Required argument -meshName (-mn) is missing.\n");
 		return false;
 	}
 	MString meshNameStr;
@@ -144,7 +144,7 @@ bool Hadan::parseArgs( const MArgList& args ) {
 
 	// parse fracture type
 	if( !db.isFlagSet(HadanArgs::HadanFractureType) ) {
-		MTLog::instance()->log("Error: Required argument -fracturetype (-ft) is missing.\n");
+		MTLog::instance()->log("Error: Required argument -fractureType (-ft) is missing.\n");
 		return false;
 	}
 	MString fractureTypeStr;
@@ -159,6 +159,22 @@ bool Hadan::parseArgs( const MArgList& args ) {
 		_pointsGenType = PointGenFactory::Type::Test;
 	} else {
 		MTLog::instance()->log("Error: Unknown fracture type.\n");
+		return false;
+	}
+
+	// parse slicer type
+	if( !db.isFlagSet(HadanArgs::HadanSlicerType) ) {
+		MTLog::instance()->log("Error: Required argument -slicerType (-st) is missing.\n");
+		return false;
+	}
+	MString slicerTypeStr;
+	db.getFlagArgument(HadanArgs::HadanSlicerType, 0, slicerTypeStr);
+	if( strcmp(slicerTypeStr.asChar(), "GTE") == 0 ) {
+		_slicerType = MeshSlicerFactory::Type::GTE;
+	} else if( strcmp(slicerTypeStr.asChar(), "CSGJS") == 0 ) {
+		_slicerType = MeshSlicerFactory::Type::CSGJS;
+	} else {
+		MTLog::instance()->log("Error: Unknown slicer type.");
 		return false;
 	}
 
@@ -264,8 +280,7 @@ void Hadan::doSingleCut( const Cell& cell, int id, std::shared_ptr<IMeshSlicer> 
 }
 
 void Hadan::performCutting() {
-	//std::shared_ptr<IMeshSlicer> slicer = std::make_shared<ClosedConvexSlicer>();
-	std::shared_ptr<IMeshSlicer> slicer = std::make_shared<CSGSlicer>();
+	std::shared_ptr<IMeshSlicer> slicer = MeshSlicerFactory::create(_slicerType);
 	if( !slicer->setSource(MFnMesh(_inputMesh)) ) {
 		MTLog::instance()->log("Warning: Failed to set slicer mesh source.  Cutting will not take place.\n");
 		return;
