@@ -169,9 +169,9 @@ bool Hadan::parseArgs( const MArgList& args ) {
 	}
 	MString slicerTypeStr;
 	db.getFlagArgument(HadanArgs::HadanSlicerType, 0, slicerTypeStr);
-	if( strcmp(slicerTypeStr.asChar(), "GTE") == 0 ) {
+	if( strcmp(slicerTypeStr.asChar(), "gte") == 0 ) {
 		_slicerType = MeshSlicerFactory::Type::GTE;
-	} else if( strcmp(slicerTypeStr.asChar(), "CSGJS") == 0 ) {
+	} else if( strcmp(slicerTypeStr.asChar(), "csgjs") == 0 ) {
 		_slicerType = MeshSlicerFactory::Type::CSGJS;
 	} else {
 		MTLog::instance()->log("Error: Unknown slicer type.");

@@ -113,9 +113,9 @@ class HadanGui(QtGui.QMainWindow):
 		# build based on slicer type
 		st = self.__get_slicer_type()
 		if 'gte' == st:
-			self.__command += '-st GTE '
+			self.__command += '-st gte '
 		elif 'csgjs' == st:
-			self.__command += '-st CSGJS '
+			self.__command += '-st csgjs '
 
 		# seed value
 		self.__command += '-rs %d ' % (self.spin_seed.value())
