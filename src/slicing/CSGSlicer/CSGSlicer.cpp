@@ -46,15 +46,6 @@ bool CSGSlicer::slice( const Cell& cell, const MeshSlicerInfo& info, MFnMesh& ou
 	// convert cell into csgjs_model
 	csgjs_model cellModel;
 
-	// NOTE: The code below will create separate faces for each plane in the cell.
-	//       They will NOT be welded and therefore the algorithm may fail.  They need
-	//       to be welded (both vertex positions and indices), but this again looses
-	//       vertex data as before (but may work on more complex meshes).
-	//ugifuifnnuf
-	// https://github.com/gilbo/cork/blob/master/src/cork.h
-	// http://www.opencsg.org/#introduction
-	// 
-
 	int indexOffset = 0;
 	const auto& planePoints = cell.getPlanePoints();
 	for( const auto& points : planePoints ) {
@@ -69,7 +60,6 @@ bool CSGSlicer::slice( const Cell& cell, const MeshSlicerInfo& info, MFnMesh& ou
 			cellModel.indices.push_back(indexOffset + idx[1]);
 			cellModel.indices.push_back(indexOffset + idx[2]);
 		}
-		//cellModel.counts.push_back(3);
 
 		indexOffset += static_cast<int>(points.size());
 	}

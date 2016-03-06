@@ -6,7 +6,7 @@
 #include <array>
 #include <cc/Vec3.hpp>
 
-std::vector<std::array<int, 3>> HadanConvexTriangulate( const std::vector<cc::Vec3f>& points ) {
+static std::vector<std::array<int, 3>> HadanConvexTriangulate( const std::vector<cc::Vec3f>& points ) {
 	std::vector<std::array<int, 3>> indices;
 
 	if( points.size () < 3 ) {

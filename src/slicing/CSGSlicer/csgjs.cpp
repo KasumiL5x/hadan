@@ -422,20 +422,6 @@ void csgjs_csgnode::build(const std::vector<csgjs_polygon> & list, int previousB
 		return;
 	}
 
-	//if( list_front.size() == previousFrontSize && !list_back.size() ) {
-	//	this->polygons = list_front;
-	//	printf("Infinite recursion detected!  Allocating remaining faces to front.\n");
-	//	fflush(stdout);
-	//	return;
-	//}
-	//if( list_back.size() == previousBackSize && !list_front.size() ) {
-	//	this->polygons = list_back;
-	//	printf("Infinite recursion detected!  Allocating remaining faces to back.\n");
-	//	fflush(stdout);
-	//	return;
-	//}
-
-
 	if (list_front.size()) 
 	{
 		if (!this->front) this->front = new csgjs_csgnode;
