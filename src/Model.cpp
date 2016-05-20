@@ -172,7 +172,7 @@ BoundingBox Model::computeBoundingBox() const {
 	cc::Vec3f min(std::numeric_limits<float>::max());
 	cc::Vec3f max(-std::numeric_limits<float>::max());
 	cc::Vec3f center;
-	for( unsigned int i = 0; i < static_cast<unsigned int>(_vertices.size()); ++i ) {
+	for( size_t i = 0; i < _vertices.size(); ++i ) {
 		const cc::Vec3f& pos = _vertices[i].position;
 		center += pos;
 		min.x = (pos.x < min.x) ? pos.x : min.x;

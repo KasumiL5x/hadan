@@ -2,7 +2,7 @@
 
 bool Plane::fitPointsToPlane( const std::vector<cc::Vec3f>& points, float& residualError, Plane& outPlane ) {
 	std::vector<cc::Vec4f> weightedPoints(points.size());
-	for( unsigned int i = 0; i < static_cast<unsigned int>(points.size()); ++i ) {
+	for( size_t i = 0; i < points.size(); ++i ) {
 		weightedPoints[i] = cc::Vec4f(points[i], 1.0f);
 	}
 	cc::Vec3f basis1;

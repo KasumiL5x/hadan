@@ -29,7 +29,7 @@ void ClusterPointGen::generateSamplePoints( const BoundingBox& boundingBox, cons
 
 	// push back primary points and generate and add all secondary points
 	const float fluxAmount = cc::math::percent<float>(static_cast<float>(boundingBox.getDiagonalDistance()), static_cast<float>(info.flux));
-	for( unsigned int i = 0; i < static_cast<unsigned int>(primaryPoints.size()); ++i ) {
+	for( size_t i = 0; i < primaryPoints.size(); ++i ) {
 		const cc::Vec3f& curr = primaryPoints[i];
 		outPoints.push_back(curr);
 

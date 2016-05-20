@@ -23,7 +23,7 @@ void BezierPath::interpolate( const std::vector<cc::Vec3f>& segmentPoints, float
 		return;
 	}
 
-	for( unsigned int i = 0; i < static_cast<unsigned int>(segmentPoints.size()); ++i ) {
+	for( size_t i = 0; i < segmentPoints.size(); ++i ) {
 		if( 0 == i ) { // first
 			const cc::Vec3f& p1 = segmentPoints[i];
 			const cc::Vec3f& p2 = segmentPoints[i+1];
@@ -62,7 +62,7 @@ void BezierPath::samplePoints( const std::vector<cc::Vec3f>& sourcePoints, float
 	std::stack<cc::Vec3f> samplePoints;
 	samplePoints.push(sourcePoints[0]);
 	cc::Vec3f potentialSamplePoint = sourcePoints[1];
-	for( unsigned int i = 2; i < static_cast<unsigned int>(sourcePoints.size()); ++i ) {
+	for( size_t i = 2; i < sourcePoints.size(); ++i ) {
 		if( ((potentialSamplePoint - sourcePoints[i]).sqrMagnitude() > minSqrDist) &&
 			  ((samplePoints.top() - sourcePoints[i]).sqrMagnitude() > maxSqrDist) ) {
 			samplePoints.push(potentialSamplePoint);

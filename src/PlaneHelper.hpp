@@ -7,7 +7,7 @@
 
 namespace PlaneHelper {
 	static bool planeFromPoints( const std::vector<cc::Vec3f>& points, Plane& outPlane ) {
-		const unsigned int n = static_cast<unsigned int>(points.size());
+		const size_t n = points.size();
 		// needs at least 3 points
 		if( n < 3 ) {
 			return false;

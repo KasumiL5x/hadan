@@ -88,7 +88,7 @@ ClipMesh::Result ClipMesh::clip( const Plane& clipPlane ) {
 
 bool ClipMesh::convert( Model* outModel ) {
 	// get visible vertices
-	const unsigned int numVertices = static_cast<unsigned int>(_vertices.size());
+	const size_t numVertices = _vertices.size();
 	std::vector<Vertex> points;
 	int* vMap = new int[numVertices];
 	memset(vMap, 0xFF, numVertices * sizeof(int));
@@ -97,7 +97,7 @@ bool ClipMesh::convert( Model* outModel ) {
 		if( !vtx.visible ) {
 			continue;
 		}
-		vMap[currVtx] = static_cast<unsigned int>(points.size());
+		vMap[currVtx] = static_cast<int>(points.size());
 
 		points.push_back(Vertex(vtx.point));
 	}
@@ -180,8 +180,8 @@ ClipMesh::Result ClipMesh::processVertices( const Plane& clippingPlane ) {
 	int numZero = 0;
 	
 	// compute signed distance from vertices to plane
-	const unsigned int numVertices = static_cast<unsigned int>(_vertices.size());
-	for( unsigned int currVert = 0; currVert < numVertices; ++currVert ) {
+	const size_t numVertices = _vertices.size();
+	for( size_t currVert = 0; currVert < numVertices; ++currVert ) {
 		CVertex& vtx = _vertices[currVert];
 		if( !vtx.visible ) {
 			continue;
@@ -216,8 +216,8 @@ ClipMesh::Result ClipMesh::processVertices( const Plane& clippingPlane ) {
 }
 
 void ClipMesh::processEdges() {
-	const unsigned int numEdges = static_cast<unsigned int>(_edges.size());
-	for( unsigned int currEdge = 0; currEdge < numEdges; ++currEdge ) {
+	const size_t numEdges = _edges.size();
+	for( size_t currEdge = 0; currEdge < numEdges; ++currEdge ) {
 		CEdge& edge = _edges[currEdge];
 		if( !edge.visible ) {
 			continue;
@@ -255,7 +255,7 @@ void ClipMesh::processEdges() {
 		// the edge is split by the plane.  copmute the point of intersection.
 		// if the old edge is <v0,v1> and i is the intersection point,
 		// the new edge is <v0,i> when d0 > 0, or<i,v1> when d1 > 0.
-		const unsigned int vNew = static_cast<unsigned int>(_vertices.size());
+		const size_t vNew = _vertices.size();
 		_vertices.push_back(CVertex());
 		CVertex& vertexNew = _vertices[vNew];
 
@@ -274,7 +274,7 @@ void ClipMesh::processEdges() {
 bool ClipMesh::processFaces( const Plane& clippingPlane ) {
 	// the mesh straddles the plane.  a new convex polygon face will be
 	// generated.  add it now and insert edges when they are visited.
-	const unsigned int fNew = static_cast<unsigned int>(_faces.size());
+	const size_t fNew = _faces.size();
 	_faces.push_back(CFace());
 	CFace& faceNew = _faces[fNew];
 	faceNew.normal = -clippingPlane.normal;
@@ -312,7 +312,7 @@ bool ClipMesh::processFaces( const Plane& clippingPlane ) {
 		int vFinal;
 		if( getOpenPolyline(face, vStart, vFinal) ) {
 			// polyline is open, close it up
-			const unsigned int eNew = static_cast<unsigned int>(_edges.size());
+			const size_t eNew = _edges.size();
 			_edges.push_back(CEdge());
 			CEdge& edgeNew = _edges[eNew];
 			edgeNew.vertex[0] = vStart;
@@ -493,14 +493,14 @@ bool ClipMesh::postProcess( int fNew, CFace& faceNew ) {
 }
 
 bool ClipMesh::getTriangles( std::vector<int>& indices ) {
-	const unsigned int numFaces = static_cast<unsigned int>(_faces.size());
-	for( unsigned int currFace = 0; currFace < numFaces; ++currFace ) {
+	const size_t numFaces = _faces.size();
+	for( size_t currFace = 0; currFace < numFaces; ++currFace ) {
 		CFace& face = _faces[currFace];
 		if( !face.visible ) {
 			continue;
 		}
 
-		const unsigned int numEdges = static_cast<unsigned int>(face.edges.size());
+		const size_t numEdges = face.edges.size();
 		//assert(numEdges >= 3); // unexpected condition
 		if( numEdges < 3 ) {
 			return false;

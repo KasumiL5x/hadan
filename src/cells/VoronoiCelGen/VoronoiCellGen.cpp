@@ -26,7 +26,7 @@ bool VoronoiCellGen::generate( const BoundingBox& bbox, const std::vector<cc::Ve
 	voro::container container(bbox.minX()-EXP, bbox.maxX()+EXP, bbox.minY()-EXP, bbox.maxY()+EXP, bbox.minZ()-EXP, bbox.maxZ()+EXP, resx, resy, resz, false, false, false, initMem);
 
 	// insert sample points
-	for( unsigned int i = 0; i < static_cast<unsigned int>(samplePoints.size()); ++i ) {
+	for( size_t i = 0; i < samplePoints.size(); ++i ) {
 		const cc::Vec3f& pos = samplePoints[i];
 		container.put(i, static_cast<double>(pos.x), static_cast<double>(pos.y), static_cast<double>(pos.z));
 	}

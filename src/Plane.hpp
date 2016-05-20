@@ -45,7 +45,7 @@ static void findScatterMatrix( const std::vector<cc::Vec4f>& points, const cc::V
 	for( i=0; i<3; i++ ) {
 		scatterMatrix[i][0]=scatterMatrix[i][1]=scatterMatrix[i][2]=0;
 	}
-	for( unsigned int i = 0; i < static_cast<unsigned int>(points.size()); i++ ) {
+	for( size_t i = 0; i < points.size(); i++ ) {
 		const cc::Vec4f& P = points[i];
 		cc::Vec3f d = cc::Vec3f(P.x, P.y, P.z) - centroid;
 		float Weight = P.w;

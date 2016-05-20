@@ -289,7 +289,7 @@ void Hadan::performCutting() {
 	if( _useMultithreading ) {
 		// multi threaded
 		std::vector<std::thread> cuttingThreads;
-		for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
+		for( size_t i = 0; i < _cuttingCells.size(); ++i ) {
 			cuttingThreads.push_back(std::thread(&Hadan::doSingleCut, this, _cuttingCells[i], i, slicer));
 		}
 		for( auto& t : cuttingThreads ) {
@@ -297,7 +297,7 @@ void Hadan::performCutting() {
 		}
 	} else {
 		// single threaded
-		for( unsigned int i = 0; i < static_cast<unsigned int>(_cuttingCells.size()); ++i ) {
+		for( size_t i = 0; i < _cuttingCells.size(); ++i ) {
 			doSingleCut(_cuttingCells[i], i, slicer);
 		}
 	}

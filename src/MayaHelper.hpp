@@ -99,7 +99,7 @@ namespace MayaHelper {
 		const std::vector<Vertex>& vertices = model.getVertices();
 		const int numVerts = static_cast<int>(vertices.size());
 		MPointArray pointArray;
-		for( unsigned int i = 0; i < static_cast<unsigned int>(vertices.size()); ++i ) {
+		for( size_t i = 0; i < vertices.size(); ++i ) {
 			const Vertex& vtx = vertices[i];
 			pointArray.append(MPoint(vtx.position.x, vtx.position.y, vtx.position.z));
 		}
@@ -107,7 +107,7 @@ namespace MayaHelper {
 		// convert indices
 		const std::vector<int>& indices = model.getIndices();
 		MIntArray faceConnects;
-		for( unsigned int i = 0; i < static_cast<unsigned int>(indices.size()); ++i ) {
+		for( size_t i = 0; i < indices.size(); ++i ) {
 			faceConnects.append(indices[i]);
 		}
 
