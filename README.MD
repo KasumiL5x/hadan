@@ -4,7 +4,10 @@ Mayaにメッシュを破断することは難しいです。このツールでM
 Fracturing meshes in Maya is difficult.  With this tool, fracturing meshes in Maya is easy.
 
 ### Version
-0.1-dev
+1.0-dev
+
+### Status
+Hadan is **not** being developed.  It is a prototype and should be treat as such.
 
 ### Tech
 * [Voro++][voropp] - computation of Voronoi diagrams
@@ -20,4 +23,4 @@ MIT
 [//]: References
 [voropp]: <http://math.lbl.gov/voro++/>
 [geometrictools]: <http://geometrictools.com/>
-[ccmath]: <http://www.ngreen.org/ccmath/>
+[ccmath]: <http://www.ngreen.org/portfolio/ccmath.html>
