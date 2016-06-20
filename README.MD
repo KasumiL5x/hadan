@@ -18,9 +18,10 @@ Hadan is **not** being developed.  It is a prototype and should be treat as such
  - See source code
 
 ### License
-MIT
+[MIT][mit-link]
 
 [//]: References
 [voropp]: <http://math.lbl.gov/voro++/>
 [geometrictools]: <http://geometrictools.com/>
 [ccmath]: <http://www.ngreen.org/portfolio/ccmath.html>
+[mit-link]: <http://www.mit.ngreen.org/>
